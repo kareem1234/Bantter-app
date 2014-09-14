@@ -1,0 +1,25 @@
+cordova.define('cordova/plugin_list', function(require, exports, module) {
+module.exports = [
+    {
+        "file": "plugins/nl.x-services.plugins.videocaptureplus/www/VideoCapturePlus.js",
+        "id": "nl.x-services.plugins.videocaptureplus.VideoCapturePlus",
+        "clobbers": [
+            "window.plugins.videocaptureplus"
+        ]
+    },
+    {
+        "file": "plugins/com.phonegap.plugins.facebookconnect/www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js",
+        "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
+        "clobbers": [
+            "window.facebookConnectPlugin"
+        ]
+    }
+];
+module.exports.metadata = 
+// TOP OF METADATA
+{
+    "nl.x-services.plugins.videocaptureplus": "1.2",
+    "com.phonegap.plugins.facebookconnect": "0.7.1"
+}
+// BOTTOM OF METADATA
+});

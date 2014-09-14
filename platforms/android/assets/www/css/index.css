@@ -1,0 +1,290 @@
+html, body {
+    height: 100%;
+
+}
+
+.backgroundImage{
+	background-image: url(../img/vacation-selfies-770.jpg);
+    background-position: 40% 40%;
+	background-size:cover;
+	width:100%;
+	height:100%;
+}
+.menuTab{
+	height:110%;
+	width:33.333%;
+}
+.notActive{
+	display:none;
+}
+#videoPopUp{
+	margin-left: -12%;
+	width: 125%;
+}
+#infoPopUp{
+	top:50%;
+}
+.videoPopUpContent{
+	background-color:rgb(179, 207, 255);
+}
+.modal { 
+    position: fixed; 
+    top: 30%; 
+    width: 110%; 
+    margin-left: -5%; 
+}
+.modal-body { 
+    height: 60%; 
+}
+.col-xs-4{
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.likesRow{
+	padding-top: 5%;
+	padding-bottom:5%;
+	font-size: 150%;
+}
+.disabled{
+	opacity:0.3;
+}
+.selectedLikesRow{
+	background-color:rgb(192, 218, 255);
+}
+.row{
+	margin-left: 0px;
+	margin-right:0px;
+}
+#noIcon{
+	width:100%;
+	height:100%;
+}
+.icon{
+	width:30%;
+	height:30%;
+}
+#removePadding{
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.btn{
+	font-size: 150%;
+	border-radius: 0px;
+}
+.container-xs-height{
+	height:100%;
+}
+/* 
+
+Loading page css styles
+
+  */
+#loadingPage{
+	background-image: url(../img/bantterIconPink.png);
+	background-size: cover;
+	background-position:45% 40%;
+    width: 100%;
+    height: 100%;
+}
+#loadingPage_statusDiv{
+	position: fixed;
+	top: 88%;
+	right: 0%;
+	width: 100%;
+	height: 7%;
+	font-size: x-large;
+	text-align: center;
+	vertical-align: middle;
+	color:#FFFFFF;
+	opacity: 0.7;
+	border-radius: 10%;
+}
+/* 
+loginPage css styles
+
+*/
+
+#loginPage_bantterLogo{
+	position:fixed;
+	top: -4%;
+	right: 15%;
+	width: 70%;
+	height: 22%;
+}
+#loginPage_slogan{
+	position:fixed;
+	text-align: center;
+	top: 15%;
+	right: 0%;
+	width: 100%;
+	height: 10%;
+	color:#00CCFF;
+	font-size: x-large;
+}
+#loginPage_fbLogin{
+	position:fixed;
+	top: 90%;
+	width:80%;
+	left:10%;
+}
+
+/*
+	main page css
+*/
+#mainPage{
+ width:100%;
+ height:100%;
+}
+
+#mainPage_menu{
+	background-color:#00CCFF;
+	width:100%;
+	margin-right: 0px;
+	margin-left:0px;
+}
+#mainPage_tabs{
+	background-color: #00CCFF;
+
+}
+.mainPage_selfies_contentPane{
+	background-color: #00CCFF;
+	height:50%;
+	text-align: center;
+	font-size:x-large;
+	color:white;
+	font-size:125%;
+}
+#mainPage_menu_logo{
+	width: 90%;
+	height:100%;
+}
+#mainPage_menu_vidIcon{
+	margin-top: 20%;
+	width:100%;
+	height:60%;
+}
+#mainPage_menu_likes{
+	background-color: #FF0066;
+	width:100%;
+}
+#mainPage_menu_inbox{
+	background-color:#0000FF;
+	width:100%;
+}
+#mainPage_menu_selfies{
+	background-color: #CC0099;
+	width:100%;
+}
+#mainPage_selfies{
+	height:80%;
+	background-color: #00CCFF;
+}
+
+#mainPage_selfies_selfieVid{
+	background-color:#00CCFF !important;
+	height:100%;
+	width: 120%;
+	margin-left:-12%;
+}
+#mainPage_selfies_thumbsDown{
+	margin-top:30%;
+	margin-left: 30%;
+	height:50%;
+	width:50%;
+}
+#mainPage_selfies_thumbsUp{
+	margin-right:30%;
+	margin-top: 30%;
+	height:50%;
+	width:50%;	
+}
+#mainPage_people{
+	height:81%;
+}
+#mainPage_likes_controlBut{
+	margin-left:44%;
+	margin-top:2%;
+	height:90%;
+	width:13%;
+}
+#mainPage_likes_controlCont{
+	height:9%;
+}
+.mainPage_likesDiv{
+	height:73%;
+	overflow-y:scroll;
+}
+#mainPage_people_menu{
+	height:17%;
+	padding-top:15%;
+	font-size:large;
+	color: rgb(13, 82, 105);
+}
+.mainPage_likes_profilePic{
+	border-radius: 10px;
+}
+.starDiv{
+	background-color: red;
+}
+
+/*   Code for css loader animation */
+.spinner {
+  width: 70px;
+  height: 70px;
+
+  position: relative;
+  margin-left: 107px;
+}
+.spinner2{
+width: 45px;
+height: 45px;
+position: relative;
+margin-left: 108px;
+margin-top: 177%;
+}
+.spinner3 {
+width: 70px;
+height: 70px;
+position: relative;
+margin-left: 123px;
+margin-top: 100px;
+}
+.newInboxIcon{
+	width:100%;
+	height:100%;
+}
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color:blue;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: bounce 2.0s infinite ease-in-out;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+	background-color:purple;
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes bounce {
+  0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}	
+
