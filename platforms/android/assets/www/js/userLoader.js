@@ -31,8 +31,6 @@ function MediaLoader(eventEmitter,request){
 		var newInboxRefHash = JSON.parse(window.localStorage.getItem("media_inboxRefHash"));
 		if(newInboxRefHash)
 			inboxRefHash = newInboxRefHash;
-		console.log("inbox ref hash is");
-		console.dir(inboxRefHash);
 		checkStatus();
 	}
 	// saves all user arrays 
@@ -108,7 +106,6 @@ function MediaLoader(eventEmitter,request){
 	// set the viewing mode to 
 	// findUsers/ findWhoILike, findWhoLikedMe
 	this.setMode = function(modeType){
-		console.log("setting mode to "+ modeType);
 		mode = modeType;
 		likesBuff = 2;
 		checkStatus();
@@ -117,12 +114,9 @@ function MediaLoader(eventEmitter,request){
 	// attach videoReference array to  the matching user object
 	// then call checkStatus() 
 	this.onRefLoad = function(refs,type){
-		console.log("adding ref...");
-		console.log("type of ref is: "+ type);
 		if(type === "findUsers"){
 			for(var i = 0; i< userStream.length; i++){
 				if(userStream[i].FbId === refs[0].FbId){
-					console.log("ref addeded");
 					userStream[i].refs = refs;
 				}
 			}
@@ -156,7 +150,6 @@ function MediaLoader(eventEmitter,request){
 				that.setInboxUsers();
 	}
 	this.setInboxUsers = function(){
-		console.log("setting inboxUsers");
 		for(var i = 0; i <that.inboxUsers.length; i++){
 			that.inboxUsers[i].refs = inboxRefHash[that.inboxUsers[i].FbId.toString()];
 		}
@@ -167,11 +160,9 @@ function MediaLoader(eventEmitter,request){
 	// when a user array response comes from the server
 	// call the appropiate action and call buffer if needed
 	this.onUserLoad = function(users,type){
-		console.log("type of user is: "+type);
 		if(type === "findUsers"){
 			usLoader.addUsers(users);
 		}else if(type === "findWhoILike"){
-			console.log("adding people i liked...");
 			that.myLikes = users;
 			buffer();
 			E.EMIT("media_myLikes_loaded");
@@ -193,7 +184,6 @@ function MediaLoader(eventEmitter,request){
 			if(userStream[0] && userStream[0].refs)
 				that.readyStatus = true;
 			else{
-				console.dir(userStream);
 				that.readyStatus = false;
 			}
 		}else if(mode === "findWhoILike"){

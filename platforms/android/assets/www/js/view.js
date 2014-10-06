@@ -1,4 +1,3 @@
-console.log("hello");
 function View (EventEmitter){
 	var E = EventEmitter;
 	var that = this;
@@ -8,6 +7,7 @@ function View (EventEmitter){
 	var likersSet = false;
 	var prevSelected = undefined;
 	var playedOnce = false;
+	var playing = false;
 	this.streamLoading = false;
 	var vidUrl = 'https://s3.amazonaws.com/bantter-downloads/';
 	this.currentView ="";
@@ -18,23 +18,57 @@ function View (EventEmitter){
 		});
 		$("#mainPage_likes_controlBut").bind("tap",function(){
 			E.EMIT("view_likesControll_taped");
-		})
+		});
+		$('#loadingContainer_play').bind("tap",function(){
+			if(that.currentView=="streamView"){
+			console.log("video taped");
+			if(playing == false){
+				displayVidLoad();
+				var vid = $('#mainPage_selfies_selfieVid').get(0);
+				vid.load();
+				vid.play();
+				playing = true;
+			}
+			}else if(that.currentView == likersView){
+
+			}
+		});
+		/// precache jquery selectors
+		that.loginPage = $("#loginPage");
+		that.mainPage = $("#mainPage");
+		that.loadingPage = $("#loadingPage");
+		that.spinner = $(".spinner");
 	}
 	function initVidControll(){
 		$("#videoPopUp").bind("tap",function(){
-			if($(this).get(0).paused)
-				$(this).get(0).play();
-			else
-				$(this).get(0).pause();
+			console.log("video taped");
+			if(playing == false){
+				console.log("video taped");
+				var vid = $(this).get(0);
+				vid.play();
+				vid.load();
+				playing = true;
+			}
+		}).bind("timeupdate",function(){
+			var vid = $(this).get(0);
+			console.log("time updated:"+vid.currentTime);
+		}).bind("ended",function(){
+			playing = false;
 		});
 		$("#mainPage_selfies_selfieVid").bind("tap",function(){
-			if($(this).get(0).paused)
+			if($(this).get(0).ended){
+				console.log("replaying");
 				$(this).get(0).play();
-			else
-				$(this).get(0).pause();
+				$(this).get(0).load();
+			}
 		}).bind("ended",function(){
 			playedOnce = true;
 			enableThumbs();
+		}).bind("timeupdate",function(){
+			var vid = $(this).get(0);
+			if(vid.currentTime > 0)
+				removeVidLoad();
+			console.log("time updated:"+vid.currentTime);
 		});
 	}
 	function clearBox(){
@@ -43,18 +77,17 @@ function View (EventEmitter){
 
 	}
 	this.setLoadingView = function(){
-		$.mobile.changePage( "#loadingPage", { transition: "slideup",allowSamePageTransition: true } );
 		that.currentView='loadingView';
 		$("#loginPage").addClass("notActive");
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").removeClass("notActive");
 	}
 	this.streamViewDisplayNext = function(user){
-		$.mobile.changePage( "#mainPage", { transition: "slideup",allowSamePageTransition: true } );
-		$("#mainPage_selfies_name").text(user.Name+",   "+user.Age);
 		$("#mainPage_selfies_city").text(user.City);
+		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		var vid = $("#mainPage_selfies_selfieVid");
 		vid.get(0).src=user.refs[0].Url;
+		vid.get(0).load();
 		playedOnce = false;
 		vid.get(0).play();
 		disableThumbs();
@@ -67,6 +100,19 @@ function View (EventEmitter){
 	function enableThumbs(){
 		$("#mainPage_selfies_thumbsUp").removeClass("disabled");
 		$("#mainPage_selfies_thumbsDown").removeClass("disabled");
+	}
+	function displayVidLoad(popUpBool){
+		$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+		$("#loadingContainer_play").addClass("notActive");
+		$(".loadSpinner").removeClass("notActive");
+	}
+	function removeVidLoad(popUpBool){
+		$("#mainPage_selfies_loadingContainer").addClass("notActive");
+	}
+	function displayVidPlay(popUpBool){
+		$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+		$("#loadingContainer_play").addClass("notActive");
+		$(".loadSpinner").removeClass("notActive");
 	}
 	this.displayInfo = function(text){
 		$("#modal-title2").html(text);
@@ -89,19 +135,15 @@ function View (EventEmitter){
 		$("#mainPage_selfies_thumbsDown").addClass("disabled");
 	}
 	this.setUserViewPopUp = function(user){
-		console.dir(user);
 		$("#modal-title1").text(user.Name+".");
 		var vid = $("#videoPopUp");
-		console.log(that.currentView);
 		if(that.currentView ==="inboxView")
 			vid.get(0).src=user.refs.Url;
 		else
 			vid.get(0).src=user.refs[0].Url;
-		vid.get(0).play();
 		$("#videoPopUpModal").modal('toggle');
 	}
 	this.setLoginView = function(loginFunc){
-		$.mobile.changePage( "#loginPage", { transition: "slideup",allowSamePageTransition: true } );
 		that.currentView='loginView';
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").addClass("notActive");
@@ -126,29 +168,32 @@ function View (EventEmitter){
 		}
 	}
 	this.setStreamView = function(user){
-		$.mobile.changePage( "#mainPage", {transition: "slideup", allowSamePageTransition: true } );
-		that.setMenu();
 		that.currentView='streamView';
+		$("#mainPage_selfies_loadingContainer").css('background-image', 'url(' + user.refs[0].ImageUrl + ')');
+		$("#mainPage_selfies").removeClass("notActive");
+		$("#mainPage_people").addClass("notActive");
 		$("#loginPage").addClass("notActive");
 		$("#loadingPage").addClass("notActive");
-		$("#mainPage").removeClass("notActive");
-		$("#mainPage_people").addClass("notActive");
-		$("#mainPage_selfies").removeClass("notActive");
 		$("#mainPage_selfies_thumbsUp").unbind('tap').bind("tap",function(){
+			playing = false;
 			if( ! $(this).hasClass('disabled'))
 				E.EMIT("streamView_thumbsUp_taped");
 		});
 		$("#mainPage_selfies_thumbsDown").unbind('tap').bind("tap",function(){
+			playing = false;
 			if( ! $(this).hasClass('disabled'))
 				E.EMIT("streamView_thumbsDown_taped");
 		});
-		$("#mainPage_selfies_name").text(user.Name+",   "+user.Age);
+		that.setMenu();
+		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		$("#mainPage_selfies_city").text(user.City);
 		var vid = $("#mainPage_selfies_selfieVid");
 		vid.attr('src',user.refs[0].Url);
-		vid.get(0).play();
+		vid.get(0).load();
 		playedOnce = false;
+		vid.get(0).play();
 		disableThumbs();
+		$("#mainPage").removeClass("notActive");
 	}
 	this.displayPeopleLoading = function(inbox){
 		that.currentView='peopleLoading';
@@ -170,8 +215,6 @@ function View (EventEmitter){
 		$(".spinner3").removeClass("notActive");
 	}
 	this.updateInboxView = function(){
-		$.mobile.changePage( "#mainPage", { transition: "slideup",allowSamePageTransition: true } );
-		console.log($.mobile.getActivePage);
 		that.currentView='inboxView';
 		that.setMenu();
 		clearBox();
@@ -194,7 +237,6 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuTitle").html("My Inbox");
 	}
 	this.updateMyLikesView = function(){
-		$.mobile.changePage( "#mainPage", {transition: "slideup", allowSamePageTransition: true } );
 		that.currentView ='myLikesView';
 		that.setMenu();
 		clearBox();
@@ -219,7 +261,6 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuTitle").html("My Likes");
 	}
 	this.updateLikersView = function(){
-		$.mobile.changePage( "#mainPage", {transition: "slideup", allowSamePageTransition: true } );
 		that.currentView='likersView';
 		that.setMenu();
 		clearBox();
@@ -240,9 +281,9 @@ function View (EventEmitter){
 		$("#mainPage_people_likers").removeClass("notActive");
 
 		//
-		$("#mainPage_likes_menuTitle").html("My fans");
+		$("#mainPage_likes_menuTitle").html("My Fans");
 	}
-	this.setInboxView = function(inboxUsers){
+	this.setInboxView = function(inboxUsers,viewFunction){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty().on('scroll',checkScroll);
@@ -283,7 +324,7 @@ function View (EventEmitter){
 					actionBut1.text("View");
 					actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("inboxView_view",index);
+						viewFunction(index);
 					});
 				}else{
 					actionBut1.text(" ");
@@ -296,7 +337,7 @@ function View (EventEmitter){
 				actionBut.text("Reply");		
 			});
 	}
-	this.setMyLikesView = function(){
+	this.setMyLikesView = function(viewFunction){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty().on('scroll',checkScroll);
@@ -304,7 +345,7 @@ function View (EventEmitter){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				if(that.mediaLoader.myLikes[i].refs === undefined)
-						likesRowDiv.className ="disabled";
+						likesRowDiv.className +=" disabled";
 				var picDiv = document.createElement("div");
 				picDiv.className = "col-xs-3 col-xs-height col-top";
 				var picDivImg = document.createElement("img");
@@ -331,7 +372,7 @@ function View (EventEmitter){
 				actionBut1.text("View");
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("myLikesView_view",index);
+						viewFunction(index);
 				});
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
@@ -344,7 +385,7 @@ function View (EventEmitter){
 	this.enableRow = function(index){
 		$(".likesRow:eq("+index+")").removeClass("disabled");
 	}
-	this.setLikersView = function(){
+	this.setLikersView = function(viewFunction){
 			likersSet = true;
 			that.updateLikersView();
 			$("#mainPage_people_likers").empty().bind("scroll",checkScroll);
@@ -352,7 +393,7 @@ function View (EventEmitter){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				if(that.mediaLoader.likers[i].refs === undefined)
-					likesRowDiv.addClass("disabled");
+					likesRowDiv.className+=" disabled ";
 				var picDiv = document.createElement("div");
 				picDiv.className = "col-xs-3 col-xs-height col-top";
 				var picDivImg = document.createElement("img");
@@ -379,7 +420,7 @@ function View (EventEmitter){
 				actionBut1.text("View");
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("likersView_view",index);
+						viewFunction(index);
 				});
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
@@ -389,9 +430,8 @@ function View (EventEmitter){
 				actionBut.text("Message");		
 			});
 	}
-	function checkScroll(e){
-		var elem = $(e.currentTarget);
-    	if (elem[0].scrollHeight - elem.scrollTop() >= elem.outerHeight()*0.15)
+	function checkScroll(){
+    	if ($(this).innerHeight() + $(this).scrollTop() >= $(this).scrollHeight()*0.15)
         	E.EMIT("likesView_scrolled");
 	}
 

@@ -9,7 +9,7 @@ function EventEmitter(){
 			return;
 		}
 		if(EVENTLIST.indexOf(eventName) === -1)
-			console.log('error emmited unregistered event: '+ eventName);
+			console.log();
 		else{
 			//console.log('event emmitted: '+eventName);
 			if(data === null || data === undefined){

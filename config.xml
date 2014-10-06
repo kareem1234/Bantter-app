@@ -13,4 +13,5 @@
     	<param name="APP_ID" value="Bantter" />
     	<param name="APP_NAME" value="1409430495955338" />
 	</gap:plugin>
+    <icon src="res/icon.png" />
 </widget>

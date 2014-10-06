@@ -15,7 +15,6 @@ function Request(EventEmitter){
 	}
 	function makeRequest(Type,URL,Data){
 		const requestData = Data;
-		console.dir(requestData);
 		$.ajax({
 			url: domain+URL,
 			type: Type,
@@ -25,7 +24,6 @@ function Request(EventEmitter){
 				tries = 0;
 				timeout = 2000;
 			}
-			console.log("request complete"+URL);
 			E.EMIT("complete"+URL,{res:response,req:requestData});
 		}).fail(function(error){
 			tries ++;
@@ -40,7 +38,6 @@ function Request(EventEmitter){
 		});
 	}
 	this.request = function(string,data){
-		console.log("attempting to request: "+string);
 		switch(string){
 			case "insertLike" :
 				me.Like = data;

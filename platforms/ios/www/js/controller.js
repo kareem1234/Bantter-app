@@ -32,7 +32,7 @@ function Controller(){
         that.initCallbacks();
         that.load();
         that.view.init();
-        that.setSaveInterval();
+        that.setSave();
 
         ///
     }
@@ -42,14 +42,13 @@ function Controller(){
         initFailCallbacks();
         initViewCallbacks();
     }
-    this.setSaveInterval = function(){
-        setInterval(function(){
-            console.log("saving to localStorage");
+    this.setSave = function(){
+        document.addEventListener("pause", function(){
             that.likes.save();
             that.user.save();
             that.mediaLoader.save();
             that.mediaCapture.save();
-        },1000*20);
+        }, false);
     }
     function initModelCallbacks(){
         that.event.LISTEN("signedUp",function(){
@@ -69,6 +68,7 @@ function Controller(){
             that.view.displayInfo("saving data");
         });
         that.event.LISTEN("media_ready",function(){
+            console.log("media is ready setting streamView");
             if(that.view.currentView ==="loadingView"){
                 that.mediaLoader.setMode("findUsers");
                 currentUser = that.mediaLoader.getNext();
@@ -109,7 +109,7 @@ function Controller(){
             //
         });
         that.event.LISTEN("complete/insertVidRef",function(data){
-            that.mediaCapture.onPolicyReturn(data.res);
+            that.view.displayInfo("video uploaded succesfully");
         });
         that.event.LISTEN("complete/insertUser",function(data){
             console.log("user data saved on server");
@@ -122,6 +122,9 @@ function Controller(){
         that.event.LISTEN("complete/findWhoILike",function(data){
             that.mediaLoader.onUserLoad(data.res,"findWhoILike");
         });
+        that.event.LISTEN("complete/getPolicy",function(data){
+            that.mediaCapture.onPolicyReturn(data.res);
+        })
         that.event.LISTEN("complete/getVideoRefs",function(data){
             that.mediaLoader.onRefLoad(data.res.Refs,data.res.Type);
         });
@@ -163,8 +166,6 @@ function Controller(){
     }
     function initViewCallbacks(){
         that.event.LISTEN("myLikesView_view",function(index){
-            console.log("index is: "+ index);
-            console.dir(that.mediaLoader.myLikes);
             that.view.setUserViewPopUp(that.mediaLoader.myLikes[index]);
         });
         that.event.LISTEN("myLikesView_message",function(index){
@@ -287,8 +288,9 @@ Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
 document.addEventListener("deviceready",c.setup,false);
-if ((typeof cordova == 'undefined') && (typeof Cordova == 'undefined')) alert('Cordova variable does not exist. Check that you have included cordova.js correctly');
-if (typeof CDV == 'undefined') alert('CDV variable does not exist. Check that you have included cdv-plugin-fb-connect.js correctly');
-if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
+
+
+
+
 
 

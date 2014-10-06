@@ -41,7 +41,6 @@ function UserStreamLoader(eventEmitter,Request){
 		if(userStream.length > 0)
 			E.EMIT("userStream_ready");
 		else{
-			console.log(userStream.length + " therefore not rdy");
 			E.EMIT("userStream_notReady");
 		}
 		

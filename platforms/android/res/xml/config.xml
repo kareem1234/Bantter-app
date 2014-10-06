@@ -16,6 +16,16 @@
     <access origin="https://api.facebook.com" />
     <access origin="https://*.fbcdn.net" />
     <access origin="https://*.akamaihd.net" />
+    <feature name="File">
+        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="FileTransfer">
+        <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
+    </feature>
+    <feature name="Capture">
+        <param name="android-package" value="org.apache.cordova.mediacapture.Capture" />
+    </feature>
     <name>bantter</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -29,4 +39,5 @@
         <param name="APP_ID" value="Bantter" />
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
+    <icon src="res/icon.png" />
 </widget>

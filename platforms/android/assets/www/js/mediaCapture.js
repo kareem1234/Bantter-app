@@ -31,8 +31,10 @@ function MediaCapture(eventEmitter,request){
 	}
 	var captureError = function(error){
 		console.log("video captureError" + error);
+		console.dir(error);
 		E.EMIT("mediaCapture_captureError");
 	}
+
 	this.getVideo= function(id){
 		if(id){
 			toId = id;
@@ -40,7 +42,9 @@ function MediaCapture(eventEmitter,request){
 		}else
 			recordedSelfie = true;
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
+			console.log("vid captured");
 			mediaFile = mediaFiles[0];
+			console.log(mediaFile);
 			contentType = 'video/mp4';
 			E.EMIT("mediaCapture_cap");
 		},captureError,{
@@ -54,18 +58,24 @@ function MediaCapture(eventEmitter,request){
 	this.getPolicy = function(){
 		var me = R.getUser();
 		var time = new Date().getTime();
-		var url = me.FbId +"_"+ time;
+		var vidurl = me.FbId +"_"+ time+".mp4";
+		var imageurl =me.FbId +"_"+ time+"-00001.png";
 		vidRef = {
 			FbId: me.FbId,
 			Url: url,
+			ImageUrl:imageurl,
 			Caption: caption,
 			Numer: num,
 			To: toId,
 			Type: contentType
 		}
+		console.log("getting policy");
 		R.request('getPolicy',vidRef);
 	}
 	this.onPolicyReturn = function(pol){
+		console.log("printing policy object");
+		console.dir(pol);
+		console.log("creating file transfer object");
 		var ft = new FileTransfer();
 		var options = new FileUploadOptions();
 		options.fileKey = "file";
@@ -81,12 +91,19 @@ function MediaCapture(eventEmitter,request){
                     "signature": pol.signature,
                     "Content-Type": contentType
                 };
-         ft.upload(mediaFile.fullPath,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
+        console.log("file transfer options set. Starting upload");
+        console.log(mediaFile.fullPath);
+        var newPath = mediaFile.fullPath.replace(":","://");
+        console.log(newPath);
+        ft.upload(newPath,encodeURI("https://" + pol.bucket + ".s3.amazonaws.com/"),function(result){
          	incUpload();
          	clear();
          	R.request("insertVidRef",vidRef);
+         	console.log("upload complete");
          	E.EMIT("mediaCapture_uploadSuccess");
          },function(error){
+         	console.log("upload failed");
+         	console.log(error.code);
          	E.EMIT("mediaCapture_uploadError",error);
          },options);
 	}

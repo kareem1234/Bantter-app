@@ -7,11 +7,9 @@ function User(eventEmitter,request){
 
 	// function for returning user object
 	this.returnUser = function(){
-		console.log("creating user object");
 		var me = {};
 	    me.Age = Age; me.Gender = Gender; me.City = City; me.Name = Name; 
 		me.Id = Id; me.FbId = FbId; me.Lat = Lat; me.Lgt = Lgt; me.TimeStamp = TimeStamp;
-		console.log("age is: "+me.Age);
 		return me;
 	}
 	this.updateTimeStamp = function(time){
@@ -22,7 +20,6 @@ function User(eventEmitter,request){
 		if(!Age)
 			return;
 		else{
-			console.log("saving user"+JSON.stringify(that.returnUser()));
 			window.localStorage.setItem("me", JSON.stringify(that.returnUser()));
 		}
 	}
@@ -30,7 +27,6 @@ function User(eventEmitter,request){
 	this.load = function(){
 		var me = window.localStorage.getItem("me");
 		if(!me){
-			console.log("returning false");
 			return false;
 		}
 		else{
@@ -54,14 +50,11 @@ function User(eventEmitter,request){
  	}
 	// get facebook data
 	this.getFbData = function(){
-		console.log("getting facebook data");
 		var callback = function(response){
 			if(response.error){
 				console.log("error getting data: "+response.error);
 				E.EMIT('error',response.error);
 			}else{
-				console.log("got data response from facebook");
-				console.dir(response);
 				formatFbData(response);
 			}
 		};
@@ -83,10 +76,8 @@ function User(eventEmitter,request){
 			if(response.error){
 				E.EMIT('error',response.error);
 			}else{
-				console.log(response);
 				Lat = response.location.latitude;
 				Lgt = response.location.longitude;
-				console.log(that.returnUser());
 				E.EMIT('loadedFbData');
 			}
 		};
@@ -95,24 +86,20 @@ function User(eventEmitter,request){
 	// send user object to server
 	function insertUser(){
 		var _user = that.returnUser();
-		console.dir(_user);
 		R.request("insertUser",_user);
 	}
 	// extract age from
 	function parseAge(birthdate){
-		console.log("birthdate : "+birthdate);
 		var i = birthdate.length - 4;
 		var year = birthdate.substring(i);
 		year = parseInt(year);
 		_age =  new Date().getFullYear() -year;
-		console.log(_age);
 		return _age;
 	}
 	// extract city from hometown string
 	function parseCity(city){
 		var i = city.indexOf(",");
 		city = city.substring(0,i);
-		console.log(city);
 		return city;
 	}
 	function parseName(name){
@@ -125,17 +112,12 @@ function User(eventEmitter,request){
 	}
 	// extract all strings and set variables;
 	function formatFbData(data){
-		console.log("formatting facebook data");
 		FbId = data.id;
 		Gender = parseGender(data.gender);
-		console.log(Gender);
 		Name = parseName(data.name);
-		console.log(Name);
 		City = parseCity(data.location.name);
 		Age = parseAge(data.birthday);
-		console.log(Age);
 		Id = generateId();
-		console.log(Id);
 		TimeStamp = 0;
 		getCordinates(data.location.id);
 	}
