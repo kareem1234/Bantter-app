@@ -3,13 +3,12 @@ function MediaCapture(eventEmitter,request){
 	var E = eventEmitter;
 	var R = request;
 	var toId = undefined;
+	var androidFilePath = "";
 	var num = 0;
 	var mediaFile;
 	var outBoxHash = {};
 	var contentType;
-	var caption;
-	var recordedSelfie;
-	var maxLength = 10;
+	var recordedSelfie = false;
 	var vidRef = undefined;
 	this.save = function(){
 		window.localStorage.setItem("mediaCapture_num",JSON.stringify(num));
@@ -46,7 +45,14 @@ function MediaCapture(eventEmitter,request){
 			mediaFile = mediaFiles[0];
 			console.log(mediaFile);
 			contentType = 'video/mp4';
-			E.EMIT("mediaCapture_cap");
+			if(window.device.name === "Android"){
+				getAndroidFilePath(function(isDone){
+					if(isDone == true)
+						E.EMIT("mediaCapture_cap");
+				});
+			}else{
+				E.EMIT("mediaCapture_cap");
+			}
 		},captureError,{
 			limit: 1,
 			duration: 7,
@@ -55,6 +61,33 @@ function MediaCapture(eventEmitter,request){
 
 		});
 	}
+	function getAndroidFilePath(callback){
+		console.log("fetching getting file path");
+		function gotFS(fileSystem){
+			var dirReader = fileSystem.root.createReader();
+			dirReader.readEntries(gotEntries,fail);
+		};
+	    function gotEntries(entries) {
+	    	for(var i = 0;i <entries.length;i++){
+	    		if(entries[i].isFile == true){
+	    			if( i == 0){
+	    				if(entries[i].fullPath.indexOf(".3gp") >= 0){
+	    					androidFilePath = entries[i].fullPath;
+	    					console.log("android file path found");
+	    					console.log(androidFilePath);
+	    					callback(true);
+	    				}
+	    			}
+	    		}else{
+	    			var directoryReader = entries[i].fullPath.createReader();
+         			directoryReader.readEntries(gotEntries, fail);
+	    		}
+	    	}
+	    	callback(false);
+    	};
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+
+	}
 	this.getPolicy = function(){
 		var me = R.getUser();
 		var time = new Date().getTime();
@@ -62,9 +95,8 @@ function MediaCapture(eventEmitter,request){
 		var imageurl =me.FbId +"_"+ time+"-00001.png";
 		vidRef = {
 			FbId: me.FbId,
-			Url: url,
+			Url: vidurl,
 			ImageUrl:imageurl,
-			Caption: caption,
 			Numer: num,
 			To: toId,
 			Type: contentType
@@ -82,7 +114,9 @@ function MediaCapture(eventEmitter,request){
         options.fileName = vidRef.Url;
         options.mimeType = contentType;
         options.chunkedMode = false;
-        
+        var path = mediaFile.fullPath;
+        if(window.device == "Android")
+        	path = androidFilePath;
         options.params = {
                     "key": vidRef.Url,
                     "AWSAccessKeyId": pol.awsKey,
@@ -91,11 +125,7 @@ function MediaCapture(eventEmitter,request){
                     "signature": pol.signature,
                     "Content-Type": contentType
                 };
-        console.log("file transfer options set. Starting upload");
-        console.log(mediaFile.fullPath);
-        var newPath = mediaFile.fullPath.replace(":","://");
-        console.log(newPath);
-        ft.upload(newPath,encodeURI("https://" + pol.bucket + ".s3.amazonaws.com/"),function(result){
+        ft.upload(path,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
          	incUpload();
          	clear();
          	R.request("insertVidRef",vidRef);
@@ -114,10 +144,9 @@ function MediaCapture(eventEmitter,request){
 		vidRef = undefined;
 		mediaFile = undefined;
 		toId = undefined;
-		caption = undefined;
 	}
-	// capture video
-	// check length and add caption
-	// get policy
-	// upload video
+	function fail(err){
+		console.log("failed to find android file path");
+	}
+
 }

@@ -55,6 +55,18 @@ function MediaCapture(eventEmitter,request){
 
 		});
 	}
+	function getUrl(){
+		console.log("fetching url");
+		function gotFS(fileSystem){
+			fileSystem.root.getFile("/storage/emulated/0/DCIM/Camera/VID_20141014_024250.3gp", null, gotFileEntry, fail);
+		};
+	    function gotFileEntry(fileEntry) {
+	    	console.log("url is");
+        	console.log(fileEntry.fullPath);
+    	};
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+
+	}
 	this.getPolicy = function(){
 		var me = R.getUser();
 		var time = new Date().getTime();
@@ -62,7 +74,7 @@ function MediaCapture(eventEmitter,request){
 		var imageurl =me.FbId +"_"+ time+"-00001.png";
 		vidRef = {
 			FbId: me.FbId,
-			Url: url,
+			Url: vidurl,
 			ImageUrl:imageurl,
 			Caption: caption,
 			Numer: num,
@@ -73,6 +85,7 @@ function MediaCapture(eventEmitter,request){
 		R.request('getPolicy',vidRef);
 	}
 	this.onPolicyReturn = function(pol){
+		getUrl();
 		console.log("printing policy object");
 		console.dir(pol);
 		console.log("creating file transfer object");
@@ -115,6 +128,9 @@ function MediaCapture(eventEmitter,request){
 		mediaFile = undefined;
 		toId = undefined;
 		caption = undefined;
+	}
+	function fail(err){
+		console.log(err.code);
 	}
 	// capture video
 	// check length and add caption

@@ -52,6 +52,7 @@
 		0C5A8E53785D4BE1A2A16993 /* CDVFileTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = C64CF168B6484BBABBB0F2C9 /* CDVFileTransfer.m */; };
 		913373E8370340BEA0A533EE /* CDVCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5E861B132B4A5799E4F51D /* CDVCapture.m */; };
 		BF58EC2F2C154760BA3600E0 /* CDVCapture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EDB59DAC8E3E4DA9B7AF9AF9 /* CDVCapture.bundle */; };
+		86CF15B4EEA9487EA2D26092 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = B644E80E91A040D3B1EE6C4F /* CDVDevice.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,8 @@
 		DE5E861B132B4A5799E4F51D /* CDVCapture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVCapture.m"; path = "org.apache.cordova.media-capture/CDVCapture.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		B7A177B6D89D4FE98C91C5C3 /* CDVCapture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVCapture.h"; path = "org.apache.cordova.media-capture/CDVCapture.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		EDB59DAC8E3E4DA9B7AF9AF9 /* CDVCapture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = "CDVCapture.bundle"; path = "CDVCapture.bundle"; sourceTree = "<group>"; };
+		B644E80E91A040D3B1EE6C4F /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "org.apache.cordova.device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		76DCFF6D7CAA40B3AEAAF7A7 /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "org.apache.cordova.device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -284,6 +287,8 @@
 				075DABBED81442FAB76F23E8 /* CDVFileTransfer.h */,
 				DE5E861B132B4A5799E4F51D /* CDVCapture.m */,
 				B7A177B6D89D4FE98C91C5C3 /* CDVCapture.h */,
+				B644E80E91A040D3B1EE6C4F /* CDVDevice.m */,
+				76DCFF6D7CAA40B3AEAAF7A7 /* CDVDevice.h */,
 			);
 			name = Plugins;
 			path = "bantter/Plugins";
@@ -486,6 +491,7 @@
 				8EEDFE340C6B411F9FD4C5F0 /* CDVAssetLibraryFilesystem.m in Sources */,
 				0C5A8E53785D4BE1A2A16993 /* CDVFileTransfer.m in Sources */,
 				913373E8370340BEA0A533EE /* CDVCapture.m in Sources */,
+				86CF15B4EEA9487EA2D26092 /* CDVDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

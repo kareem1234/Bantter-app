@@ -97,7 +97,7 @@ function Controller(){
             that.mediaLoader.onStreamReady();
         });
         that.event.LISTEN("mediaCapture_captureError",function(){
-            that.view.displayInfo("something whent wrong recording video");
+            that.view.displayInfo("something went wrong recording video");
         });
         that.event.LISTEN("mediaCapture_cap",function(){
             that.mediaCapture.getPolicy();
@@ -286,7 +286,6 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
-window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
 
 

@@ -97,7 +97,7 @@ function Controller(){
             that.mediaLoader.onStreamReady();
         });
         that.event.LISTEN("mediaCapture_captureError",function(){
-            that.view.displayInfo("something whent wrong recording video");
+            that.view.displayInfo("something went wrong recording video");
         });
         that.event.LISTEN("mediaCapture_cap",function(){
             that.mediaCapture.getPolicy();

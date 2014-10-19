@@ -30,13 +30,16 @@
         <div class="modal" id="videoPopUpModal">
             <div class="modal-dialog">
                 <div class="modal-content videoPopUpContent">
-                    <div class="modal-header">
-                        <button type="button" class="close" ><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 id="modal-title1"></h4>
-                    </div>
                     <div class="modal-body">
                         <video webkit-playsinline   id='videoPopUp' >
                         </video>
+                        <div id="popUpOverlay">
+                            <img  id="popUpOverlay_background"/>
+                            <img  id="popUpOverlay_play" src="./img/play.png"class=""/>
+                            <div id="loadSpinner2"class="">
+                                <div class="loader"></div>
+                            </div>
+                        </div>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -45,8 +48,8 @@
             <div class="modal-dialog">
                 <div class="modal-content infoPopUpContent">
                     <div class="modal-header">
-                        <button type="button" class="close" ><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <p id="modal-title2">Kareem's video</p>
+                        <span class="sr-only">Close</span></button>
+                        <p id="modal-title2"></p>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -89,9 +92,10 @@
                         </video>
                     </div>
                     <div id ="mainPage_selfies_loadingContainer">
-                        <img  class=""id="loadingContainer_play"src= "./img/play.png"/>
-                            <div class="notActive loadSpinner">
-                                <div class="loader">Loading...</div>
+                        <img  id="loadingContainer_background"/>
+                        <img  id="loadingContainer_play" src="./img/play.png"class="notActive"/>
+                            <div id="loadSpinner"class="notActive ">
+                                <div class="loader"></div>
                             </div>
                     </div>
                     <div class ="mainPage_selfies_contentPane pane2 row row-xs-height">

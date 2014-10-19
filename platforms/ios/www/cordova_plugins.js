@@ -78,6 +78,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.device/www/device.js",
+        "id": "org.apache.cordova.device.device",
+        "clobbers": [
+            "device"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [
@@ -231,6 +238,7 @@ module.exports.metadata =
     "com.phonegap.plugins.facebookconnect": "0.7.1",
     "org.apache.cordova.file-transfer": "0.4.5",
     "org.apache.cordova.media-capture": "0.3.4-dev",
+    "org.apache.cordova.device": "0.2.13-dev",
     "org.apache.cordova.file": "1.3.0"
 }
 // BOTTOM OF METADATA

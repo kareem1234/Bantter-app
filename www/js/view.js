@@ -6,68 +6,68 @@ function View (EventEmitter){
 	var myLikesSet = false;
 	var likersSet = false;
 	var prevSelected = undefined;
-	var playedOnce = false;
 	var playing = false;
 	this.streamLoading = false;
 	var vidUrl = 'https://s3.amazonaws.com/bantter-downloads/';
 	this.currentView ="";
 	this.init = function(){
 		initVidControll();
-		$(".close").bind("tap",function(){
-			$(".modal").modal("hide");
-		});
 		$("#mainPage_likes_controlBut").bind("tap",function(){
 			E.EMIT("view_likesControll_taped");
 		});
-		$('#loadingContainer_play').bind("tap",function(){
+		$('#loadingContainer_background, #loadingContainer_play').bind("tap",function(){
 			if(that.currentView=="streamView"){
-			console.log("video taped");
-			if(playing == false){
-				displayVidLoad();
-				var vid = $('#mainPage_selfies_selfieVid').get(0);
-				vid.load();
-				vid.play();
-				playing = true;
-			}
-			}else if(that.currentView == likersView){
-
+				console.log("video taped");
+				if(playing == false){
+					console.log("video not playing");
+					displayVidLoad(false);
+					var vid = $('#mainPage_selfies_selfieVid').get(0);
+					vid.load();
+					vid.play();
+					playing = true;
+				}
 			}
 		});
-		/// precache jquery selectors
-		that.loginPage = $("#loginPage");
-		that.mainPage = $("#mainPage");
-		that.loadingPage = $("#loadingPage");
-		that.spinner = $(".spinner");
+		$("#videoPopUpModal").bind("tap",function(){
+			console.log("video taped");
+			if(playing == false){
+				console.log("video not playing");
+				var vid = $("#videoPopUp").get(0);
+				displayVidLoad(true);
+				vid.play();
+				vid.load();
+				playing = true;
+			}
+		});
 	}
 	function initVidControll(){
 		$("#videoPopUp").bind("tap",function(){
-			console.log("video taped");
-			if(playing == false){
-				console.log("video taped");
-				var vid = $(this).get(0);
-				vid.play();
-				vid.load();
-				playing = true;
+			if($(this).get(0).ended){
+				console.log("replaying");
+				displayVidLoad(true);
+				$(this).get(0).load();
+				$(this).get(0).play();
 			}
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
-			console.log("time updated:"+vid.currentTime);
+			if(vid.currentTime > 0)
+				removeVidLoad(true);
 		}).bind("ended",function(){
 			playing = false;
 		});
 		$("#mainPage_selfies_selfieVid").bind("tap",function(){
 			if($(this).get(0).ended){
 				console.log("replaying");
-				$(this).get(0).play();
+				displayVidLoad(false);
 				$(this).get(0).load();
+				$(this).get(0).play();
 			}
 		}).bind("ended",function(){
-			playedOnce = true;
 			enableThumbs();
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
 			if(vid.currentTime > 0)
-				removeVidLoad();
+				removeVidLoad(false);
 			console.log("time updated:"+vid.currentTime);
 		});
 	}
@@ -83,12 +83,13 @@ function View (EventEmitter){
 		$("#loadingPage").removeClass("notActive");
 	}
 	this.streamViewDisplayNext = function(user){
+		$("#loadingContainer_background").attr("src", user.refs[0].ImageUrl);
+		displayVidLoad(false);
 		$("#mainPage_selfies_city").text(user.City);
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		var vid = $("#mainPage_selfies_selfieVid");
 		vid.get(0).src=user.refs[0].Url;
 		vid.get(0).load();
-		playedOnce = false;
 		vid.get(0).play();
 		disableThumbs();
 
@@ -102,19 +103,43 @@ function View (EventEmitter){
 		$("#mainPage_selfies_thumbsDown").removeClass("disabled");
 	}
 	function displayVidLoad(popUpBool){
-		$("#mainPage_selfies_loadingContainer").removeClass("notActive");
-		$("#loadingContainer_play").addClass("notActive");
-		$(".loadSpinner").removeClass("notActive");
+		console.log("display vid load");
+		if(!popUpBool){
+			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#loadingContainer_play").addClass("notActive");
+			$("#loadSpinner").removeClass("notActive");
+		}
+		else{
+			$("#popUpOverlay").removeClass("notActive");
+			$("#popUpOverlay_play").addClass("notActive");
+			$("#loadSpinner2").removeClass("notActive");
+		}
+
 	}
 	function removeVidLoad(popUpBool){
-		$("#mainPage_selfies_loadingContainer").addClass("notActive");
+		if(!popUpBool)
+			$("#mainPage_selfies_loadingContainer").addClass("notActive");
+		else
+			$("#popUpOverlay").addClass("notActive");
 	}
 	function displayVidPlay(imageUrl,popUpBool){
-		var loadingContainer =$("#loadingContainer_background");
-		$("#mainPage_selfies_loadingContainer").removeClass("notActive");
-		loadingContainer.addClass("notActive");
-		$(".loadSpinner").removeClass("notActive");
-		loadingContainer_background.attr("src", imageUrl);
+		console.log("display vid play called");
+		if(!popUpBool){
+			var loadingContainer = $("#loadingContainer_background");
+			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			loadingContainer.removeClass("notActive");
+			$("#loadSpinner").addClass("notActive");
+			$("#loadingContainer_play").removeClass("notActive");
+			loadingContainer.attr("src", imageUrl);
+		}else{
+			console.log("else reached");
+			var loadingContainer = $("#popUpOverlay_background");
+			$("#popUpOverlay").removeClass("notActive");
+			loadingContainer.removeClass("notActive");
+			$("#loadSpinner2").addClass("notActive");
+			$("#popUpOverlay_play").removeClass("notActive");
+			loadingContainer.attr("src", imageUrl);
+		}
 	}
 	this.displayInfo = function(text){
 		$("#modal-title2").html(text);
@@ -137,12 +162,16 @@ function View (EventEmitter){
 		$("#mainPage_selfies_thumbsDown").addClass("disabled");
 	}
 	this.setUserViewPopUp = function(user){
-		$("#modal-title1").text(user.Name+".");
 		var vid = $("#videoPopUp");
-		if(that.currentView ==="inboxView")
+		if(that.currentView ==="inboxView"){
 			vid.get(0).src=user.refs.Url;
-		else
+			displayVidPlay(user.refs.ImageUrl,true);
+		}
+		else{
 			vid.get(0).src=user.refs[0].Url;
+			displayVidPlay(user.refs[0].ImageUrl,true);
+		}
+		playing = false;
 		$("#videoPopUpModal").modal('toggle');
 	}
 	this.setLoginView = function(loginFunc){
@@ -171,7 +200,6 @@ function View (EventEmitter){
 	}
 	this.setStreamView = function(user){
 		that.currentView='streamView';
-		$("#mainPage_selfies_loadingContainer").css('background-image', 'url(' + user.refs[0].ImageUrl + ')');
 		$("#mainPage_selfies").removeClass("notActive");
 		$("#mainPage_people").addClass("notActive");
 		$("#loginPage").addClass("notActive");
@@ -191,11 +219,9 @@ function View (EventEmitter){
 		$("#mainPage_selfies_city").text(user.City);
 		var vid = $("#mainPage_selfies_selfieVid");
 		vid.attr('src',user.refs[0].Url);
-		vid.get(0).load();
-		playedOnce = false;
-		vid.get(0).play();
+		displayVidPlay(user.refs[0].ImageUrl,false);
+		playing = false;
 		disableThumbs();
-		displayVidPlay(user.refs[0].ImageUrl);
 		$("#mainPage").removeClass("notActive");
 	}
 	this.displayPeopleLoading = function(inbox){

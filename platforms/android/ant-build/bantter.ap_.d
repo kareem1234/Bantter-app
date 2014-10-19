@@ -227,10 +227,13 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/bantter2.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/bantterIconPink.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/friendsIcon.jpg \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Groups and Teamwork.pptx \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/inboxIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/likesIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/logo.png \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Multiple  Questions.docx \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/noIcon.jpg \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/readMeSeptember9th.rtf \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/starIcon.jpg \
