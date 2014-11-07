@@ -25,6 +25,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/nl/xservices/plugins/videocaptureplus/FileHelper.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/nl/xservices/plugins/videocaptureplus/VideoCapturePlus$1.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/nl/xservices/plugins/videocaptureplus/VideoCapturePlus.class \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/device/Device.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/facebook/ConnectPlugin$1.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/facebook/ConnectPlugin$2.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/facebook/ConnectPlugin$3.class \

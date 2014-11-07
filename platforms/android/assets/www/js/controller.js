@@ -108,6 +108,9 @@ function Controller(){
         that.event.LISTEN("mediaCapture_uploadError",function(){
             that.view.displayInfo("something whent wrong, video upload failed");
         });
+        that.event.LISTEN("fileDl_gotFile",function(data){
+            that.mediaLoader.onVidDl(data);
+        })
     }
     function initQueryCallbacks(){
         that.event.LISTEN("complete/insertLike",function(){
@@ -137,6 +140,7 @@ function Controller(){
             that.mediaLoader.onUserLoad(data.res,"findUsers");
         });
         that.event.LISTEN("complete/getInbox",function(data){
+            console.log("completed got inbox refs");
             that.mediaLoader.onInboxRefLoad(data.res);
         });
         that.event.LISTEN("complete/findInboxUsers",function(data){
@@ -250,6 +254,7 @@ function Controller(){
         });
         that.event.LISTEN("streamView_thumbsUp_taped",function(){
             that.likes.addLike(currentUser.FbId);
+            that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             var nextUser = that.mediaLoader.getNext();
             if(nextUser){
                 that.view.streamViewDisplayNext(nextUser);
@@ -261,11 +266,13 @@ function Controller(){
         });
         that.event.LISTEN("streamView_thumbsDown_taped",function(){
             var nextUser = that.mediaLoader.getNext();
+            that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             if(nextUser){
                 that.view.streamViewDisplayNext(nextUser);
                 currentUser = nextUser;
             }else{
                 that.view.streamViewDisplayLoading();
+                that.waitingFor = "findUsers";
             }
         });
         that.event.LISTEN("likesView_scrolled",function(){
@@ -286,7 +293,9 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
+window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
+
 
 
 

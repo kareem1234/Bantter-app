@@ -8,7 +8,7 @@ function View (EventEmitter){
 	var prevSelected = undefined;
 	var playing = false;
 	this.streamLoading = false;
-	var vidUrl = 'https://s3.amazonaws.com/bantter-downloads/';
+	var domain = 'https://s3.amazonaws.com/bantter-downloads/';
 	this.currentView ="";
 	this.init = function(){
 		initVidControll();
@@ -68,7 +68,6 @@ function View (EventEmitter){
 			var vid = $(this).get(0);
 			if(vid.currentTime > 0)
 				removeVidLoad(false);
-			console.log("time updated:"+vid.currentTime);
 		});
 	}
 	function clearBox(){
@@ -83,12 +82,15 @@ function View (EventEmitter){
 		$("#loadingPage").removeClass("notActive");
 	}
 	this.streamViewDisplayNext = function(user){
-		$("#loadingContainer_background").attr("src", user.refs[0].ImageUrl);
+		$("#loadingContainer_background").attr("src",domain+ user.refs[0].ImageUrl);
 		displayVidLoad(false);
 		$("#mainPage_selfies_city").text(user.City);
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		var vid = $("#mainPage_selfies_selfieVid");
-		vid.get(0).src=user.refs[0].Url;
+		if(user.refs[0].Url.indexOf("file") == -1)
+			vid.get(0).src=domain+user.refs[0].Url;
+		else
+			vid.get(0).src=user.refs[0].Url;
 		vid.get(0).load();
 		vid.get(0).play();
 		disableThumbs();
@@ -130,7 +132,7 @@ function View (EventEmitter){
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
-			loadingContainer.attr("src", imageUrl);
+			loadingContainer.attr("src", domain+imageUrl);
 		}else{
 			console.log("else reached");
 			var loadingContainer = $("#popUpOverlay_background");
@@ -138,7 +140,7 @@ function View (EventEmitter){
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner2").addClass("notActive");
 			$("#popUpOverlay_play").removeClass("notActive");
-			loadingContainer.attr("src", imageUrl);
+			loadingContainer.attr("src", domain+imageUrl);
 		}
 	}
 	this.displayInfo = function(text){
@@ -164,11 +166,11 @@ function View (EventEmitter){
 	this.setUserViewPopUp = function(user){
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
-			vid.get(0).src=user.refs.Url;
+			vid.get(0).src=domain+user.refs.Url;
 			displayVidPlay(user.refs.ImageUrl,true);
 		}
 		else{
-			vid.get(0).src=user.refs[0].Url;
+			vid.get(0).src=domain+user.refs[0].Url;
 			displayVidPlay(user.refs[0].ImageUrl,true);
 		}
 		playing = false;
@@ -218,7 +220,7 @@ function View (EventEmitter){
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		$("#mainPage_selfies_city").text(user.City);
 		var vid = $("#mainPage_selfies_selfieVid");
-		vid.attr('src',user.refs[0].Url);
+		vid.attr('src',domain+user.refs[0].Url);
 		displayVidPlay(user.refs[0].ImageUrl,false);
 		playing = false;
 		disableThumbs();
@@ -257,6 +259,7 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","hidden");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
@@ -280,7 +283,7 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
-		$("#mainPage_likes_controlCont").removeClass("notActive");
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","visible");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
@@ -303,7 +306,7 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
-		$("#mainPage_likes_controlCont").removeClass("notActive");
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","visible");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
@@ -316,7 +319,10 @@ function View (EventEmitter){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty().on('scroll',checkScroll);
+			console.log("inboxusers.length is: "+inboxUsers.length);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i<inboxUsers.length;i++){
+				console.log("iteration");
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				var picDiv = document.createElement("div");
@@ -370,6 +376,7 @@ function View (EventEmitter){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty().on('scroll',checkScroll);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.myLikes.length; i++){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
@@ -418,6 +425,7 @@ function View (EventEmitter){
 			likersSet = true;
 			that.updateLikersView();
 			$("#mainPage_people_likers").empty().bind("scroll",checkScroll);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.likers.length; i++){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";

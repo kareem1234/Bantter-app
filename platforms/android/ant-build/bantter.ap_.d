@@ -245,6 +245,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/client.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/controller.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/customEvent.js \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/fileDownloader.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/likes.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/mediaCapture.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/query.js \
@@ -260,6 +261,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/libs/jquery.mobile.custom.theme.min.css \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/com.phonegap.plugins.facebookconnect \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.device \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file-transfer \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.media-capture \
@@ -270,6 +272,8 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/com.phonegap.plugins.facebookconnect/www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus/www \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus/www/VideoCapturePlus.js \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.device/www \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.device/www/device.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file/www \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file/www/android \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file/www/DirectoryEntry.js \

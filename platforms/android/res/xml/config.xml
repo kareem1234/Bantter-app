@@ -26,6 +26,9 @@
     <feature name="Capture">
         <param name="android-package" value="org.apache.cordova.mediacapture.Capture" />
     </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
     <name>bantter</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -40,7 +43,4 @@
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
     <icon src="res/icon.png" />
-    <feature name="Device">
-        <param name="android-package" value="org.apache.cordova.device.Device" />
-    </feature>
 </widget>

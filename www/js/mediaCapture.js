@@ -43,14 +43,18 @@ function MediaCapture(eventEmitter,request){
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
 			console.log("vid captured");
 			mediaFile = mediaFiles[0];
-			console.log(mediaFile);
-			contentType = 'video/mp4';
-			if(window.device.name === "Android"){
-				getAndroidFilePath(function(isDone){
-					if(isDone == true)
+			if(window.device.platform === "Android")
+				contentType = 'video/3gp';
+			if(window.device.platform === "Android"){
+				console.log("getting android file path");
+				getAndroidFilePath(function(bool){
+					if(bool == true)
 						E.EMIT("mediaCapture_cap");
+					else
+						E.EMIT("mediaCapture_captureError");
 				});
 			}else{
+				console.log("platform is not android");
 				E.EMIT("mediaCapture_cap");
 			}
 		},captureError,{
@@ -63,35 +67,39 @@ function MediaCapture(eventEmitter,request){
 	}
 	function getAndroidFilePath(callback){
 		console.log("fetching getting file path");
+		var greatestTime = 0;
+		var callbacksDone = false;
+		var currentPath = "";
 		function gotFS(fileSystem){
-			var dirReader = fileSystem.root.createReader();
-			dirReader.readEntries(gotEntries,fail);
+			console.log("got fs");
+			fileSystem.root.getDirectory("DCIM/Camera/", {create: false, exclusive: false},
+				gotDirectory,fail);
 		};
-	    function gotEntries(entries) {
-	    	for(var i = 0;i <entries.length;i++){
-	    		if(entries[i].isFile == true){
-	    			if( i == 0){
-	    				if(entries[i].fullPath.indexOf(".3gp") >= 0){
-	    					androidFilePath = entries[i].fullPath;
-	    					console.log("android file path found");
-	    					console.log(androidFilePath);
-	    					callback(true);
-	    				}
-	    			}
-	    		}else{
-	    			var directoryReader = entries[i].fullPath.createReader();
-         			directoryReader.readEntries(gotEntries, fail);
-	    		}
-	    	}
-	    	callback(false);
-    	};
+	 	function gotDirectory(dirEntry){
+	 		console.log("got directory");
+	 		var directoryReader = dirEntry.createReader();
+			directoryReader.readEntries(gotFiles, fail);
+	 	};
+	 	function gotFiles(files){
+	 		console.log("got files");
+	 		console.log("setting androidFilePath")
+	 		androidFilePath = files[files.length-1].toURL();
+	 		callback(true);
+	 	};
+	 	function fail(err){
+			console.log("failed to find android file path");
+			callback(false);
+		};
     	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
 
 	}
 	this.getPolicy = function(){
+		var extension;
+		if(window.device.platform ==="Android")
+			extension = ".3gp";
 		var me = R.getUser();
 		var time = new Date().getTime();
-		var vidurl = me.FbId +"_"+ time+".mp4";
+		var vidurl = me.FbId +"_"+ time+extension;
 		var imageurl =me.FbId +"_"+ time+"-00001.png";
 		vidRef = {
 			FbId: me.FbId,
@@ -115,8 +123,9 @@ function MediaCapture(eventEmitter,request){
         options.mimeType = contentType;
         options.chunkedMode = false;
         var path = mediaFile.fullPath;
-        if(window.device == "Android")
+        if(window.device.platform == "Android")
         	path = androidFilePath;
+        console.log("path is: "+ path);
         options.params = {
                     "key": vidRef.Url,
                     "AWSAccessKeyId": pol.awsKey,
@@ -127,8 +136,8 @@ function MediaCapture(eventEmitter,request){
                 };
         ft.upload(path,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
          	incUpload();
-         	clear();
          	R.request("insertVidRef",vidRef);
+         	clear();
          	console.log("upload complete");
          	E.EMIT("mediaCapture_uploadSuccess");
          },function(error){
@@ -144,9 +153,6 @@ function MediaCapture(eventEmitter,request){
 		vidRef = undefined;
 		mediaFile = undefined;
 		toId = undefined;
-	}
-	function fail(err){
-		console.log("failed to find android file path");
 	}
 
 }

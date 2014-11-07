@@ -3,13 +3,12 @@ function MediaCapture(eventEmitter,request){
 	var E = eventEmitter;
 	var R = request;
 	var toId = undefined;
+	var androidFilePath = "";
 	var num = 0;
 	var mediaFile;
 	var outBoxHash = {};
 	var contentType;
-	var caption;
-	var recordedSelfie;
-	var maxLength = 10;
+	var recordedSelfie = false;
 	var vidRef = undefined;
 	this.save = function(){
 		window.localStorage.setItem("mediaCapture_num",JSON.stringify(num));
@@ -44,9 +43,20 @@ function MediaCapture(eventEmitter,request){
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
 			console.log("vid captured");
 			mediaFile = mediaFiles[0];
-			console.log(mediaFile);
-			contentType = 'video/mp4';
-			E.EMIT("mediaCapture_cap");
+			if(window.device.platform === "Android")
+				contentType = 'video/3gp';
+			if(window.device.platform === "Android"){
+				console.log("getting android file path");
+				getAndroidFilePath(function(bool){
+					if(bool == true)
+						E.EMIT("mediaCapture_cap");
+					else
+						E.EMIT("mediaCapture_captureError");
+				});
+			}else{
+				console.log("platform is not android");
+				E.EMIT("mediaCapture_cap");
+			}
 		},captureError,{
 			limit: 1,
 			duration: 7,
@@ -55,28 +65,46 @@ function MediaCapture(eventEmitter,request){
 
 		});
 	}
-	function getUrl(){
-		console.log("fetching url");
+	function getAndroidFilePath(callback){
+		console.log("fetching getting file path");
+		var greatestTime = 0;
+		var callbacksDone = false;
+		var currentPath = "";
 		function gotFS(fileSystem){
-			fileSystem.root.getFile("/storage/emulated/0/DCIM/Camera/VID_20141014_024250.3gp", null, gotFileEntry, fail);
+			console.log("got fs");
+			fileSystem.root.getDirectory("DCIM/Camera/", {create: false, exclusive: false},
+				gotDirectory,fail);
 		};
-	    function gotFileEntry(fileEntry) {
-	    	console.log("url is");
-        	console.log(fileEntry.fullPath);
-    	};
+	 	function gotDirectory(dirEntry){
+	 		console.log("got directory");
+	 		var directoryReader = dirEntry.createReader();
+			directoryReader.readEntries(gotFiles, fail);
+	 	};
+	 	function gotFiles(files){
+	 		console.log("got files");
+	 		console.log("setting androidFilePath")
+	 		androidFilePath = files[files.length-1].toURL();
+	 		callback(true);
+	 	};
+	 	function fail(err){
+			console.log("failed to find android file path");
+			callback(false);
+		};
     	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
 
 	}
 	this.getPolicy = function(){
+		var extension;
+		if(window.device.platform ==="Android")
+			extension = ".3gp";
 		var me = R.getUser();
 		var time = new Date().getTime();
-		var vidurl = me.FbId +"_"+ time+".mp4";
+		var vidurl = me.FbId +"_"+ time+extension;
 		var imageurl =me.FbId +"_"+ time+"-00001.png";
 		vidRef = {
 			FbId: me.FbId,
 			Url: vidurl,
 			ImageUrl:imageurl,
-			Caption: caption,
 			Numer: num,
 			To: toId,
 			Type: contentType
@@ -85,7 +113,6 @@ function MediaCapture(eventEmitter,request){
 		R.request('getPolicy',vidRef);
 	}
 	this.onPolicyReturn = function(pol){
-		getUrl();
 		console.log("printing policy object");
 		console.dir(pol);
 		console.log("creating file transfer object");
@@ -95,7 +122,10 @@ function MediaCapture(eventEmitter,request){
         options.fileName = vidRef.Url;
         options.mimeType = contentType;
         options.chunkedMode = false;
-        
+        var path = mediaFile.fullPath;
+        if(window.device.platform == "Android")
+        	path = androidFilePath;
+        console.log("path is: "+ path);
         options.params = {
                     "key": vidRef.Url,
                     "AWSAccessKeyId": pol.awsKey,
@@ -104,14 +134,10 @@ function MediaCapture(eventEmitter,request){
                     "signature": pol.signature,
                     "Content-Type": contentType
                 };
-        console.log("file transfer options set. Starting upload");
-        console.log(mediaFile.fullPath);
-        var newPath = mediaFile.fullPath.replace(":","://");
-        console.log(newPath);
-        ft.upload(newPath,encodeURI("https://" + pol.bucket + ".s3.amazonaws.com/"),function(result){
+        ft.upload(path,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
          	incUpload();
-         	clear();
          	R.request("insertVidRef",vidRef);
+         	clear();
          	console.log("upload complete");
          	E.EMIT("mediaCapture_uploadSuccess");
          },function(error){
@@ -127,13 +153,6 @@ function MediaCapture(eventEmitter,request){
 		vidRef = undefined;
 		mediaFile = undefined;
 		toId = undefined;
-		caption = undefined;
 	}
-	function fail(err){
-		console.log(err.code);
-	}
-	// capture video
-	// check length and add caption
-	// get policy
-	// upload video
+
 }
