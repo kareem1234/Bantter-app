@@ -121,6 +121,9 @@ function User(eventEmitter,request){
 		TimeStamp = 0;
 		getCordinates(data.location.id);
 	}
+	this.getGpsData = function(){
+		
+	}
 }
 
 

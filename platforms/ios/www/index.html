@@ -30,13 +30,16 @@
         <div class="modal" id="videoPopUpModal">
             <div class="modal-dialog">
                 <div class="modal-content videoPopUpContent">
-                    <div class="modal-header">
-                        <button type="button" class="close" ><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 id="modal-title1"></h4>
-                    </div>
                     <div class="modal-body">
                         <video webkit-playsinline   id='videoPopUp' >
                         </video>
+                        <div id="popUpOverlay">
+                            <img  id="popUpOverlay_background"/>
+                            <img  id="popUpOverlay_play" src="./img/play.png"class=""/>
+                            <div id="loadSpinner2"class="">
+                                <div class="loader"></div>
+                            </div>
+                        </div>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -45,25 +48,46 @@
             <div class="modal-dialog">
                 <div class="modal-content infoPopUpContent">
                     <div class="modal-header">
-                        <button type="button" class="close" ><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <p id="modal-title2">Kareem's video</p>
+                        <span class="sr-only">Close</span></button>
+                        <p id="modal-title2"></p>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->        
         <div id="loginPage" data-role="page" class="backgroundImage notActive">
-            <img  id="loginPage_bantterLogo"src= "./img/bantter2.png"/>
-            <p id="loginPage_slogan"> Record your selfie. Watch selfies. Have fun </p>
-            <button type="button" id="loginPage_fbLogin"class="btn btn-lg btn-primary">Log in with Facebook</button>
+            <img  id="loginPage_bantterLogo"src= "./img/bantterIconPink.png"/>
+            <input type="text" id="loginPage_nameInput" placeholder="First Name">
+            <div id="underline1" class ="underline"></div>
+            <input type="number" id="loginPage_AgeInput" min="16" max="80"placeholder="Age">
+            <div id="underline2" class ="underline"></div>
+            <!-- Single button -->
+            <div id="loginPage_GenderInput" class="  btn-group">
+                <button type="button" class=" transparent btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Gender <span class="  caret"></span>
+                </button>
+                <ul class="  dropdown-menu" role="menu">
+                    <li ><a href="#">Female</a></li>
+                    <li ><a href="#">Male</a></li>
+                </ul>
+            </div>
+            <button type="button" id="loginPage_fbLogin"class="btn btn-lg btn-primary">Sign Up</button>
+            <!--
+            <div id="loginPage_info"class=" row row-xs-height">
+                    <a class=" text-center customLink"onclick="navigator.app.loadUrl('http://www.bantter.com/', { openExternal:true });">More info</a>
+            </div>
+        -->
         </div>
         <div id ="mainPage" data-role="page" class="notActive">
             <div  class=" container-xs-height">
-                <div id="mainPage_menu" class =" height1 row row-xs-height">
-                     <div class="col-xs-9 col-xs-height">
+                <div id="mainPage_menu" class ="  row row-xs-height">
+                     <div class="col-xs-8 col-xs-height">
                         <img  id="mainPage_menu_logo"src= "./img/bantter2.png"/>
                      </div>
                      <div class="col-xs-3 col-xs-height col-top">
                         <img  id="mainPage_menu_vidIcon"src= "./img/vidIcon.png"/>
+                     </div>
+                    <div class="col-xs-1 col-xs-height col-top">
+                        <img  id="mainPage_menu_optionsIcon"src= "./img/optionsIcon.png"/>
                      </div>
                 </div>
                 <div id ="mainPage_tabs"class ="row row-xs-height">
@@ -83,24 +107,38 @@
                         </button>
                     </div>
                 </div>
+                <div id="optionsMenu" class="notActive">
+                    <div class=" centerText row row-xs-height">   <a id="profileVidLink">View profile Video</a>
+                    </div>
+                    <div class=" centerText row row-xs-height"> 
+                        <a href="mailto:bantter.llc@gmail.com" data-rel='external'>Contact Bantter</a>
+                    </div>
+                </div>
                 <div  id="mainPage_selfies"class =" row row-xs-height">
                     <div class ="mainPage_selfies_contentPane row row-xs-height">
-                        <video  webkit-playsinline  id='mainPage_selfies_selfieVid' >
+                        <video  preload="auto"webkit-playsinline  id='mainPage_selfies_selfieVid' >
                         </video>
                     </div>
-                    <div class ="mainPage_selfies_contentPane pane2 row row-xs-height">
-                        <div id="mainPage_selfies_selfieInfo"class ="textInfo row row-xs-height">
+                    <div id="mainPage_selfies_selfieInfo"class =" row row-xs-height">
                             <div id="mainPage_selfies_name"class="textInfo col-xs-6 col-xs-height col-top">Ashley 19</div>
                             <div id="mainPage_selfies_city"class="textInfo col-xs-6 col-xs-height col-top">Ottawa</div>
-                        </div>
-                        <div class ="row row-xs-height">
-                            <div class="col-xs-6 col-xs-height col-top">
+                    </div>
+                    <div id ="mainPage_selfies_loadingContainer">
+                        <img  id="loadingContainer_background"/>
+                        <img  id="loadingContainer_play" src="./img/play.png"class="notActive"/>
+                            <div id="loadSpinner"class="notActive ">
+                                <div class="loader"></div>
+                            </div>
+                    </div>
+                    <div class ="thumbsDiv row row-xs-height">
+                            <div class="thumbsDown col-xs-6 col-xs-height col-top">
                                 <img id="mainPage_selfies_thumbsDown"src="./img/thumbsDown.png"/>
                             </div>
-                            <div class="col-xs-6 col-xs-height col-top">
+                            <div class="thumbsUp col-xs-6 col-xs-height col-top">
                                 <img id="mainPage_selfies_thumbsUp" src="./img/thumbsUp.png"/>
                             </div>
-                        </div>
+                    </div>
+                    <div class ="mainPage_selfies_contentPane pane2 row row-xs-height">
                         <div class = "row row-xs-height">
                             <div class="col-xs-12 col-xs-height col-top">
                                 <div class=" spinner notActive">
@@ -144,6 +182,7 @@
                         </div>
                     -->
                     </div> 
+
                     <div id="mainPage_people_inbox" class ="notActive mainPage_likesDiv row row-xs-height">
                                 <!--
 
@@ -184,8 +223,6 @@
     <script type="text/javascript"  src="facebookConnectPlugin.js"></script>
 -->
     <script type="text/javascript"  src="cordova.js"></script>
-    <script type ="text/javascript" src="js/util.js"></script>
-    <script type ="text/javascript" src="js/view.js"></script>
     <script type ="text/javascript" src="libs/jquery-2.1.1.min.js"></script>
     <script type ="text/javascript" src="libs/bootstrap.min.js"></script>
     <script type ="text/javascript" src="libs/jquery.mobile.custom.min.js"></script>
@@ -195,6 +232,9 @@
     <script type ="text/javascript" src="js/query.js"></script>
     <script type ="text/javascript" src="js/userStreamLoader.js"></script>
     <script type ="text/javascript" src="js/userLoader.js"></script>
+    <script type ="text/javascript" src="js/view.js"></script>
+    <script type ="text/javascript" src="js/util.js"></script>
+    <script type ="text/javascript" src="js/fileDownloader.js"></script>
     <script type ="text/javascript" src="js/customEvent.js"></script>
     <script type ="text/javascript" src="js/controller.js"></script>
 </html>

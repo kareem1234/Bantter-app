@@ -53,6 +53,7 @@
 		913373E8370340BEA0A533EE /* CDVCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5E861B132B4A5799E4F51D /* CDVCapture.m */; };
 		BF58EC2F2C154760BA3600E0 /* CDVCapture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EDB59DAC8E3E4DA9B7AF9AF9 /* CDVCapture.bundle */; };
 		86CF15B4EEA9487EA2D26092 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = B644E80E91A040D3B1EE6C4F /* CDVDevice.m */; };
+		BA7C970349A444A085B971D1 /* CDVLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC4DF3CB244BE3AA7FE3A6 /* CDVLocation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,6 +141,8 @@
 		EDB59DAC8E3E4DA9B7AF9AF9 /* CDVCapture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = "CDVCapture.bundle"; path = "CDVCapture.bundle"; sourceTree = "<group>"; };
 		B644E80E91A040D3B1EE6C4F /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "org.apache.cordova.device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		76DCFF6D7CAA40B3AEAAF7A7 /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "org.apache.cordova.device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		27BC4DF3CB244BE3AA7FE3A6 /* CDVLocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVLocation.m"; path = "org.apache.cordova.geolocation/CDVLocation.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		A60A188C5EF845128A9DAB9F /* CDVLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVLocation.h"; path = "org.apache.cordova.geolocation/CDVLocation.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,6 +292,8 @@
 				B7A177B6D89D4FE98C91C5C3 /* CDVCapture.h */,
 				B644E80E91A040D3B1EE6C4F /* CDVDevice.m */,
 				76DCFF6D7CAA40B3AEAAF7A7 /* CDVDevice.h */,
+				27BC4DF3CB244BE3AA7FE3A6 /* CDVLocation.m */,
+				A60A188C5EF845128A9DAB9F /* CDVLocation.h */,
 			);
 			name = Plugins;
 			path = "bantter/Plugins";
@@ -492,6 +497,7 @@
 				0C5A8E53785D4BE1A2A16993 /* CDVFileTransfer.m in Sources */,
 				913373E8370340BEA0A533EE /* CDVCapture.m in Sources */,
 				86CF15B4EEA9487EA2D26092 /* CDVDevice.m in Sources */,
+				BA7C970349A444A085B971D1 /* CDVLocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,4 +14,8 @@
     	<param name="APP_NAME" value="1409430495955338" />
 	</gap:plugin>
     <icon src="res/icon.png" />
+     <platform name="android">
+        <preference name="KeepRunning" value="false"/>
+        
+    </platform>
 </widget>

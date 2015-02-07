@@ -7,6 +7,7 @@ function View (EventEmitter){
 	var likersSet = false;
 	var prevSelected = undefined;
 	var playing = false;
+	var optionsVisible = false;
 	this.streamLoading = false;
 	var domain = 'https://s3.amazonaws.com/bantter-downloads/';
 	this.currentView ="";
@@ -22,58 +23,55 @@ function View (EventEmitter){
 					console.log("video not playing");
 					displayVidLoad(false);
 					var vid = $('#mainPage_selfies_selfieVid').get(0);
-					vid.load();
-					vid.play();
-					playing = true;
+					setTimeout(function(){
+						vid.load();
+						vid.play();
+						playing = true;
+					},1);
 				}
 			}
 		});
-		$("#videoPopUpModal").bind("tap",function(){
+		$("#videoPopUpModal, #popUpOverlay_background, popUpOverlay_play").bind("tap",function(){
 			console.log("video taped");
 			if(playing == false){
 				console.log("video not playing");
 				var vid = $("#videoPopUp").get(0);
 				displayVidLoad(true);
-				vid.play();
-				vid.load();
-				playing = true;
-			}
+				setTimeout(function(){
+					vid.load();
+					vid.play();
+					playing = true;
+				},1);
+			}else
+				console.log("video is playing");
 		});
 	}
 	function initVidControll(){
-		$("#videoPopUp").bind("tap",function(){
-			if($(this).get(0).ended){
-				console.log("replaying");
-				displayVidLoad(true);
-				$(this).get(0).load();
-				$(this).get(0).play();
-			}
-		}).bind("timeupdate",function(){
+		$("#videoPopUp").bind("timeupdate",function(){
 			var vid = $(this).get(0);
 			if(vid.currentTime > 0)
 				removeVidLoad(true);
 		}).bind("ended",function(){
-			playing = false;
-		});
-		$("#mainPage_selfies_selfieVid").bind("tap",function(){
-			if($(this).get(0).ended){
-				console.log("replaying");
-				displayVidLoad(false);
-				$(this).get(0).load();
-				$(this).get(0).play();
-			}
-		}).bind("ended",function(){
+			$(this).get(0).currentTime=0;
+			$(this).get(0).play();
+		}).get(0).loop=false;
+		$("#mainPage_selfies_selfieVid").bind("ended",function(){
+			$(this).get(0).currentTime=0;
+			$(this).get(0).play();
 			enableThumbs();
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
 			if(vid.currentTime > 0)
 				removeVidLoad(false);
-		});
+		}).get(0).loop=false;
 	}
 	function clearBox(){
 		$("#mainPage_likes_menuAction1").unbind("tap").text("");
 		$("#mainPage_likes_menuAction2").unbind("tap").text("");
 
+	}
+	this.getLoginFormData = function(){
+		
 	}
 	this.setLoadingView = function(){
 		that.currentView='loadingView';
@@ -82,7 +80,8 @@ function View (EventEmitter){
 		$("#loadingPage").removeClass("notActive");
 	}
 	this.streamViewDisplayNext = function(user){
-		$("#loadingContainer_background").attr("src",domain+ user.refs[0].ImageUrl);
+		console.log("video url is: "+user.refs[0].Url);
+		$("#loadingContainer_background").attr("src",user.refs[0].ImageUrl);
 		displayVidLoad(false);
 		$("#mainPage_selfies_city").text(user.City);
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
@@ -91,18 +90,34 @@ function View (EventEmitter){
 			vid.get(0).src=domain+user.refs[0].Url;
 		else
 			vid.get(0).src=user.refs[0].Url;
-		vid.get(0).load();
-		vid.get(0).play();
-		disableThumbs();
+		setTimeout(function(){
+			vid.get(0).load();
+			vid.get(0).play();
+			//scaleToFill();
+			disableThumbs();
+		},0);
 
 	}
+	this.toggleOptionsMenu = function(){
+		var options = $("#optionsMenu");
+		if (optionsVisible == true){
+			console.log("hiding options menu");
+			optionsVisible = false;
+			options.addClass("notActive");
+		}
+		else{
+			console.log("showing options menu");
+			optionsVisible=true;
+			options.removeClass("notActive");
+		}
+	}
 	function disableThumbs(){
-		$("#mainPage_selfies_thumbsUp").addClass("disabled");
-		$("#mainPage_selfies_thumbsDown").addClass("disabled");
+		$("#mainPage_selfies_thumbsUp").hide(0);
+		$("#mainPage_selfies_thumbsDown").hide(0);
 	}
 	function enableThumbs(){
-		$("#mainPage_selfies_thumbsUp").removeClass("disabled");
-		$("#mainPage_selfies_thumbsDown").removeClass("disabled");
+		$("#mainPage_selfies_thumbsUp").show(0);
+		$("#mainPage_selfies_thumbsDown").show(0);
 	}
 	function displayVidLoad(popUpBool){
 		console.log("display vid load");
@@ -118,6 +133,23 @@ function View (EventEmitter){
 		}
 
 	}
+	function scaleToFill() {
+		var vid = document.getElementById('mainPage_selfies_selfieVid');
+	    var $video = $(vid),
+	        videoRatio = vid.videoWidth / vid.videoHeight,
+	        tagRatio = $video.width() / $video.height();
+	    if (videoRatio < tagRatio) {
+	            $video.css('-webkit-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('-moz-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('-ms-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('transform','scaleX(' + tagRatio / videoRatio  + ')');
+	    } else if (tagRatio < videoRatio) {
+	            $video.css('-webkit-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('-moz-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('-ms-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('transform','scaleY(' + videoRatio / tagRatio  + ')');
+	    }
+}
 	function removeVidLoad(popUpBool){
 		if(!popUpBool)
 			$("#mainPage_selfies_loadingContainer").addClass("notActive");
@@ -132,7 +164,7 @@ function View (EventEmitter){
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
-			loadingContainer.attr("src", domain+imageUrl);
+			loadingContainer.attr("src",imageUrl);
 		}else{
 			console.log("else reached");
 			var loadingContainer = $("#popUpOverlay_background");
@@ -140,7 +172,7 @@ function View (EventEmitter){
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner2").addClass("notActive");
 			$("#popUpOverlay_play").removeClass("notActive");
-			loadingContainer.attr("src", domain+imageUrl);
+			loadingContainer.attr("src", imageUrl);
 		}
 	}
 	this.displayInfo = function(text){
@@ -148,7 +180,7 @@ function View (EventEmitter){
 		$("#infoPopUp").modal('show');
 		setTimeout(function(){
 			$("#infoPopUp").modal("hide");
-		},3000);
+		},4000);
 
 	}
 	this.streamViewRemoveLoading = function(){
@@ -176,6 +208,13 @@ function View (EventEmitter){
 		playing = false;
 		$("#videoPopUpModal").modal('toggle');
 	}
+	this.setSelfViewPopUp = function(imageUrl,vidUrl){
+		var vid = $("#videoPopUp");
+		vid.get(0).src=domain+vidUrl;
+		displayVidPlay(imageUrl,true);
+		playing = false;
+		$("#videoPopUpModal").modal('toggle');
+	}
 	this.setLoginView = function(loginFunc){
 		that.currentView='loginView';
 		$("#mainPage").addClass("notActive");
@@ -198,9 +237,16 @@ function View (EventEmitter){
 			$("#mainPage_menu_vidIcon").bind("tap",function(){
 				E.EMIT("viewMenu_vidIcon_taped");
 			});
+			$("#mainPage_menu_optionsIcon").bind('touchstart',function(){
+				E.EMIT("viewMenu_options_taped");
+			});
+			$("#profileVidLink").bind('touchstart',function(){
+				E.EMIT("viewMenu_profileLink_taped");
+			});
 		}
 	}
 	this.setStreamView = function(user){
+		console.log("video url is: "+user.refs[0].Url);
 		that.currentView='streamView';
 		$("#mainPage_selfies").removeClass("notActive");
 		$("#mainPage_people").addClass("notActive");
@@ -220,7 +266,10 @@ function View (EventEmitter){
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		$("#mainPage_selfies_city").text(user.City);
 		var vid = $("#mainPage_selfies_selfieVid");
-		vid.attr('src',domain+user.refs[0].Url);
+		if(user.refs[0].Url.indexOf("file") == -1)
+			vid.get(0).src=domain+user.refs[0].Url;
+		else
+			vid.get(0).src=user.refs[0].Url;
 		displayVidPlay(user.refs[0].ImageUrl,false);
 		playing = false;
 		disableThumbs();
@@ -474,5 +523,19 @@ function View (EventEmitter){
 
 }
 
+/// extra utility for button dropdown on login page
+ $(function(){
+
+    $(".dropdown-menu li a").click(function(){
+      console.log("hello");
+      $(".btn:first-child").text($(this).text());
+      $(".btn:first-child").val($(this).text());
+
+   });
+    $("#loginPage_GenderInput").click(function(){
+    	$(this).css({ opacity: 1 });
+    });
+
+});
 
 

@@ -233,13 +233,16 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/logo.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Multiple  Questions.docx \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/noIcon.jpg \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/optionsIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/readMeSeptember9th.rtf \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/starIcon.jpg \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/starIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/SVNEclipse.ppt \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/thumbsDown.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/thumbsUp.png \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vacation-selfies-2.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vacation-selfies-770.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vidIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/client.js \

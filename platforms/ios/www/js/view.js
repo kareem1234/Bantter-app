@@ -6,40 +6,64 @@ function View (EventEmitter){
 	var myLikesSet = false;
 	var likersSet = false;
 	var prevSelected = undefined;
-	var playedOnce = false;
+	var playing = false;
+	var optionsVisible = false;
 	this.streamLoading = false;
-	var vidUrl = 'https://s3.amazonaws.com/bantter-downloads/';
+	var domain = 'https://s3.amazonaws.com/bantter-downloads/';
 	this.currentView ="";
 	this.init = function(){
 		initVidControll();
-		$(".close").bind("tap",function(){
-			$(".modal").modal("hide");
-		});
 		$("#mainPage_likes_controlBut").bind("tap",function(){
 			E.EMIT("view_likesControll_taped");
-		})
-		/// precache jquery selectors
-		that.loginPage = $("#loginPage");
-		that.mainPage = $("#mainPage");
-		that.loadingPage = $("#loadingPage");
-		that.spinner = $(".spinner");
+		});
+		$('#loadingContainer_background, #loadingContainer_play').bind("tap",function(){
+			if(that.currentView=="streamView"){
+				console.log("video taped");
+				if(playing == false){
+					console.log("video not playing");
+					displayVidLoad(false);
+					var vid = $('#mainPage_selfies_selfieVid').get(0);
+					setTimeout(function(){
+						vid.load();
+						vid.play();
+						playing = true;
+					},1);
+				}
+			}
+		});
+		$("#videoPopUpModal, #popUpOverlay_background, popUpOverlay_play").bind("tap",function(){
+			console.log("video taped");
+			if(playing == false){
+				console.log("video not playing");
+				var vid = $("#videoPopUp").get(0);
+				displayVidLoad(true);
+				setTimeout(function(){
+					vid.load();
+					vid.play();
+					playing = true;
+				},1);
+			}else
+				console.log("video is playing");
+		});
 	}
 	function initVidControll(){
-		$("#videoPopUp").bind("tap",function(){
-			if($(this).get(0).paused )
-				$(this).get(0).play();
-			else
-				$(this).get(0).pause();
-		});
-		$("#mainPage_selfies_selfieVid").bind("tap",function(){
-			if($(this).get(0).paused )
-				$(this).get(0).play();
-			else
-				$(this).get(0).pause();
+		$("#videoPopUp").bind("timeupdate",function(){
+			var vid = $(this).get(0);
+			if(vid.currentTime > 0)
+				removeVidLoad(true);
 		}).bind("ended",function(){
-			playedOnce = true;
+			$(this).get(0).currentTime=0;
+			$(this).get(0).play();
+		}).get(0).loop=false;
+		$("#mainPage_selfies_selfieVid").bind("ended",function(){
+			$(this).get(0).currentTime=0;
+			$(this).get(0).play();
 			enableThumbs();
-		});
+		}).bind("timeupdate",function(){
+			var vid = $(this).get(0);
+			if(vid.currentTime > 0)
+				removeVidLoad(false);
+		}).get(0).loop=false;
 	}
 	function clearBox(){
 		$("#mainPage_likes_menuAction1").unbind("tap").text("");
@@ -53,30 +77,107 @@ function View (EventEmitter){
 		$("#loadingPage").removeClass("notActive");
 	}
 	this.streamViewDisplayNext = function(user){
+		console.log("video url is: "+user.refs[0].Url);
+		$("#loadingContainer_background").attr("src",user.refs[0].ImageUrl);
+		displayVidLoad(false);
 		$("#mainPage_selfies_city").text(user.City);
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		var vid = $("#mainPage_selfies_selfieVid");
-		vid.get(0).src=user.refs[0].Url;
-		vid.get(0).load();
-		playedOnce = false;
-		vid.get(0).play();
-		disableThumbs();
+		if(user.refs[0].Url.indexOf("file") == -1)
+			vid.get(0).src=domain+user.refs[0].Url;
+		else
+			vid.get(0).src=user.refs[0].Url;
+		setTimeout(function(){
+			vid.get(0).load();
+			vid.get(0).play();
+			//scaleToFill();
+			disableThumbs();
+		},0);
 
 	}
+	this.toggleOptionsMenu = function(){
+		var options = $("#optionsMenu");
+		if (optionsVisible == true){
+			console.log("hiding options menu");
+			optionsVisible = false;
+			options.addClass("notActive");
+		}
+		else{
+			console.log("showing options menu");
+			optionsVisible=true;
+			options.removeClass("notActive");
+		}
+	}
 	function disableThumbs(){
-		$("#mainPage_selfies_thumbsUp").addClass("disabled");
-		$("#mainPage_selfies_thumbsDown").addClass("disabled");
+		$("#mainPage_selfies_thumbsUp").hide(0);
+		$("#mainPage_selfies_thumbsDown").hide(0);
 	}
 	function enableThumbs(){
-		$("#mainPage_selfies_thumbsUp").removeClass("disabled");
-		$("#mainPage_selfies_thumbsDown").removeClass("disabled");
+		$("#mainPage_selfies_thumbsUp").show(0);
+		$("#mainPage_selfies_thumbsDown").show(0);
+	}
+	function displayVidLoad(popUpBool){
+		console.log("display vid load");
+		if(!popUpBool){
+			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#loadingContainer_play").addClass("notActive");
+			$("#loadSpinner").removeClass("notActive");
+		}
+		else{
+			$("#popUpOverlay").removeClass("notActive");
+			$("#popUpOverlay_play").addClass("notActive");
+			$("#loadSpinner2").removeClass("notActive");
+		}
+
+	}
+	function scaleToFill() {
+		var vid = document.getElementById('mainPage_selfies_selfieVid');
+	    var $video = $(vid),
+	        videoRatio = vid.videoWidth / vid.videoHeight,
+	        tagRatio = $video.width() / $video.height();
+	    if (videoRatio < tagRatio) {
+	            $video.css('-webkit-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('-moz-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('-ms-transform','scaleX(' + tagRatio / videoRatio  + ')');
+	            $video.css('transform','scaleX(' + tagRatio / videoRatio  + ')');
+	    } else if (tagRatio < videoRatio) {
+	            $video.css('-webkit-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('-moz-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('-ms-transform','scaleY(' + videoRatio / tagRatio  + ')');
+	            $video.css('transform','scaleY(' + videoRatio / tagRatio  + ')');
+	    }
+}
+	function removeVidLoad(popUpBool){
+		if(!popUpBool)
+			$("#mainPage_selfies_loadingContainer").addClass("notActive");
+		else
+			$("#popUpOverlay").addClass("notActive");
+	}
+	function displayVidPlay(imageUrl,popUpBool){
+		console.log("display vid play called");
+		if(!popUpBool){
+			var loadingContainer = $("#loadingContainer_background");
+			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			loadingContainer.removeClass("notActive");
+			$("#loadSpinner").addClass("notActive");
+			$("#loadingContainer_play").removeClass("notActive");
+			loadingContainer.attr("src",imageUrl);
+		}else{
+			console.log("else reached");
+			var loadingContainer = $("#popUpOverlay_background");
+			$("#popUpOverlay").removeClass("notActive");
+			loadingContainer.removeClass("notActive");
+			$("#loadSpinner2").addClass("notActive");
+			$("#popUpOverlay_play").removeClass("notActive");
+			loadingContainer.attr("src", imageUrl);
+		}
 	}
 	this.displayInfo = function(text){
 		$("#modal-title2").html(text);
 		$("#infoPopUp").modal('show');
 		setTimeout(function(){
 			$("#infoPopUp").modal("hide");
-		},3000);
+		},4000);
 
 	}
 	this.streamViewRemoveLoading = function(){
@@ -92,14 +193,23 @@ function View (EventEmitter){
 		$("#mainPage_selfies_thumbsDown").addClass("disabled");
 	}
 	this.setUserViewPopUp = function(user){
-		$("#modal-title1").text(user.Name+".");
 		var vid = $("#videoPopUp");
-		if(that.currentView ==="inboxView")
-			vid.get(0).src=user.refs.Url;
-		else
-			vid.get(0).src=user.refs[0].Url;
-		vid.get(0).load();
-		vid.get(0).play();
+		if(that.currentView ==="inboxView"){
+			vid.get(0).src=domain+user.refs.Url;
+			displayVidPlay(user.refs.ImageUrl,true);
+		}
+		else{
+			vid.get(0).src=domain+user.refs[0].Url;
+			displayVidPlay(user.refs[0].ImageUrl,true);
+		}
+		playing = false;
+		$("#videoPopUpModal").modal('toggle');
+	}
+	this.setSelfViewPopUp = function(imageUrl,vidUrl){
+		var vid = $("#videoPopUp");
+		vid.get(0).src=domain+vidUrl;
+		displayVidPlay(imageUrl,true);
+		playing = false;
 		$("#videoPopUpModal").modal('toggle');
 	}
 	this.setLoginView = function(loginFunc){
@@ -124,21 +234,28 @@ function View (EventEmitter){
 			$("#mainPage_menu_vidIcon").bind("tap",function(){
 				E.EMIT("viewMenu_vidIcon_taped");
 			});
+			$("#mainPage_menu_optionsIcon").bind('touchstart',function(){
+				E.EMIT("viewMenu_options_taped");
+			});
+			$("#profileVidLink").bind('touchstart',function(){
+				E.EMIT("viewMenu_profileLink_taped");
+			});
 		}
 	}
 	this.setStreamView = function(user){
+		console.log("video url is: "+user.refs[0].Url);
 		that.currentView='streamView';
-		
+		$("#mainPage_selfies").removeClass("notActive");
+		$("#mainPage_people").addClass("notActive");
 		$("#loginPage").addClass("notActive");
 		$("#loadingPage").addClass("notActive");
-		$("#mainPage").removeClass("notActive");
-		$("#mainPage_people").addClass("notActive");
-		$("#mainPage_selfies").removeClass("notActive");
 		$("#mainPage_selfies_thumbsUp").unbind('tap').bind("tap",function(){
+			playing = false;
 			if( ! $(this).hasClass('disabled'))
 				E.EMIT("streamView_thumbsUp_taped");
 		});
 		$("#mainPage_selfies_thumbsDown").unbind('tap').bind("tap",function(){
+			playing = false;
 			if( ! $(this).hasClass('disabled'))
 				E.EMIT("streamView_thumbsDown_taped");
 		});
@@ -146,11 +263,14 @@ function View (EventEmitter){
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		$("#mainPage_selfies_city").text(user.City);
 		var vid = $("#mainPage_selfies_selfieVid");
-		vid.attr('src',user.refs[0].Url);
-		vid.get(0).load();
-		vid.get(0).play();
-		playedOnce = false;
+		if(user.refs[0].Url.indexOf("file") == -1)
+			vid.get(0).src=domain+user.refs[0].Url;
+		else
+			vid.get(0).src=user.refs[0].Url;
+		displayVidPlay(user.refs[0].ImageUrl,false);
+		playing = false;
 		disableThumbs();
+		$("#mainPage").removeClass("notActive");
 	}
 	this.displayPeopleLoading = function(inbox){
 		that.currentView='peopleLoading';
@@ -185,6 +305,7 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","hidden");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
@@ -208,7 +329,7 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
-		$("#mainPage_likes_controlCont").removeClass("notActive");
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","visible");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
@@ -231,20 +352,23 @@ function View (EventEmitter){
 		$(".spinner3").addClass("notActive");
 
 				// adding to view
-		$("#mainPage_likes_controlCont").removeClass("notActive");
+		$("#mainPage_likes_controlCont").removeClass("notActive").css("visibility","visible");
 		$("#mainPage").removeClass("notActive");
 		$("#mainPage_people_menu").removeClass("notActive");
 		$("#mainPage_people").removeClass("notActive");
 		$("#mainPage_people_likers").removeClass("notActive");
 
 		//
-		$("#mainPage_likes_menuTitle").html("My fans");
+		$("#mainPage_likes_menuTitle").html("My Fans");
 	}
-	this.setInboxView = function(inboxUsers){
+	this.setInboxView = function(inboxUsers,viewFunction){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty().on('scroll',checkScroll);
+			console.log("inboxusers.length is: "+inboxUsers.length);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i<inboxUsers.length;i++){
+				console.log("iteration");
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				var picDiv = document.createElement("div");
@@ -281,7 +405,7 @@ function View (EventEmitter){
 					actionBut1.text("View");
 					actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("inboxView_view",index);
+						viewFunction(index);
 					});
 				}else{
 					actionBut1.text(" ");
@@ -294,10 +418,11 @@ function View (EventEmitter){
 				actionBut.text("Reply");		
 			});
 	}
-	this.setMyLikesView = function(){
+	this.setMyLikesView = function(viewFunction){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty().on('scroll',checkScroll);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.myLikes.length; i++){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
@@ -329,7 +454,7 @@ function View (EventEmitter){
 				actionBut1.text("View");
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("myLikesView_view",index);
+						viewFunction(index);
 				});
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
@@ -342,10 +467,11 @@ function View (EventEmitter){
 	this.enableRow = function(index){
 		$(".likesRow:eq("+index+")").removeClass("disabled");
 	}
-	this.setLikersView = function(){
+	this.setLikersView = function(viewFunction){
 			likersSet = true;
 			that.updateLikersView();
 			$("#mainPage_people_likers").empty().bind("scroll",checkScroll);
+			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.likers.length; i++){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
@@ -377,7 +503,7 @@ function View (EventEmitter){
 				actionBut1.text("View");
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
-						E.EMIT("likersView_view",index);
+						viewFunction(index);
 				});
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
@@ -387,13 +513,23 @@ function View (EventEmitter){
 				actionBut.text("Message");		
 			});
 	}
-	function checkScroll(e){
-		var elem = $(e.currentTarget);
-    	if (elem[0].scrollHeight - elem.scrollTop() >= elem.outerHeight()*0.15)
+	function checkScroll(){
+    	if ($(this).innerHeight() + $(this).scrollTop() >= $(this).scrollHeight()*0.15)
         	E.EMIT("likesView_scrolled");
 	}
 
 }
 
+/// extra utility for button dropdown on login page
+ $(function(){
+
+    $(".dropdown-menu li a").click(function(){
+      console.log("hello");
+      $(".btn:first-child").text($(this).text());
+      $(".btn:first-child").val($(this).text());
+
+   });
+
+});
 
 

@@ -4,20 +4,28 @@ function MediaCapture(eventEmitter,request){
 	var R = request;
 	var toId = undefined;
 	var androidFilePath = "";
-	var num = 0;
+	this.num = 0;
 	var mediaFile;
 	var outBoxHash = {};
 	var contentType;
 	var recordedSelfie = false;
+	this.selfImageUrl;
+	this.selfVidUrl;
 	var vidRef = undefined;
+	var that = this;
 	this.save = function(){
-		window.localStorage.setItem("mediaCapture_num",JSON.stringify(num));
+		window.localStorage.setItem("mediaCapture_num",JSON.stringify(that.num));
 		window.localStorage.setItem("mediaCapture_outBoxHash",JSON.stringify(outBoxHash));
+		window.localStorage.setItem("mediaCapture_selfImage",JSON.stringify(that.selfImageUrl));
+		window.localStorage.setItem("mediaCapture_selfVid",JSON.stringify(that.selfVidUrl));
 	}
 	this.load = function(){
 		var newNum = JSON.parse(window.localStorage.getItem("mediaCapture_num"));
 		if(newNum)
-			num = newNum;
+			that.num = newNum;
+		var newImageUrl = JSON.parse(window.localStorage.getItem("mediaCapture_selfImage"));
+		if(newImageUrl)
+			that.selfImageUrl= newImageUrl;
 		var newOutBoxHash = JSON.parse(window.localStorage.getItem("mediaCapture_outBoxHash"));
 		if(newOutBoxHash)
 			outBoxHash = newOutBoxHash;
@@ -60,7 +68,7 @@ function MediaCapture(eventEmitter,request){
 		},captureError,{
 			limit: 1,
 			duration: 7,
-			highquality: false,
+			highquality: true,
 			frontcamera: true,
 
 		});
@@ -100,12 +108,14 @@ function MediaCapture(eventEmitter,request){
 		var me = R.getUser();
 		var time = new Date().getTime();
 		var vidurl = me.FbId +"_"+ time+extension;
-		var imageurl =me.FbId +"_"+ time+"-00001.png";
+		var imageurl =me.FbId +"_"+ time;
+		that.selfVidUrl = vidurl;
+		that.selfImageUrl = imageurl;
 		vidRef = {
 			FbId: me.FbId,
 			Url: vidurl,
 			ImageUrl:imageurl,
-			Numer: num,
+			Numer: that.num,
 			To: toId,
 			Type: contentType
 		}
@@ -147,7 +157,7 @@ function MediaCapture(eventEmitter,request){
          },options);
 	}
 	function incUpload(){
-		num++;
+		that.num++;
 	}
 	function clear(){
 		vidRef = undefined;

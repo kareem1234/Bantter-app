@@ -1,6 +1,6 @@
 function User(eventEmitter,request){
 	// User properties
-	var Age, Gender,City,Id,FbId,Lat,Lgt,TimeStamp, Name;
+	var Age, Gender,Id,FbId,Lat,Lgt,TimeStamp, Name;
 	var R = request;
 	var E = eventEmitter;
 	var that = this;
@@ -12,8 +12,8 @@ function User(eventEmitter,request){
 		me.Id = Id; me.FbId = FbId; me.Lat = Lat; me.Lgt = Lgt; me.TimeStamp = TimeStamp;
 		return me;
 	}
-	this.updateTimeStamp = function(time){
-		TimeStamp = time;
+	this.updateTimeStamp = function(){
+		TimeStamp = new Date().getTime();
 	}
 	// save user object into local storage
 	this.save = function(){
@@ -36,31 +36,8 @@ function User(eventEmitter,request){
 			return me;
 		}
 	}
-	// facebook login function
-	this.login = function(){
-		console.log("login function called");
-		var callback = function(response){
-			if(response.authResponse){
-				E.EMIT("signedUp");
-			}else{
-				E.EMIT("deniedSignUp");
-			}
-		};
- 		facebookConnectPlugin.login( ["user_birthday","user_location"], callback,callback);	
- 	}
-	// get facebook data
-	this.getFbData = function(){
-		var callback = function(response){
-			if(response.error){
-				console.log("error getting data: "+response.error);
-				E.EMIT('error',response.error);
-			}else{
-				formatFbData(response);
-			}
-		};
-		facebookConnectPlugin.api( "me/?fields=id,name,birthday,location,gender",
-		null,callback,callback);
-	}
+
+
 // Create a unique id for this user
 	function generateId(){
  		function s4() {
@@ -68,58 +45,35 @@ function User(eventEmitter,request){
                .toString(16)
                .substring(1);
   		}
-    	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4();
+    	return s4()+s4()+ s4()+ s4()+s4()+s4()+s4()+s4();
 	}
-	// get user  lat ang lgt cordinates
-	function getCordinates(cityId){
-		var callback = function(response){
-			if(response.error){
-				E.EMIT('error',response.error);
-			}else{
-				Lat = response.location.latitude;
-				Lgt = response.location.longitude;
-				E.EMIT('loadedFbData');
-			}
-		};
-		facebookConnectPlugin.api(cityId.toString(),null,callback,callback);
-	}
+
 	// send user object to server
-	function insertUser(){
+	this.insertUser = function (){
 		var _user = that.returnUser();
 		R.request("insertUser",_user);
 	}
 	// extract age from
-	function parseAge(birthdate){
-		var i = birthdate.length - 4;
-		var year = birthdate.substring(i);
-		year = parseInt(year);
-		_age =  new Date().getFullYear() -year;
-		return _age;
-	}
-	// extract city from hometown string
-	function parseCity(city){
-		var i = city.indexOf(",");
-		city = city.substring(0,i);
-		return city;
-	}
-	function parseName(name){
-		var index = name.indexOf(" ");
-		name  = name.substring(0,index+2);
-		return name;
-	}
-	function parseGender(gender){
-    	return gender.charAt(0).toUpperCase() + gender.slice(1);
-	}
+
 	// extract all strings and set variables;
-	function formatFbData(data){
-		FbId = data.id;
-		Gender = parseGender(data.gender);
-		Name = parseName(data.name);
-		City = parseCity(data.location.name);
-		Age = parseAge(data.birthday);
+	this.setData = function(data){
+		FbId = generateId();
+		Gender = data.gender;
+		Name = data.name;
+		Age = data.age;
 		Id = generateId();
 		TimeStamp = 0;
-		getCordinates(data.location.id);
+	}
+	this.getGpsData = function(){
+		function gotGps(position){
+			Lat = position.coords.latitude;
+			Lgt = position.coords.longitude;
+			E.EMIT("user_gotGps");
+		};
+		function failedGps(){
+			E.EMIT("user_failedGps");
+		};
+		navigator.geolocation.getCurrentPosition(gotGps, failedGps);
 	}
 }
 

@@ -7,6 +7,14 @@ function Controller(){
     var waitingFor = undefined;
     var currentUser = undefined;
     this.load = function(){
+        function onUserLoad(userStatus){
+            if(!userStatus)
+                that.view.setLoginView(that.user.login);
+            else{
+                that.request.setUser(userStatus);
+                that.mediaLoader.start();
+            }
+        }
         that.view.setLoadingView();
         that.likes.load();
         that.mediaCapture.load();
@@ -15,14 +23,6 @@ function Controller(){
         onUserLoad(userStatus);
 
      }
-    function onUserLoad(userStatus){
-        if(!userStatus)
-            that.view.setLoginView(that.user.login);
-        else{
-            that.request.setUser(userStatus);
-            that.mediaLoader.start();
-        }
-    }
     // call all setup methods
     this.setup = function(){
         console.log("setting up device");
@@ -53,11 +53,11 @@ function Controller(){
     var myLikesView_view = function(index){
         that.view.setUserViewPopUp(that.mediaLoader.myLikes[index]);
     };
+    // listen for call backs initated by the model objects
     function initModelCallbacks(){
         that.event.LISTEN("signedUp",function(){
             that.view.setLoadingView();
             that.user.getFbData();
-            that.view.displayInfo('Fetching facebook data');
         });
         that.event.LISTEN("deniedSignUp",function(){
             console.log("user denied sign up");
@@ -68,7 +68,6 @@ function Controller(){
             that.request.setUser(usr);
             console.log("controller inserting user");
             that.request.request('insertUser');
-            that.view.displayInfo("saving data");
         });
         that.event.LISTEN("media_ready",function(){
             console.log("media is ready setting streamView");
@@ -112,6 +111,7 @@ function Controller(){
             that.mediaLoader.onVidDl(data);
         })
     }
+    // listen for call backs initated by the query/request object
     function initQueryCallbacks(){
         that.event.LISTEN("complete/insertLike",function(){
             //
@@ -122,7 +122,6 @@ function Controller(){
         that.event.LISTEN("complete/insertUser",function(data){
             console.log("user data saved on server");
             that.mediaLoader.start();
-            that.view.displayInfo("finding people in your area");
         });
         that.event.LISTEN("complete/findWhoLikedMe",function(data){
             that.mediaLoader.onUserLoad(data.res,"findWhoLikedMe");
@@ -159,6 +158,7 @@ function Controller(){
             }
         });
     }
+    // listen for call backs initated by failure events
     function initFailCallbacks(){
         var failureCallback = function(err){
             console.log(err);
@@ -173,6 +173,7 @@ function Controller(){
         that.event.LISTEN("failed/getInbox",failureCallback);
         that.event.LISTEN("failed/findInboxUsers",failureCallback);
     }
+    //// listen for call backs initated by the view
     function initViewCallbacks(){
         that.event.LISTEN("myLikesView_message",function(index){
             that.mediaCapture.getVideo(that.mediaLoader.myLikes[index].Id);
@@ -180,7 +181,7 @@ function Controller(){
         that.event.LISTEN("likersView_message",function(index){
             that.mediaCapture.getVideo(that.mediaLoader.likers[index].Id);
         });
-         var inboxView_view = function(index){
+        var inboxView_view = function(index){
             that.view.setUserViewPopUp(that.mediaLoader.inboxUsers[index]);
             that.mediaLoader.markedViewed(that.mediaLoader.inboxUsers[index].refs);
             that.view.setInboxView(that.mediaLoader.inboxUsers);
@@ -254,6 +255,7 @@ function Controller(){
         });
         that.event.LISTEN("streamView_thumbsUp_taped",function(){
             that.likes.addLike(currentUser.FbId);
+            that.mediaLoader.pushLikedUser(currentUser);
             that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             var nextUser = that.mediaLoader.getNext();
             if(nextUser){
@@ -278,6 +280,21 @@ function Controller(){
         that.event.LISTEN("likesView_scrolled",function(){
             that.mediaLoader.callBuffer();
         });
+        that.event.LISTEN("viewMenu_options_taped",function(){
+            console.log("options taped");
+            that.view.toggleOptionsMenu();
+        });
+        that.event.LISTEN("viewMenu_profileLink_taped",function(){
+            console.log("view profile video taped");
+            that.view.toggleOptionsMenu();
+            if(that.mediaCapture.num > 0){
+                that.view.setSelfViewPopUp(that.mediaCapture.selfImageUrl,that.mediaCapture.selfVidUrl);
+                that.event.EMIT("viewMenu_likes_taped");
+            }else{
+                that.view.displayInfo("You havent recorded a profile video yet");
+            }
+        });
+        
     }
 
 // end of declaration

@@ -1,18 +1,25 @@
 
 function Request(EventEmitter){
 	/*var domain = "http://localhost:3000";*/
-	var domain = "http://bantter.herokuapp.com";
+	var domain = "https://bantter.herokuapp.com";
 	var me;
 	var E = EventEmitter;
 	var that = this;
 	var timeout = 1000;
 	var tries = 3;
+	// set internal user object
 	this.setUser = function(user){
 		me = user;
+		//
 	}
+	// return internal user object
 	this.getUser = function(){
 		return me;
+		//
 	}
+	// make a request to the server
+	/// try  request again on fail
+	// ideally with exponential timeout retries
 	function makeRequest(Type,URL,Data){
 		const requestData = Data;
 		$.ajax({
@@ -30,13 +37,12 @@ function Request(EventEmitter){
 			if(tries %4 == 0)
 				timeout = timeout + 1000;
 			E.EMIT("failed"+URL,error);
-			/*
 			setTimeout(function(){
 				makeRequest(Type,URL,requestData);
 			},timeout);
-*/
 		});
 	}
+	// attach data to request and set type depending on url
 	this.request = function(string,data){
 		switch(string){
 			case "insertLike" :

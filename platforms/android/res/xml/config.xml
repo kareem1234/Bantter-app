@@ -29,6 +29,7 @@
     <feature name="Device">
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
+    <preference name="KeepRunning" value="false" />
     <name>bantter</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.

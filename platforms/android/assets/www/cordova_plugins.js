@@ -239,6 +239,7 @@ module.exports.metadata =
     "org.apache.cordova.file-transfer": "0.4.5",
     "org.apache.cordova.media-capture": "0.3.4-dev",
     "org.apache.cordova.device": "0.2.13-dev",
+    "org.apache.cordova.geolocation": "0.3.11",
     "org.apache.cordova.file": "1.3.0"
 }
 // BOTTOM OF METADATA
