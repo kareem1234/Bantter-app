@@ -8,9 +8,10 @@ function View (EventEmitter){
 	var prevSelected = undefined;
 	var playing = false;
 	var optionsVisible = false;
+	var setPauseEvent = false;
 	this.streamLoading = false;
 	var domain = 'https://s3.amazonaws.com/bantter-downloads/';
-	this.currentView ="";
+	this.currentView = "";
 	this.init = function(){
 		initVidControll();
 		$("#mainPage_likes_controlBut").bind("tap",function(){
@@ -33,7 +34,7 @@ function View (EventEmitter){
 		});
 		$("#videoPopUpModal, #popUpOverlay_background, popUpOverlay_play").bind("tap",function(){
 			console.log("video taped");
-			if(playing == false){
+			if(playing === false){
 				console.log("video not playing");
 				var vid = $("#videoPopUp").get(0);
 				displayVidLoad(true);
@@ -46,9 +47,14 @@ function View (EventEmitter){
 				console.log("video is playing");
 		});
 	}
+	function pauseVid(){
+		var vid = $("#mainPage_selfies_selfieVid");
+		vid.get(0).pause();
+	}
 	function initVidControll(){
 		$("#videoPopUp").bind("timeupdate",function(){
 			var vid = $(this).get(0);
+			console.log("time is: "+vid.currentTime);
 			if(vid.currentTime > 0)
 				removeVidLoad(true);
 		}).bind("ended",function(){
@@ -64,6 +70,22 @@ function View (EventEmitter){
 			if(vid.currentTime > 0)
 				removeVidLoad(false);
 		}).get(0).loop=false;
+		$("#mainPage_selfies_selfieVid, #videoPopUp").bind("tap",function(){
+			console.log("video taped");
+			var vid = $(this).get(0);
+			var bindEvent = function(){
+				if(!vid.paused){
+					console.log("video not paused, pausing ...");
+					setPauseEvent = true;
+					vid.pause();
+				}else if( setPauseEvent === true){
+					vid.play();
+					console.log("video is paused, playing ...");
+				}
+			}
+			setTimeout(bindEvent,0);
+
+		});
 	}
 	function clearBox(){
 		$("#mainPage_likes_menuAction1").unbind("tap").text("");
@@ -71,7 +93,22 @@ function View (EventEmitter){
 
 	}
 	this.getLoginFormData = function(){
-		
+		var formData = {
+			age: undefined,
+			name: undefined,
+			gender: undefined
+		};
+		formData.name = $("#loginPage_nameInput").val();
+		formData.age = $("#loginPage_AgeInput").val();
+		formData.gender = $("#loginPage_GenderInput_but").val();
+		console.log(formData.age);
+		return formData;
+
+	}
+	this.resetForms = function(){
+		$("#loginPage_nameInput").val('');
+		$("#loginPage_AgeInput").val('');
+		$("#loginPage_GenderInput").val('Gender');
 	}
 	this.setLoadingView = function(){
 		that.currentView='loadingView';
@@ -79,11 +116,22 @@ function View (EventEmitter){
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").removeClass("notActive");
 	}
-	this.streamViewDisplayNext = function(user){
+	function displayDistance(distance){
+		if(distance.method ==="car"){
+			$('#mainPage_selfies_transportImg').empty().prepend('<img class="transportImg" src="carIcon.png" />');
+		}else if(distance.method ==="plane"){
+			$('#mainPage_selfies_transportImg').empty().prepend('<img class="transportImg" src="planeIcon.png" />');
+		}else{
+			$('#mainPage_selfies_transportImg').empty().prepend('<img class="transportImg" src="walkIcon.png" />');
+		}
+		$("#mainPage_selfies_hours").text(distance.Hours);
+		$("#mainPage_selfies_mins").text(distance.Minutes);
+	}
+	this.streamViewDisplayNext = function(user,distance){
 		console.log("video url is: "+user.refs[0].Url);
 		$("#loadingContainer_background").attr("src",user.refs[0].ImageUrl);
 		displayVidLoad(false);
-		$("#mainPage_selfies_city").text(user.City);
+		displayDistance(distance);
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
 		var vid = $("#mainPage_selfies_selfieVid");
 		if(user.refs[0].Url.indexOf("file") == -1)
@@ -93,7 +141,6 @@ function View (EventEmitter){
 		setTimeout(function(){
 			vid.get(0).load();
 			vid.get(0).play();
-			//scaleToFill();
 			disableThumbs();
 		},0);
 
@@ -133,23 +180,6 @@ function View (EventEmitter){
 		}
 
 	}
-	function scaleToFill() {
-		var vid = document.getElementById('mainPage_selfies_selfieVid');
-	    var $video = $(vid),
-	        videoRatio = vid.videoWidth / vid.videoHeight,
-	        tagRatio = $video.width() / $video.height();
-	    if (videoRatio < tagRatio) {
-	            $video.css('-webkit-transform','scaleX(' + tagRatio / videoRatio  + ')');
-	            $video.css('-moz-transform','scaleX(' + tagRatio / videoRatio  + ')');
-	            $video.css('-ms-transform','scaleX(' + tagRatio / videoRatio  + ')');
-	            $video.css('transform','scaleX(' + tagRatio / videoRatio  + ')');
-	    } else if (tagRatio < videoRatio) {
-	            $video.css('-webkit-transform','scaleY(' + videoRatio / tagRatio  + ')');
-	            $video.css('-moz-transform','scaleY(' + videoRatio / tagRatio  + ')');
-	            $video.css('-ms-transform','scaleY(' + videoRatio / tagRatio  + ')');
-	            $video.css('transform','scaleY(' + videoRatio / tagRatio  + ')');
-	    }
-}
 	function removeVidLoad(popUpBool){
 		if(!popUpBool)
 			$("#mainPage_selfies_loadingContainer").addClass("notActive");
@@ -175,7 +205,12 @@ function View (EventEmitter){
 			loadingContainer.attr("src", imageUrl);
 		}
 	}
-	this.displayInfo = function(text){
+	this.displayInfo = function(text,warning){
+		$("#infoPopUp").removeClass("warning ok");
+		if(warning === false)
+			$(".infoPopUpContent").addClass("warning");
+		else
+			$(".infoPopUpContent").addClass("ok");
 		$("#modal-title2").html(text);
 		$("#infoPopUp").modal('show');
 		setTimeout(function(){
@@ -196,17 +231,22 @@ function View (EventEmitter){
 		$("#mainPage_selfies_thumbsDown").addClass("disabled");
 	}
 	this.setUserViewPopUp = function(user){
+		console.log("setting user view popUp");
+		console.log(domain+user.refs[0].Url);
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
 			vid.get(0).src=domain+user.refs.Url;
 			displayVidPlay(user.refs.ImageUrl,true);
 		}
 		else{
-			vid.get(0).src=domain+user.refs[0].Url;
+			if(user.refs[0].Url.indexOf("file") == -1)
+				vid.get(0).src=domain+user.refs[0].Url;
+			else
+				vid.get(0).src=user.refs[0].Url;
 			displayVidPlay(user.refs[0].ImageUrl,true);
 		}
 		playing = false;
-		$("#videoPopUpModal").modal('toggle');
+		$("#videoPopUpModal").removeClass('notActive');
 	}
 	this.setSelfViewPopUp = function(imageUrl,vidUrl){
 		var vid = $("#videoPopUp");
@@ -215,12 +255,14 @@ function View (EventEmitter){
 		playing = false;
 		$("#videoPopUpModal").modal('toggle');
 	}
-	this.setLoginView = function(loginFunc){
+	this.setLoginView = function(){
 		that.currentView='loginView';
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").addClass("notActive");
 		$("#loginPage").removeClass("notActive");
-		$("#loginPage_fbLogin").bind("click",loginFunc);
+		$("#loginPage_fbLogin").bind("click",function(){
+			E.EMIT("view_login_clicked");
+		});
 	}
 	this.setMenu = function(){
 		if(!menuSet){
@@ -245,7 +287,7 @@ function View (EventEmitter){
 			});
 		}
 	}
-	this.setStreamView = function(user){
+	this.setStreamView = function(user,distance){
 		console.log("video url is: "+user.refs[0].Url);
 		that.currentView='streamView';
 		$("#mainPage_selfies").removeClass("notActive");
@@ -264,7 +306,7 @@ function View (EventEmitter){
 		});
 		that.setMenu();
 		$("#mainPage_selfies_name").text(user.Name+","+" "+user.Age);
-		$("#mainPage_selfies_city").text(user.City);
+		displayDistance(distance);
 		var vid = $("#mainPage_selfies_selfieVid");
 		if(user.refs[0].Url.indexOf("file") == -1)
 			vid.get(0).src=domain+user.refs[0].Url;
@@ -295,6 +337,7 @@ function View (EventEmitter){
 		$(".spinner3").removeClass("notActive");
 	}
 	this.updateInboxView = function(){
+		pauseVid();
 		that.currentView='inboxView';
 		that.setMenu();
 		clearBox();
@@ -318,6 +361,7 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuTitle").html("My Inbox");
 	}
 	this.updateMyLikesView = function(){
+		pauseVid();
 		that.currentView ='myLikesView';
 		that.setMenu();
 		clearBox();
@@ -342,6 +386,7 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuTitle").html("My Likes");
 	}
 	this.updateLikersView = function(){
+		pauseVid();
 		that.currentView='likersView';
 		that.setMenu();
 		clearBox();
@@ -367,7 +412,7 @@ function View (EventEmitter){
 	this.setInboxView = function(inboxUsers,viewFunction){
 			inboxSet = true;
 			that.updateInboxView();
-			$("#mainPage_people_inbox").empty().on('scroll',checkScroll);
+			$("#mainPage_people_inbox").empty();
 			console.log("inboxusers.length is: "+inboxUsers.length);
 			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i<inboxUsers.length;i++){
@@ -424,9 +469,11 @@ function View (EventEmitter){
 	this.setMyLikesView = function(viewFunction){
 			myLikesSet = true;
 			that.updateMyLikesView();
-			$("#mainPage_people_myLikes").empty().on('scroll',checkScroll);
+			$("#mainPage_people_myLikes").empty();
 			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.myLikes.length; i++){
+				if(that.mediaLoader.myLikes[i].refs === undefined)
+					continue;
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				if(that.mediaLoader.myLikes[i].refs === undefined)
@@ -435,7 +482,7 @@ function View (EventEmitter){
 				picDiv.className = "col-xs-3 col-xs-height col-top";
 				var picDivImg = document.createElement("img");
 				picDivImg.className ="mainPage_likes_profilePic";
-				picDivImg.src="http://graph.facebook.com/" + that.mediaLoader.myLikes[i].FbId+"/picture?type=square";
+				picDivImg.src=that.mediaLoader.myLikes[i].refs[0].ImageUrl;
 				var nameDiv = document.createElement("div");
 				nameDiv.className = "col-xs-9 col-xs-height col-top";
 				nameDiv.innerHTML = that.mediaLoader.myLikes[i].Name;
@@ -473,9 +520,11 @@ function View (EventEmitter){
 	this.setLikersView = function(viewFunction){
 			likersSet = true;
 			that.updateLikersView();
-			$("#mainPage_people_likers").empty().bind("scroll",checkScroll);
+			$("#mainPage_people_likers").empty();
 			console.log("visible height is:"+ $('#mainPage_people').height() );
 			for(var i = 0; i < that.mediaLoader.likers.length; i++){
+				if(that.mediaLoader.likers[i].refs === undefined)
+					continue;
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				if(that.mediaLoader.likers[i].refs === undefined)
@@ -516,20 +565,18 @@ function View (EventEmitter){
 				actionBut.text("Message");		
 			});
 	}
-	function checkScroll(){
-    	if ($(this).innerHeight() + $(this).scrollTop() >= $(this).scrollHeight()*0.15)
-        	E.EMIT("likesView_scrolled");
-	}
 
 }
 
 /// extra utility for button dropdown on login page
  $(function(){
-
+ 	$("button").focus(function(){
+ 		this.blur();
+ 	});
     $(".dropdown-menu li a").click(function(){
       console.log("hello");
-      $(".btn:first-child").text($(this).text());
-      $(".btn:first-child").val($(this).text());
+      $("#loginPage_GenderInput_but").text($(this).text());
+      $("#loginPage_GenderInput_but").val($(this).text());
 
    });
     $("#loginPage_GenderInput").click(function(){

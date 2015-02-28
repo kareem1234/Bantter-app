@@ -143,7 +143,11 @@ function MediaLoader(eventEmitter,request){
 	// attach videoReference array to  the matching user object
 	// then call checkStatus() 
 	this.onRefLoad = function(refs,type){
+		function move2back(index,array){
+			array.push(array.slice(index,0)[0]);
+		};
 		if(type === "findUsers"){
+			console.log(JSON.stringify(refs));
 			for(var i = 0; i< userStream.length; i++){
 				if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
 					userStream[i].refs = refs;
@@ -154,14 +158,17 @@ function MediaLoader(eventEmitter,request){
 			for(var i = 0; i< that.myLikes.length; i++){
 				if(that.myLikes[i].FbId === refs[0].FbId){
 					that.myLikes[i].refs = refs;
-					E.EMIT("media_myLikes_refLoaded",i);
+					move2back(i,array);
+					E.EMIT("media_myLikes_refLoaded");
+
 				}
 			}	
 		}else if(type === "findWhoLikedMe"){
 			for(var i = 0; i< that.likers.length; i++){
 				if(that.likers[i].FbId === refs[0].FbId){
 					that.likers[i].refs = refs;
-					E.EMIT("media_likers_refLoaded",i);
+					move2back(i,array);
+					E.EMIT("media_likers_refLoaded");
 				}
 			}			
 		}

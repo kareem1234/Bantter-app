@@ -37,9 +37,11 @@ function Request(EventEmitter){
 			if(tries %4 == 0)
 				timeout = timeout + 1000;
 			E.EMIT("failed"+URL,error);
+			/*
 			setTimeout(function(){
 				makeRequest(Type,URL,requestData);
 			},timeout);
+*/
 		});
 	}
 	// attach data to request and set type depending on url

@@ -224,8 +224,10 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/css/vacation-selfies-770.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/assignment-guidelines.rtf \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Ayo Otepola.docx \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/backIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/bantter2.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/bantterIconPink.png \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/carIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/friendsIcon.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Groups and Teamwork.pptx \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/inboxIcon.png \
@@ -234,6 +236,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/Multiple  Questions.docx \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/noIcon.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/optionsIcon.png \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/planeIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/play.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/readMeSeptember9th.rtf \
@@ -245,6 +248,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vacation-selfies-2.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vacation-selfies-770.jpg \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/vidIcon.png \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/img/walkIcon.png \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/client.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/controller.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/customEvent.js \
