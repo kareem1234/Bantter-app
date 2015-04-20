@@ -35,13 +35,11 @@ function Request(EventEmitter){
 		}).fail(function(error){
 			tries ++;
 			if(tries %4 == 0)
-				timeout = timeout + 1000;
+				timeout = timeout + 7000;
 			E.EMIT("failed"+URL,error);
-			/*
 			setTimeout(function(){
 				makeRequest(Type,URL,requestData);
 			},timeout);
-*/
 		});
 	}
 	// attach data to request and set type depending on url
@@ -82,6 +80,9 @@ function Request(EventEmitter){
 				   makeRequest("GET","/"+string,me);
 				   break;
 			case "findInboxUsers" :
+					makeRequest("GET","/"+string,me);
+					break;
+			case "getGps":
 					makeRequest("GET","/"+string,me);
 					break;
 		}

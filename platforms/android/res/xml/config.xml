@@ -30,6 +30,8 @@
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
     <preference name="KeepRunning" value="false" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="android-windowSoftInputMode" value="adjustNothing" />
     <name>bantter</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -43,5 +45,4 @@
         <param name="APP_ID" value="Bantter" />
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
-    <icon src="res/icon.png" />
 </widget>

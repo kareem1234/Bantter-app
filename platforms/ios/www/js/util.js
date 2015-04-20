@@ -19,3 +19,8 @@
 
     window.CustomEvent = CustomEvent;
  }
+
+ if (Number.prototype.toRadians === undefined) {
+    Number.prototype.toRadians = function() { return this * Math.PI / 180; };
+}
+

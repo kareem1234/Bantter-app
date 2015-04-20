@@ -16,7 +16,7 @@ function Controller(){
                 that.request.setUser(userStatus);
                 that.mediaLoader.start();
             }
-        }
+        };
         that.view.setLoadingView();
         that.likes.load();
         that.mediaCapture.load();
@@ -31,9 +31,19 @@ function Controller(){
         that.initCallbacks();
         that.load();
         that.view.init();
-        that.setSave();
+        that.setOnPause();
+        that.setOnResume();
+        setInterval(function(){
+            that.save();
+        },1000*60);
 
         ///
+    }
+    this.save = function(){
+        that.likes.save();
+        that.user.save();
+        that.mediaLoader.save();
+        that.mediaCapture.save();
     }
     this.initCallbacks = function(){
         initModelCallbacks();
@@ -41,19 +51,38 @@ function Controller(){
         initFailCallbacks();
         initViewCallbacks();
     }
-    this.setSave = function(){
+    this.setOnPause = function(){
         document.addEventListener("pause", function(){
-            that.likes.save();
-            that.user.save();
-            that.mediaLoader.save();
-            that.mediaCapture.save();
+            that.mediaLoader.pause();
         }, false);
+    }
+    this.setOnResume = function(){
+        document.addEventListener("resume",function(){
+            that.mediaLoader.resume();
+        },false);
+    }
+    this.setConnectivity = function(){
+        document.addEventListener("offline",function(){
+            that.mediaLoader.pause();
+            that.view.displayInfo("Connectivity lost, videos may not load...",false);
+        },false);
+        document.addEventListener("online",function(){
+            that.view.displayInfo("Connectivity resumed",false);
+            that.mediaLoader.resume();
+        },false);
     }
     var likersView_view = function(index){
         that.view.setUserViewPopUp(that.mediaLoader.likers[index]);
     };
     var myLikesView_view = function(index){
         that.view.setUserViewPopUp(that.mediaLoader.myLikes[index]);
+    };
+    var inboxView_view = function(index){
+            that.mediaLoader.markedViewed(that.mediaLoader.inboxUsers[index].refs);
+            that.view.setUserViewPopUp(that.mediaLoader.inboxUsers[index]);
+    };
+    var likesWarning = function(){
+        that.view.displayInfo("You cant like anyone until you record a selfie",false);
     };
     // listen for call backs initated by the model objects
     function initModelCallbacks(){
@@ -70,7 +99,8 @@ function Controller(){
               if(that.view.streamLoading){
                 that.view.removeStreamLoading();
                 var nextUser = that.mediaLoader.getNext();
-                that.view.streamViewDisplayNext(nextUser);
+                var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
+                that.view.streamViewDisplayNext(nextUser,distance);
                 currentUser = nextUser;
               }
             }
@@ -79,33 +109,54 @@ function Controller(){
             
         });
         that.event.LISTEN('user_failedGps',function(){
-            that.view.displayInfo("Please turn on GPS and restart app");
+            that.view.displayInfo("Please turn on GPS for more accurate results",false);
         });
         that.event.LISTEN("user_gotGps",function(){
             if(that.user.isDataSet())
                 that.user.insertUser();
-        })
+        });
         that.event.LISTEN("userStream_notReady",function(){
         });
         that.event.LISTEN("userStream_ready",function(){
             that.mediaLoader.onStreamReady();
         });
         that.event.LISTEN("mediaCapture_captureError",function(){
-            that.view.displayInfo("something went wrong recording video");
+            that.view.displayInfo("something went wrong recording video",false);
         });
         that.event.LISTEN("mediaCapture_cap",function(){
             that.mediaCapture.getPolicy();
         });
         that.event.LISTEN("mediaCapture_uploadSuccess",function(){
-            that.view.displayInfo("video uploaded!");
+            that.mediaCapture.incUpload();
             that.user.updateTimeStamp();
         });
         that.event.LISTEN("mediaCapture_uploadError",function(){
-            that.view.displayInfo("something whent wrong, video upload failed");
+            that.view.displayInfo("something whent wrong, video upload failed",false);
         });
         that.event.LISTEN("fileDl_gotFile",function(data){
             that.mediaLoader.onVidDl(data);
-        })
+        });
+        that.event.LISTEN("media_myLikes_refLoaded",function(index){
+            that.view.updatePeopleRow(that.mediaLoader.myLikes[index],"myLikes",myLikesView_view);
+        });
+        that.event.LISTEN("media_likers_refLoaded",function(index){
+            that.view.updatePeopleRow(that.mediaLoader.likers[index],"likers",likersView_view);
+        });
+        that.event.LISTEN("media_myLikes_loaded",function(){
+             if(that.view.currentView ==="myLikesView"){
+                that.view.setMyLikesView(myLikesView_view);
+            }           
+        });
+        that.event.LISTEN("media_inbox_loaded",function(){
+            if(that.view.currentView ==="inboxView"){
+                that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
+            }
+        });
+        that.event.LISTEN("media_likers_loaded",function(){
+            if(that.view.currentView ==="likersView"){
+                that.view.setLikersView(likersView_view);
+            }
+        });      
     }
     // listen for call backs initated by the query/request object
     function initQueryCallbacks(){
@@ -113,12 +164,15 @@ function Controller(){
             //
         });
         that.event.LISTEN("complete/insertVidRef",function(data){
-            that.view.displayInfo("video uploaded succesfully");
+            that.view.displayInfo("video uploaded succesfully",true);
         });
         that.event.LISTEN("complete/insertUser",function(data){
             console.log("user data saved on server");
             that.mediaLoader.start();
         });
+        that.event.LISTEN("complete/getGps",function(data){
+            that.user.onGeoIp(data.res);
+        })
         that.event.LISTEN("complete/findWhoLikedMe",function(data){
             that.mediaLoader.onUserLoad(data.res,"findWhoLikedMe");
         });
@@ -127,29 +181,21 @@ function Controller(){
         });
         that.event.LISTEN("complete/getPolicy",function(data){
             that.mediaCapture.onPolicyReturn(data.res);
+            that.view.displayInfo("video uploading in background ...",true);
         })
         that.event.LISTEN("complete/getVideoRefs",function(data){
-            console.log("got video refs: "+JSON.stringify(data));
             that.mediaLoader.onRefLoad(data.res.Refs,data.res.Type);
         });
         that.event.LISTEN("complete/findUsers",function(data){
             that.mediaLoader.onUserLoad(data.res,"findUsers");
         });
         that.event.LISTEN("complete/getInbox",function(data){
-            console.log("completed got inbox refs");
             that.mediaLoader.onInboxRefLoad(data.res);
         });
         that.event.LISTEN("complete/findInboxUsers",function(data){
             that.mediaLoader.onUserLoad(data.res,"findInboxUsers");
-        });
-        that.event.LISTEN("media_myLikes_loaded",function(){
-             if(that.view.currentView ==="myLikesView"){
-                that.view.setMyLikesView(myLikesView_view);
-            }           
-        });
-        that.event.LISTEN("media_likers_loaded",function(){
-            if(that.view.currentView ==="likersView"){
-                that.view.setLikersView(likersView_view);
+            if(that.waitingFor ==="findInboxUsers"){
+                that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
             }
         });
     }
@@ -157,7 +203,7 @@ function Controller(){
     function initFailCallbacks(){
         var failureCallback = function(err){
             console.log(err);
-        }
+        };
         that.event.LISTEN("failed/insertLike",function(){
             failureCallback("failed insertLike");
         });
@@ -189,18 +235,22 @@ function Controller(){
     //// listen for call backs initated by the view
     function initViewCallbacks(){
         that.event.LISTEN("myLikesView_message",function(index){
-            that.mediaCapture.getVideo(that.mediaLoader.myLikes[index].Id);
+            if(that.mediaCapture.num === 0)
+                that.view.displayInfo("You have to upload a selfie before you can message someone",false);
+            else
+                that.mediaCapture.getVideo(that.mediaLoader.myLikes[index].FbId);
         });
         that.event.LISTEN("likersView_message",function(index){
-            that.mediaCapture.getVideo(that.mediaLoader.likers[index].Id);
+            if(that.mediaCapture.num === 0)
+                that.view.displayInfo("You have to upload a selfie before you can message someone",false);
+            else
+            that.mediaCapture.getVideo(that.mediaLoader.likers[index].FbId);
         });
-        var inboxView_view = function(index){
-            that.view.setUserViewPopUp(that.mediaLoader.inboxUsers[index]);
-            that.mediaLoader.markedViewed(that.mediaLoader.inboxUsers[index].refs);
-            that.view.setInboxView(that.mediaLoader.inboxUsers);
-        };
         that.event.LISTEN("inboxView_reply",function(index){
-             that.mediaCapture.getVideo(that.mediaLoader.inboxUsers[index].Id);           
+            if(that.mediaCapture.num === 0)
+                that.view.displayInfo("You have to upload a selfie before you can message someone",false);
+            else
+                 that.mediaCapture.getVideo(that.mediaLoader.inboxUsers[index].Id);           
         });
         that.event.LISTEN("view_login_clicked",function(){
             var data = that.view.getLoginFormData();
@@ -211,53 +261,48 @@ function Controller(){
             }else{
                 that.view.setLoadingView();
                 that.user.setData(data);
+                that.save();
                 that.request.setUser(that.user.returnUser());
                 if(that.user.isGpsSet()){
-                    console.log()
                     that.user.insertUser();
                 }
                 else
-                    that.view.displayInfo("waiting on GPS");
+                    that.view.displayInfo("waiting on GPS",false);
             }
         });
         that.event.LISTEN("viewMenu_likes_taped",function(){
             that.waitingFor = undefined;
-            if(that.view.currentView ==="myLikesView" || that.view.currentView === "likersView")
-                    return;
+            that.mediaLoader.setMode("myLikes");
+            if(that.mediaLoader.myLikes){
+                that.view.setMyLikesView(myLikesView_view);
+                 if(that.mediaCapture.num === 0)
+                    that.view.displayInfo("You cant like anyone until you record a selfie",false);
+               
+            }
             else{
-                that.mediaLoader.setMode("myLikes");
-                if(that.mediaLoader.myLikes)
-                    that.view.setMyLikesView(myLikesView_view);
-                else{
-                    that.waitingFor = "myLikes"
-                    that.view.displayPeopleLoading();
-                }
+                that.waitingFor = "myLikes"
+                that.view.displayPeopleLoading();
             }
         });
         that.event.LISTEN("viewMenu_selfies_taped",function(){
             that.waitingFor = undefined;
             that.mediaLoader.setMode("findUsers");
-            if(that.view.currentView ==="streamView")
-                return;
-            else{
-                that.view.setStreamView(currentUser);
-                if(!that.mediaLoader.readyStatus){
-                    that.waitingFor = 'findUsers'; 
-                    that.view.streamViewDisplayLoading();
-                }
+            var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
+            that.view.setStreamView(currentUser,distance);
+            if(!that.mediaLoader.readyStatus){
+                that.waitingFor = 'findUsers'; 
+                that.view.streamViewDisplayLoading();
             }
         });
         that.event.LISTEN("viewMenu_inbox_taped",function(){
             that.waitingFor = undefined;
-            if(that.view.currentView ==="inboxView")
-                return;
-            else{
-                if(that.mediaLoader.inboxUsers)
-                    that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
-                else{
-                    that.view.displayPeopleLoading('inbox');
-                    that.waitingFor = 'inboxUsers';
-                }
+            if(that.mediaLoader.inboxUsers){
+                that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
+                if(that.mediaCapture.num === 0)
+                    that.view.displayInfo("Upload a selfie to recieve messages",false);
+            }else{
+                that.view.displayPeopleLoading('inbox');
+                that.waitingFor = 'inboxUsers';
             }
         });
         that.event.LISTEN("view_likesControll_taped",function(){
@@ -266,6 +311,9 @@ function Controller(){
                 if(that.mediaLoader.myLikes){
                     that.view.setMyLikesView(myLikesView_view);
                     that.mediaLoader.setMode("findWhoILike");
+                    if(that.mediaCapture.num === 0){
+                        that.view.displayInfo("No one can like you until you record a selfie",false);
+                    }
                 }else{
                     that.waitingFor="myLikes";
                     that.view.displayPeopleLoading();
@@ -275,6 +323,9 @@ function Controller(){
                 if(that.mediaLoader.likers){
                     that.view.setLikersView(likersView_view);
                     that.mediaLoader.setMode("findWhoLikedMe");
+                    if(that.mediaCapture.num === 0){
+                        that.view.displayInfo("No one can like you until you record a selfie",false);
+                    }
                 }else{
                     that.waitingFor="likers";
                     that.view.displayPeopleLoading();
@@ -285,14 +336,18 @@ function Controller(){
             that.mediaCapture.getVideo();
         });
         that.event.LISTEN("streamView_thumbsUp_taped",function(){
-            that.likes.addLike(currentUser.FbId);
-            that.mediaLoader.pushLikedUser(currentUser);
             that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             var nextUser = that.mediaLoader.getNext();
             if(nextUser){
                  var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
                 currentUser  = nextUser;
+                if(that.mediaCapture.num > 0){
+                    that.likes.addLike(currentUser.FbId);
+                    that.mediaLoader.pushLikedUser(currentUser);
+                }else{
+                    likesWarning();
+                }
             }else{
                 that.view.streamViewDisplayLoading();
                 that.waitingFor = "findUsers";
@@ -302,7 +357,8 @@ function Controller(){
             var nextUser = that.mediaLoader.getNext();
             that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             if(nextUser){
-                that.view.streamViewDisplayNext(nextUser);
+                var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
+                that.view.streamViewDisplayNext(nextUser,distance);
                 currentUser = nextUser;
             }else{
                 that.view.streamViewDisplayLoading();
@@ -313,17 +369,14 @@ function Controller(){
             that.mediaLoader.callBuffer();
         });
         that.event.LISTEN("viewMenu_options_taped",function(){
-            console.log("options taped");
             that.view.toggleOptionsMenu();
         });
         that.event.LISTEN("viewMenu_profileLink_taped",function(){
-            console.log("view profile video taped");
             that.view.toggleOptionsMenu();
             if(that.mediaCapture.num > 0){
                 that.view.setSelfViewPopUp(that.mediaCapture.selfImageUrl,that.mediaCapture.selfVidUrl);
-                that.event.EMIT("viewMenu_likes_taped");
             }else{
-                that.view.displayInfo("You havent recorded a profile video yet");
+                that.view.displayInfo("You havent recorded a profile video yet",false);
             }
         });
         
@@ -342,7 +395,7 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
-window.localStorage.clear();
+//window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
 
 

@@ -45,6 +45,9 @@
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
     </feature>
+    <feature name="Geolocation">
+        <param name="ios-package" value="CDVLocation" />
+    </feature>
     <name>bantter</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -58,8 +61,4 @@
         <param name="APP_ID" value="Bantter" />
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
-    <icon src="res/icon.png" />
-    <feature name="Geolocation">
-        <param name="ios-package" value="CDVLocation" />
-    </feature>
 </widget>

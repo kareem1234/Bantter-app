@@ -1,6 +1,15 @@
 html, body {
 	overflow: hidden; height: 100%;
+	l
 
+}
+a {
+    color: #428BCA;
+}
+
+a:hover, a:focus {
+    color: #428BCA;
+    text-decoration: none;
 }
 input:focus,
 select:focus,
@@ -37,15 +46,6 @@ input {
     text-transform: capitalize;
 }
 
-.backgroundImage{
-	/*
-	background-image: url(../img/vacation-selfies-2.jpg);
-	*/
-	background-color: #2B9FCC;
-	background-size: cover;
-	width:100%;
-	height:100%;
-}
 .underline{
 	position:fixed;
 	width:70%;
@@ -65,7 +65,7 @@ input {
 }
 .menuTab{
 	height:112%;
-	width:33.333%;
+	width:33.3%;
 }
 .full{
 	height: 100%;
@@ -117,13 +117,14 @@ input {
 	background-color:#0033CC;
 }
 #infoPopUp{
-	top:85%;
+	top:80%;
 	left:0%;
 	width:110%;
 	height:60%;
 	text-align: center;
-	padding-bottom: 10%;
+	padding: 10%;
 	font-size: large;
+	z-index: 10;
 	color:white;
 	font-family: 'Comfortaa', cursive;
 }
@@ -131,13 +132,16 @@ input {
 	height:60%;
 }
 #mainPage_selfies_loadingContainer{
+	background-color: black;
 	position:fixed;
 	width:100%;
 	height:100%;
 	top:13%;
-	z-index: 2;
+	z-index: 5;
 }
 #loadingContainer_background{
+	left:0%;
+	top:0%;
 	width:100%;
 	height:100%;
 }
@@ -161,13 +165,11 @@ input {
 	width:20%;
 	height:10%;
 }
-.videoPopUpContent{
-	background-color:rgb(179, 207, 255);
-}
+
 .centerText{
 	text-align: center;
 	height:50%;
-	font-size:x-large;
+	font-size:large;
 	margin-top:2%;
 	font-family: 'Comfortaa', cursive;
 	color: rgb(13, 82, 105);
@@ -189,7 +191,7 @@ input {
 .likesRow{
 	padding-top: 5%;
 	padding-bottom:5%;
-	font-size: x-large%;
+	font-size: x-large;
 	height:25%;
 }
 .disabled{
@@ -224,6 +226,12 @@ input {
 	width:17%;
 	height:100%;
 }
+@media screen and (max-width: 350px) {
+     .icon{
+     		margin-top:-25%;
+     }
+}
+
 #removePadding{
 	padding-left: 0px;
 	padding-right: 0px;
@@ -285,6 +293,20 @@ loginPage css styles
     color:white;
     width:70%;
     left:15%;
+}
+.transportImg{
+	width:70%;
+	height:70%;
+	opacity:1;
+	margin-left: 35%;
+
+}
+.noPad {
+	margin: 0%;
+	padding:0%; 
+}
+#mainPage_selfies_time{
+	font-size: large;
 }
 .customLink{
 	padding-left: 30%;
@@ -356,8 +378,12 @@ loginPage css styles
 	height:5%;
 
 }
+#loginPage{
+	width:100%;
+	height:100%;
+	background-color: #0099CC;
+}
 .mainPage_selfies_contentPane{
-	background-color: #00CCFF;
 	height:80%;
 	text-align: center;
 	color:white;
@@ -368,12 +394,20 @@ loginPage css styles
 	height:80%;
 }
 #mainPage_menu_vidIcon{
-	width:80%;
-	height:80%;
+	padding-top: 12%;
+	width:60%;
+	height:60%;
+}
+@media screen and (max-width: 350px) {
+     #mainPage_menu_vidIcon{
+     		width:80%;
+			height:80%;
+     }
 }
 #optionsMenu{
 	position:fixed;
 	border: 10px solid;
+	font-size: large;
 	border-color:  #00CCFF;
 	width:70%;
 	height:20%;
@@ -385,8 +419,15 @@ loginPage css styles
 	z-index: 4;
 }
 #mainPage_menu_optionsIcon{
-	width:80%;
-	height:100%;
+	padding-top: 12%;
+	width:60%;
+	height:60%;
+}
+@media screen and (max-width: 350px) {
+     #mainPage_menu_optionsIcon{
+     		width:80%;
+			height:80%;
+     }
 }
 #mainPage_menu_likes{
 	background-color: #FF0066;
@@ -402,12 +443,20 @@ loginPage css styles
 }
 #mainPage_selfies{
 	height:67%;
-	background-color: #00CCFF;
 
 }
 
 #mainPage_selfies_selfieVid{
 	width:100%;
+	background-size: cover;
+	/*
+	    position: absolute;
+    min-width: 100%;
+    min-height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	*/
 }
 #mainPage_selfies_thumbsDown{
 	margin-left:35%;
@@ -417,7 +466,7 @@ loginPage css styles
 }
 #mainPage_selfies_selfieInfo{
 	height: 10%;
-	top:13%;
+	top:13.1%;
 	position:fixed;
 	width:100%;
 	background-color:black;
@@ -471,16 +520,32 @@ loginPage css styles
 	margin-left:4%;
 }
 .mainPage_likes_profilePic{
-	border-radius: 10px;
+	border-radius: 5%;
 	margin-top:-15%;
 	margin-bottom:-25%;
-	width:100%;
-	height:150%;
+	width:70%;
+	height:90%;
+}
+@media screen and (max-width: 350px) {
+     .mainPage_likes_profilePic {
+     		width:100%;
+			height:100%;
+     }
+}
+#profileVidLink{
+	  color: #428BCA;
 }
 .starDiv{
 	background-color: red;
 }
-
+#popUpOverlay_backIcon{
+	width:10%;
+	height:10%;
+	position:fixed;
+	top:20%;
+	left:80%;
+	z-index: 6;
+}
 /*   Code for css loader animation */
 .spinner {
   width: 70px;
@@ -497,11 +562,11 @@ margin-left: 40%;
 margin-top: 165%;
 }
 .spinner3 {
-width: 70px;
-height: 70px;
+width: 18%;
+height: 15%;
 position: relative;
-margin-left: 123px;
-margin-top: 100px;
+margin-left: 40%;
+margin-top: 60%;
 }
 .newInboxIcon{
 	width:100%;
@@ -516,7 +581,6 @@ margin-top: 100px;
   height: 100%;
   border-radius: 50%;
   background-color:blue;
-  opacity: 0.6;
   position: absolute;
   top: 0;
   left: 0;

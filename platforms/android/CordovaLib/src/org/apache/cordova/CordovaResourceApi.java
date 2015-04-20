@@ -90,7 +90,6 @@ public class CordovaResourceApi {
     private final ContentResolver contentResolver;
     private final PluginManager pluginManager;
     private boolean threadCheckingEnabled = true;
-     private static boolean initializedOkHttpClient = false;
 
 
     public CordovaResourceApi(Context context, PluginManager pluginManager) {
@@ -324,10 +323,6 @@ public class CordovaResourceApi {
     }
     
     public HttpURLConnection createHttpConnection(Uri uri) throws IOException {
-        if (!initializedOkHttpClient) {
-            initializedOkHttpClient = true;
-            URL.setURLStreamHandlerFactory(httpClient);
-        }
         assertBackgroundThread();
         return httpClient.open(new URL(uri.toString()));
     }

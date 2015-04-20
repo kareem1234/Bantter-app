@@ -4,6 +4,7 @@ function User(eventEmitter, request) {
         var R = request;
         var E = eventEmitter;
         var that = this;
+        var gpsSet = false;
 
         // function for returning user object
         this.returnUser = function() {
@@ -40,10 +41,8 @@ function User(eventEmitter, request) {
             }
          }
          this.validate = function(name,age,gender){
-            console.log("name is: "+name);
 
          	function isAgebtween13and100(n) {
-                console.log('age is: '+n);
   				return  n>13 && n<=100 && n%1===0;
 			}
 			function isgender(g){
@@ -79,10 +78,13 @@ function User(eventEmitter, request) {
                     City = me.City;
                     Name = me.Name;
                     Id = me.Id;
+                    console.log(Id);
                     FbId = me.FbId;
+                    console.log(FbId);
                     Lat = me.Lat;
                     Lgt = me.Lgt;
                     TimeStamp = me.TimeStamp;
+                    console.log("user loaded");
                     return me;
                 }
             }
@@ -94,6 +96,10 @@ function User(eventEmitter, request) {
                     returnObj.Hours = Math.floor(returnObj.Time / 60);
                     returnObj.Minutes = Math.floor(returnObj.Time % 60);
                     returnObj.Method = "walk";
+
+                    // dont expose very close distances
+                    if(returnObj.Hours  === 0 && returnObj.Minutes < 15)
+                        returnObj.Minutes = 15;
                     return returnObj;
                 };
 
@@ -125,7 +131,27 @@ function User(eventEmitter, request) {
 
 
             }
+        this.onGeoIp = function(data){
+            console.log("printing gps data");
+            console.log(JSON.stringify(data));
+            if(data == null){
+                console.log("unable to find ip location setting false lat lgt");
+                Lat = 0; 
+                Lgt = 0;
+
+            }else if(gpsSet === true){
+                console.log("already have more accurate gps");
+            }else{
+                Lat = data.ll[0];
+                Lgt = data.ll[1];
+                if(gpsSet === false){
+                    gpsSet = true;
+                    E.EMIT("user_gotGps");
+                }
+            }
+        }
         this.getDistance = function(lat2, lgt2) {
+                    lat2 = Number(lat2);
                     var R = 6371000; // metres
                     var φ1 = Lat.toRadians();
                     var φ2 = lat2.toRadians();
@@ -153,7 +179,6 @@ function User(eventEmitter, request) {
             // send user object to server
         this.insertUser = function() {
                     var _user = that.returnUser();
-                    console.log(JSON.stringify(_user));
                     R.request("insertUser", _user);
                 }
                 // extract age from
@@ -162,26 +187,33 @@ function User(eventEmitter, request) {
         this.setData = function(data) {
                 FbId = generateId();
                 Gender = data.gender;
-                Name = data.name;
+                Name = capitalizeFirstLetter(data.name);
                 Age = data.age;
                 Id = generateId();
                 TimeStamp = 0;
-            }
+        }
+        function capitalizeFirstLetter(string) {
+             return string.charAt(0).toUpperCase() + string.slice(1);
+        }
         this.getGpsData = function() {
                 function gotGps(position) {
                     console.log("got gps data");
                     Lat = position.coords.latitude;
                     Lgt = position.coords.longitude;
-                    that.gpsSet = true;
-                    E.EMIT("user_gotGps");
+                    if(gpsSet === false){
+                        gpsSet = true;
+                        E.EMIT("user_gotGps");
+                    }
                 };
 
                 function failedGps() {
                     console.log("gps failed");
+                    R.request("getGps");
                     E.EMIT("user_failedGps");
                 };
                 console.log('attempting to retrieve gps');
-                navigator.geolocation.getCurrentPosition(gotGps, failedGps);
+                navigator.geolocation.getCurrentPosition(gotGps, failedGps,{ enableHighAccuracy: true });
+                R.request("getGps");
             }
         }
 

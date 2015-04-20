@@ -12,6 +12,7 @@ function Likes(eventEmitter, Request){
 		var newLikes = JSON.parse(window.localStorage.getItem("likes_likesArray"));
 		if(newLikes)
 			likes = likes.concat(newLikes);
+		console.log("newlikes loaded");
 	}
 	this.addLike = function(toId){
 		var like = {

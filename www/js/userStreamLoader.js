@@ -23,6 +23,7 @@ function UserStreamLoader(eventEmitter,Request){
 	// when request come in call this function an addUsers
 	// to appropiate users
 	this.addUsers = function(users){
+		console.log("found "+users.length+" users");
 		onUserAddedCount++;
 		for(var i=0; i<users.length; i++){
 			if(checkHash(users[i].FbId) && checkRange(users[i]))

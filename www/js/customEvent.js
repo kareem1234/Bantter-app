@@ -14,10 +14,14 @@ function EventEmitter(){
 			//console.log('event emmitted: '+eventName);
 			if(data === null || data === undefined){
 				var m = new CustomEvent (eventName);
-  				document.dispatchEvent(m);
+				setTimeout(function(){
+					document.dispatchEvent(m);
+				},0);
 			}else{
 				var m = new CustomEvent (eventName,{"detail": data});
-  				document.dispatchEvent(m);
+				setTimeout(function(){
+					document.dispatchEvent(m);
+				},0);
 			}
 
 		}

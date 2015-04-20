@@ -5,7 +5,7 @@
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
         <link rel="stylesheet" type="text/css" href="libs/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.structure.min.css" />
         <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.theme.min.css" />
@@ -27,42 +27,31 @@
                 <div class="double-bounce2"></div>
             </div>             
         </div>
-        <div class="modal" id="videoPopUpModal">
-            <div class="modal-dialog">
-                <div class="modal-content videoPopUpContent">
-                    <div class="modal-body">
-                        <video webkit-playsinline   id='videoPopUp' >
-                        </video>
-                        <div id="popUpOverlay">
-                            <img  id="popUpOverlay_background"/>
-                            <img  id="popUpOverlay_play" src="./img/play.png"class=""/>
-                            <div id="loadSpinner2"class="">
-                                <div class="loader"></div>
-                            </div>
-                        </div>
+        <div class="notActive" id="videoPopUpModal">
+                <video webkit-playsinline  preload="auto" id='videoPopUp' >
+                </video>
+                <div id="popUpOverlay">
+                    <img  id="popUpOverlay_background"/>
+                    <img  id="popUpOverlay_play" src="./img/play.png"class=""/>
+                    <div id="loadSpinner2"class="">
+                        <div class="loader"></div>
                     </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+                </div>
+        </div>
         <div class="modal " id="infoPopUp">
-            <div class="modal-dialog">
                 <div class="modal-content infoPopUpContent">
-                    <div class="modal-header">
-                        <span class="sr-only">Close</span></button>
                         <p id="modal-title2"></p>
-                    </div>
                 </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->        
         <div id="loginPage" data-role="page" class="backgroundImage notActive">
             <img  id="loginPage_bantterLogo"src= "./img/bantterIconPink.png"/>
             <input type="text" id="loginPage_nameInput" placeholder="First Name">
             <div id="underline1" class ="underline"></div>
-            <input type="number" id="loginPage_AgeInput" min="16" max="80"placeholder="Age">
+            <input type="number" id="loginPage_AgeInput"placeholder="Age">
             <div id="underline2" class ="underline"></div>
             <!-- Single button -->
             <div id="loginPage_GenderInput" class="  btn-group">
-                <button type="button" class=" transparent btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <button id="loginPage_GenderInput_but"type="button" class=" transparent btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 Gender <span class="  caret"></span>
                 </button>
                 <ul class="  dropdown-menu" role="menu">
@@ -80,13 +69,13 @@
         <div id ="mainPage" data-role="page" class="notActive">
             <div  class=" container-xs-height">
                 <div id="mainPage_menu" class ="  row row-xs-height">
-                     <div class="col-xs-8 col-xs-height">
+                     <div class="col-xs-6 col-xs-height">
                         <img  id="mainPage_menu_logo"src= "./img/bantter2.png"/>
                      </div>
                      <div class="col-xs-3 col-xs-height col-top">
                         <img  id="mainPage_menu_vidIcon"src= "./img/vidIcon.png"/>
                      </div>
-                    <div class="col-xs-1 col-xs-height col-top">
+                    <div class="col-xs-3 col-xs-height col-top">
                         <img  id="mainPage_menu_optionsIcon"src= "./img/optionsIcon.png"/>
                      </div>
                 </div>
@@ -108,7 +97,7 @@
                     </div>
                 </div>
                 <div id="optionsMenu" class="notActive">
-                    <div class=" centerText row row-xs-height">   <a id="profileVidLink">View profile Video</a>
+                    <div class=" centerText row row-xs-height">   <p id="profileVidLink">View profile Video</p>
                     </div>
                     <div class=" centerText row row-xs-height"> 
                         <a href="mailto:bantter.llc@gmail.com" data-rel='external'>Contact Bantter</a>
@@ -119,9 +108,11 @@
                         <video  preload="auto"webkit-playsinline  id='mainPage_selfies_selfieVid' >
                         </video>
                     </div>
-                    <div id="mainPage_selfies_selfieInfo"class =" row row-xs-height">
-                            <div id="mainPage_selfies_name"class="textInfo col-xs-6 col-xs-height col-top">Ashley 19</div>
-                            <div id="mainPage_selfies_city"class="textInfo col-xs-6 col-xs-height col-top">Ottawa</div>
+                    <div id="mainPage_selfies_selfieInfo"class =" noPad row row-xs-height">
+                            <div id="mainPage_selfies_name"class="textInfo col-xs-6 noPad col-xs-height col-top">Ashley 19</div>
+                            <div id="mainPage_selfies_transportImg"class="textInfo noPad  col-xs-2 col-xs-height col-top"></div>
+                            <div id="mainPage_selfies_time"class="textInfo col-xs-4 noPad col-xs-height col-top"></div>
+                           
                     </div>
                     <div id ="mainPage_selfies_loadingContainer">
                         <img  id="loadingContainer_background"/>
