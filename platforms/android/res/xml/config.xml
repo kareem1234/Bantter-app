@@ -8,14 +8,6 @@
     <feature name="VideoCapturePlus">
         <param name="android-package" value="nl.xservices.plugins.videocaptureplus.VideoCapturePlus" />
     </feature>
-    <feature name="FacebookConnectPlugin">
-        <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
-    </feature>
-    <access origin="https://m.facebook.com" />
-    <access origin="https://graph.facebook.com" />
-    <access origin="https://api.facebook.com" />
-    <access origin="https://*.fbcdn.net" />
-    <access origin="https://*.akamaihd.net" />
     <feature name="File">
         <param name="android-package" value="org.apache.cordova.file.FileUtils" />
         <param name="onload" value="true" />
@@ -45,4 +37,7 @@
         <param name="APP_ID" value="Bantter" />
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
 </widget>

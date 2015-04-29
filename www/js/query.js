@@ -33,9 +33,7 @@ function Request(EventEmitter){
 			}
 			E.EMIT("complete"+URL,{res:response,req:requestData});
 		}).fail(function(error){
-			tries ++;
-			if(tries %4 == 0)
-				timeout = timeout + 7000;
+				timeout += timeout;
 			E.EMIT("failed"+URL,error);
 			setTimeout(function(){
 				makeRequest(Type,URL,requestData);

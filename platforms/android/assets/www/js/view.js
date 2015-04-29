@@ -515,20 +515,20 @@ function View (EventEmitter){
 				var index = prevSelected.index();
 				var actionBut1 = $("#mainPage_likes_menuAction1");
 				if(that.mediaLoader.checkViewable(inboxUsers[index].refs.Url)){
-					actionBut1.text("View");
+					actionBut1.empty().append('<img class="actionIcon" src="./img/viewIcon.png" />');
 					actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
 						viewFunction(index);
 					});
 				}else{
-					actionBut1.text(" ");
+					actionBut1.innerHTML(" ");
 				}
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
 					e.preventDefault();
 					E.EMIT("inboxView_reply",index);
 				});
-				actionBut.text("Reply");		
+				actionBut.empty().append('<img class="actionIcon" src="./img/replyIcon.png" />');		
 			});
 	}
 	function appendUser(user,field){
@@ -564,7 +564,7 @@ function View (EventEmitter){
 				prevSelected.addClass("selectedLikesRow");
 				var index = prevSelected.index();
 				var actionBut1 = $("#mainPage_likes_menuAction1");
-				actionBut1.text("View");
+				actionBut1.empty().append('<img class="actionIcon" src="./img/viewIcon.png" />');
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
 						viewFunction(index);
@@ -574,7 +574,7 @@ function View (EventEmitter){
 					e.preventDefault();
 					E.EMIT(field,index);
 				});
-				actionBut.text("Message");		
+				actionBut.empty().append('<img class="actionIcon" src="./img/replyIcon.png" />');		
 			});		
 	}
 	this.setMyLikesView = function(viewFunction){

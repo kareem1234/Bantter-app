@@ -8,13 +8,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.phonegap.plugins.facebookconnect/www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js",
-        "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
-        "clobbers": [
-            "window.facebookConnectPlugin"
-        ]
-    },
-    {
         "file": "plugins/org.apache.cordova.file-transfer/www/FileTransferError.js",
         "id": "org.apache.cordova.file-transfer.FileTransferError",
         "clobbers": [
@@ -110,6 +103,30 @@ module.exports = [
         "id": "org.apache.cordova.geolocation.geolocation",
         "clobbers": [
             "navigator.geolocation"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
+        "clobbers": [
+            "cordova.plugins.notification.local",
+            "plugin.notification.local"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
+        "clobbers": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
+        "merges": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
         ]
     },
     {
@@ -263,11 +280,11 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "nl.x-services.plugins.videocaptureplus": "1.2",
-    "com.phonegap.plugins.facebookconnect": "0.7.1",
     "org.apache.cordova.file-transfer": "0.4.5",
     "org.apache.cordova.media-capture": "0.3.4-dev",
     "org.apache.cordova.device": "0.2.13-dev",
     "org.apache.cordova.geolocation": "0.3.11",
+    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "org.apache.cordova.file": "1.3.0"
 }
 // BOTTOM OF METADATA

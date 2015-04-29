@@ -14,7 +14,7 @@
     	<param name="APP_NAME" value="1409430495955338" />
 	</gap:plugin>
      <platform name="android">
-        <preference name="KeepRunning" value="false"/>
+        <preference name="KeepRunning" value="true"/>
          <preference name="Fullscreen" value="false" />
          <preference name="android-windowSoftInputMode" value="adjustNothing" />
     </platform>

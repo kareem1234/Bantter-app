@@ -96,6 +96,3 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/mediacapture/Capture.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/classes/org/apache/cordova/mediacapture/FileHelper.class \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/dexedLibs/classes-f928c54f69f6cacbb3ebdcfd45b8f28f.jar \
-/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/dexedLibs/classes-b43682f57e96985180bda1a3593e32b5.jar \
-/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/dexedLibs/bolts-f59a955405565a951e1e6b0c2c647f5a.jar \
-/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/ant-build/dexedLibs/android-support-v4-7c1d92a12157052e07efc020de8330ea.jar \

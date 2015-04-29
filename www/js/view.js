@@ -163,7 +163,7 @@ function View (EventEmitter){
 		},0);
 
 	}
-	this.toggleOptionsMenu = function(){
+	this.toggleOptionsMenu = function(imageUrl){
 		console.log("toggling optionsMenu");
 		var options = $("#optionsMenu");
 		console.log(optionsVisible);
@@ -172,6 +172,8 @@ function View (EventEmitter){
 			options.hide(0);
 		}
 		else{
+			if(imageUrl)
+				$("#optionsIcon_self").attr("src",domain+imageUrl);
 			console.log("showing");
 			optionsVisible=true;
 			options.show(0);
@@ -377,30 +379,6 @@ function View (EventEmitter){
 		$("#mainPage_people").removeClass("notActive");
 		$(".spinner3").removeClass("notActive");
 	}
-	this.updatePeopleRow = function(user,field,viewFunction){
-		if(that.currentView === 'myLikesView'){
-			var displayedCount = $(".likesRow:visible").length();
-			var count = 0;
-			for(var i = 0; i < that.mediaLoader.myLikes.length; i++){
-				if(that.mediaLoader[i].myLikes.refs === null)
-					continue;
-				count++;
-				if(count > displayedCount)
-					appendUser(user,field);
-			}
-			bindLikesRow('myLikesView_message',viewFunction);
-		}else if(that.currentView === 'likersView'){
-			var displayedCount = $(".likesRow:visible").length();
-			for(var i = 0; i < that.mediaLoader.likers.length; i++){
-				if(that.mediaLoader[i].likers.refs === null)
-					continue;
-				count++;
-				if(count > displayedCount)
-					appendUser(user,field);
-			}
-			bindLikesRow("likersView_message",viewFunction);
-		}
-	}
 	this.updateInboxView = function(){
 		pauseVid();
 		that.currentView='inboxView';
@@ -481,7 +459,7 @@ function View (EventEmitter){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty();
-			for(var i = 0; i<inboxUsers.length;i++){
+			for(var i = inboxUsers.length-1; i >0;i--){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				var picDiv = document.createElement("div");
@@ -515,20 +493,20 @@ function View (EventEmitter){
 				var index = prevSelected.index();
 				var actionBut1 = $("#mainPage_likes_menuAction1");
 				if(that.mediaLoader.checkViewable(inboxUsers[index].refs.Url)){
-					actionBut1.text("View");
+					actionBut1.empty().append('<img class="actionIcon" src="./img/viewIcon.png" />');
 					actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
 						viewFunction(index);
 					});
 				}else{
-					actionBut1.text(" ");
+					actionBut1.innerHTML(" ");
 				}
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
 					e.preventDefault();
 					E.EMIT("inboxView_reply",index);
 				});
-				actionBut.text("Reply");		
+				actionBut.empty().append('<img class="actionIcon" src="./img/replyIcon.png" />');		
 			});
 	}
 	function appendUser(user,field){
@@ -553,7 +531,7 @@ function View (EventEmitter){
 			likesRowDiv.appendChild(nameDiv);
 			document.getElementById(field).appendChild(likesRowDiv);
 	}
-	function bindLikesRow(field,viewFunction){
+	function bindLikesRow(field,viewFunction,length){
 			$(".likesRow").bind("tap",function(e){
 				e.preventDefault();
 				if(prevSelected)
@@ -564,7 +542,7 @@ function View (EventEmitter){
 				prevSelected.addClass("selectedLikesRow");
 				var index = prevSelected.index();
 				var actionBut1 = $("#mainPage_likes_menuAction1");
-				actionBut1.text("View");
+				actionBut1.empty().append('<img class="actionIcon" src="./img/viewIcon.png" />');
 				actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
 						viewFunction(index);
@@ -572,31 +550,31 @@ function View (EventEmitter){
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
 					e.preventDefault();
-					E.EMIT(field,index);
+					E.EMIT(field,length-1-index);
 				});
-				actionBut.text("Message");		
+				actionBut.empty().append('<img class="actionIcon" src="./img/replyIcon.png" />');		
 			});		
 	}
 	this.setMyLikesView = function(viewFunction){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty();
-			for(var i = 0; i < that.mediaLoader.myLikes.length; i++){
+			for(var i =that.mediaLoader.myLikes.length-1; i >0; i--){
 				if(that.mediaLoader.myLikes[i].refs === null)
 					continue;
 				appendUser(that.mediaLoader.myLikes[i],"myLikes");
 			}
-			bindLikesRow('myLikesView_message',viewFunction);
+			bindLikesRow('myLikesView_message',viewFunction,that.mediaLoader.myLikes.length);
 	}
 	this.setLikersView = function(viewFunction){
 			that.updateLikersView();
 			$("#mainPage_people_likers").empty();
-			for(var i = 0; i < that.mediaLoader.likers.length; i++){
+			for(var i = that.mediaLoader.likers.length-1; i >0; i--){
 				if(that.mediaLoader.likers[i].refs === null)
 					continue;
 				appendUser(that.mediaLoader.myLikes[i],"likers");
 			}
-			bindLikesRow("likersView_message",viewFunction);
+			bindLikesRow("likersView_message",viewFunction,that.mediaLoader.myLikes.length);
 	}
 }
 

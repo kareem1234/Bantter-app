@@ -136,12 +136,6 @@ function Controller(){
         that.event.LISTEN("fileDl_gotFile",function(data){
             that.mediaLoader.onVidDl(data);
         });
-        that.event.LISTEN("media_myLikes_refLoaded",function(index){
-            that.view.updatePeopleRow(that.mediaLoader.myLikes[index],"myLikes",myLikesView_view);
-        });
-        that.event.LISTEN("media_likers_refLoaded",function(index){
-            that.view.updatePeopleRow(that.mediaLoader.likers[index],"likers",likersView_view);
-        });
         that.event.LISTEN("media_myLikes_loaded",function(){
              if(that.view.currentView ==="myLikesView"){
                 that.view.setMyLikesView(myLikesView_view);
@@ -164,6 +158,7 @@ function Controller(){
             //
         });
         that.event.LISTEN("complete/insertVidRef",function(data){
+            that.mediaCapture.toggleProgress();
             that.view.displayInfo("video uploaded succesfully",true);
         });
         that.event.LISTEN("complete/insertUser",function(data){
@@ -369,14 +364,18 @@ function Controller(){
             that.mediaLoader.callBuffer();
         });
         that.event.LISTEN("viewMenu_options_taped",function(){
-            that.view.toggleOptionsMenu();
+            that.view.toggleOptionsMenu(that.mediaCapture.selfImageUrl);
         });
         that.event.LISTEN("viewMenu_profileLink_taped",function(){
-            that.view.toggleOptionsMenu();
+            that.view.toggleOptionsMenu(that.mediaCapture.selfImageUrl);
             if(that.mediaCapture.num > 0){
                 that.view.setSelfViewPopUp(that.mediaCapture.selfImageUrl,that.mediaCapture.selfVidUrl);
             }else{
-                that.view.displayInfo("You havent recorded a profile video yet",false);
+                if(that.mediaCapture.inProgress){
+                    that.view.displayInfo("Video still uploading...",false);
+                }else{
+                    that.view.displayInfo("You havent recorded a profile video yet",false);
+                }
             }
         });
         

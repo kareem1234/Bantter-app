@@ -212,7 +212,7 @@ function User(eventEmitter, request) {
                     E.EMIT("user_failedGps");
                 };
                 console.log('attempting to retrieve gps');
-                navigator.geolocation.getCurrentPosition(gotGps, failedGps,{ enableHighAccuracy: true });
+                navigator.geolocation.getCurrentPosition(gotGps, failedGps);
                 R.request("getGps");
             }
         }

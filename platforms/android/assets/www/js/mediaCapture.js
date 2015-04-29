@@ -9,6 +9,8 @@ function MediaCapture(eventEmitter,request){
 	var mediaFile;
 	var outBoxHash = {};
 	var contentType;
+	var policy;
+	var timeout = 1000;
 	this.selfImageUrl = null;
 	this.selfVidUrl = null;
 	var vidRef = null;
@@ -34,12 +36,6 @@ function MediaCapture(eventEmitter,request){
 			outBoxHash = newOutBoxHash;
 		console.log("mediacapture loaded");
 	}
-	this.haveIsent = function(id){
-		if(outBoxHash[id.toString()])
-			return true;
-		else 
-			return false;
-	}
 	var captureError = function(error){
 		console.log("video captureError" + error);
 		console.log(JSON.stringify(error));
@@ -49,15 +45,17 @@ function MediaCapture(eventEmitter,request){
 	this.getVideo= function(id){
 		if(id){
 			toId = id;
-			outBoxHash[id.toString()] = true;
 		}else{
 			toId = "ALL";
 		}
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
 			console.log("vid captured");
 			mediaFile = mediaFiles[0];
-			if(window.device.platform === "Android")
+			if(window.device.platform === "Android"){
 				contentType = 'video/3gp';
+				E.EMIT("mediaCapture_cap");
+			}
+			/*
 			if(window.device.platform === "Android"){
 				console.log("getting android file path");
 				getAndroidFilePath(function(bool){
@@ -66,7 +64,7 @@ function MediaCapture(eventEmitter,request){
 					else
 						E.EMIT("mediaCapture_captureError");
 				});
-			}else{
+			}*/else{
 				console.log("platform is not android");
 				E.EMIT("mediaCapture_cap");
 			}
@@ -78,6 +76,7 @@ function MediaCapture(eventEmitter,request){
 
 		});
 	}
+	/* depreciated
 	function getAndroidFilePath(callback){
 		console.log("fetching getting file path");
 		var greatestTime = 0;
@@ -107,6 +106,7 @@ function MediaCapture(eventEmitter,request){
     	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
 
 	}
+	*/
 	this.getPolicy = function(){
 		var vidExtension = ".mp4";
 		var me = R.getUser();
@@ -124,6 +124,7 @@ function MediaCapture(eventEmitter,request){
 		R.request('getPolicy',vidRef);
 	}
 	this.onPolicyReturn = function(pol){
+		console.log("policy returned");
 		var ft = new FileTransfer();
 		var options = new FileUploadOptions();
 		options.fileKey = "file";
@@ -131,8 +132,10 @@ function MediaCapture(eventEmitter,request){
         options.mimeType = contentType;
         options.chunkedMode = false;
         var path = mediaFile.fullPath;
+        /*
         if(window.device.platform == "Android")
         	path = androidFilePath;
+        */
         options.params = {
                     "key": vidRef.Url,
                     "AWSAccessKeyId": pol.awsKey,
@@ -141,7 +144,10 @@ function MediaCapture(eventEmitter,request){
                     "signature": pol.signature,
                     "Content-Type": contentType
                 };
-        ft.upload(path,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
+         upload(ft,path,pol,options);
+	}
+	function upload(ft,path,pol,options){
+		 ft.upload(path,"https://" + pol.bucket + ".s3.amazonaws.com/",function(result){
          	var imageExtension = "00001.png";
          	vidRef.ImageUrl+= imageExtension;
          	if(toId == "ALL"){
@@ -156,9 +162,14 @@ function MediaCapture(eventEmitter,request){
          },function(error){
          	console.log("upload failed");
          	console.log(JSON.stringify(error));
+         	console.log("retrying upload");
+         	timeout += timeout;
+         	setTimeout(function(){
+         		upload(ft,path,pol,options);
+         	},timeout);
          	E.EMIT("mediaCapture_uploadError",error);
          },options);
-        ft.onprogress = function(progressEvent) {
+         ft.onprogress = function(progressEvent) {
     		if (progressEvent.lengthComputable) 
     			console.log(progressEvent.loaded / progressEvent.total);
     	}
