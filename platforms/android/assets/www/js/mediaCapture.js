@@ -10,6 +10,7 @@ function MediaCapture(eventEmitter,request){
 	var outBoxHash = {};
 	var contentType;
 	var policy;
+	this.inProgress = false;
 	var timeout = 1000;
 	this.selfImageUrl = null;
 	this.selfVidUrl = null;
@@ -41,7 +42,9 @@ function MediaCapture(eventEmitter,request){
 		console.log(JSON.stringify(error));
 		E.EMIT("mediaCapture_captureError");
 	}
-
+	that.toggleProgress = function(){
+		that.inProgress = !that.inProgress;
+	}
 	this.getVideo= function(id){
 		if(id){
 			toId = id;
@@ -50,21 +53,13 @@ function MediaCapture(eventEmitter,request){
 		}
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
 			console.log("vid captured");
+			that.inProgress = true;
 			mediaFile = mediaFiles[0];
 			if(window.device.platform === "Android"){
 				contentType = 'video/3gp';
 				E.EMIT("mediaCapture_cap");
 			}
-			/*
-			if(window.device.platform === "Android"){
-				console.log("getting android file path");
-				getAndroidFilePath(function(bool){
-					if(bool == true)
-						E.EMIT("mediaCapture_cap");
-					else
-						E.EMIT("mediaCapture_captureError");
-				});
-			}*/else{
+			else{
 				console.log("platform is not android");
 				E.EMIT("mediaCapture_cap");
 			}
@@ -76,37 +71,6 @@ function MediaCapture(eventEmitter,request){
 
 		});
 	}
-	/* depreciated
-	function getAndroidFilePath(callback){
-		console.log("fetching getting file path");
-		var greatestTime = 0;
-		var callbacksDone = false;
-		var currentPath = "";
-		function gotFS(fileSystem){
-			console.log("got fs");
-			fileSystem.root.getDirectory("DCIM/Camera/", {create: false, exclusive: false},
-				gotDirectory,fail);
-		};
-	 	function gotDirectory(dirEntry){
-	 		console.log("got directory");
-	 		var directoryReader = dirEntry.createReader();
-			directoryReader.readEntries(gotFiles, fail);
-	 	};
-	 	function gotFiles(files){
-	 		console.log("got files");
-	 		console.log("setting androidFilePath")
-	 		androidFilePath = files[files.length-1].toURL();
-	 		callback(true);
-	 	};
-	 	function fail(err){
-	 		console.log(JSON.stringify(err));
-			console.log("failed to find android file path");
-			callback(false);
-		};
-    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-
-	}
-	*/
 	this.getPolicy = function(){
 		var vidExtension = ".mp4";
 		var me = R.getUser();
@@ -117,7 +81,7 @@ function MediaCapture(eventEmitter,request){
 			FbId: me.FbId,
 			Url: vidurl+vidExtension,
 			ImageUrl:imageurl,
-			Numer: that.num + 1,
+			Num: that.num + 1,
 			To: toId,
 			Type: contentType
 		}

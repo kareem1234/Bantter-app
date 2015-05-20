@@ -21,7 +21,10 @@
     <feature name="Device">
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
-    <preference name="KeepRunning" value="false" />
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
+    <preference name="KeepRunning" value="true" />
     <preference name="Fullscreen" value="false" />
     <preference name="android-windowSoftInputMode" value="adjustNothing" />
     <name>bantter</name>
@@ -37,7 +40,4 @@
         <param name="APP_ID" value="Bantter" />
         <param name="APP_NAME" value="1409430495955338" />
     </gap:plugin>
-    <feature name="LocalNotification">
-        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
-    </feature>
 </widget>

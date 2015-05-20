@@ -101,10 +101,17 @@ input {
 	height:10%;
 }
 #videoPopUp{
-	top:13%;
+	top:13.1%;
 	position:fixed;
 	width:100%;
 	z-index:4;
+	/*
+	transform: scaleY(1.6);
+	-ms-transform: scaleY(1.6); 
+	-webkit-transform: scaleY(1.6); 
+	-o-transform: scaleY(1.6);
+	-moz-transform: scaleY(1.6);
+	*/
 }
 .modal-header{
 	width:100%;
@@ -140,10 +147,8 @@ input {
 	z-index: 2;
 }
 #loadingContainer_background{
-	left:0%;
-	top:0%;
 	width:100%;
-	height:100%;
+	height:87%;
 }
 #loadingContainer_play{
 	margin-top: -160%;
@@ -411,11 +416,13 @@ loginPage css styles
 #optionsMenu{
 	position:fixed;
 	font-size: large;
-	width:40%;
+	width:25%;
 	height:50%;
-	border-radius: 20px;
-	border-top-right-radius: 0px;
-	left:60%;
+	border-top-left-radius:20px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+	border-bottom-left-radius:20px;
+	left:75%;
 	top:8%;
 	z-index: 6;
   	background:rgba(0,0,0,0.7);
@@ -424,15 +431,21 @@ loginPage css styles
 	opacity:none;
 }
 .optionsIcon{
-	margin-left:45%;
-	margin-top:20%;
-	width:20%;
-	height:10%;
+	margin-left:20%;
+	width:70%;
+	height:20%;
 }
 #mainPage_menu_optionsIcon{
 	padding-top: 12%;
 	width:60%;
-	height:60%;
+	height:100%;
+}
+#optionsIcon_self{
+	margin-top:20%;
+	border-radius: 50%;
+}
+#optionsIcon_contact{
+	border-radius: 50%;
 }
 @media screen and (max-width: 350px) {
      #mainPage_menu_optionsIcon{
@@ -459,7 +472,6 @@ loginPage css styles
 
 #mainPage_selfies_selfieVid{
 	width:100%;
-	background-size: cover;
 	/*
 	    position: absolute;
     min-width: 100%;
@@ -544,6 +556,7 @@ loginPage css styles
      }
 }
 #profileVidLink{
+	  height:30%;
 	  color: #428BCA;
 }
 .starDiv{

@@ -178,8 +178,11 @@ function MediaLoader(eventEmitter,request){
 	// attach videoReference array to  the matching user object
 	// then call checkStatus() 
 	this.onRefLoad = function(refArray,type){
+		console.log(refArray.length);
 		for(var x = 0 ; x<refArray.length; x++){
-			var refs =  new Array(refArray[x]); // backwards compatibility
+			var refs =  new Array(); // backwards compatibility
+			refs.push(refArray[x]);
+			//console.log(JSON.stringify(refs));
 			if(type === "findUsers"){
 				for(var i = 0; i< userStream.length; i++){
 					if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
@@ -192,17 +195,14 @@ function MediaLoader(eventEmitter,request){
 				for(var i = 0; i< that.myLikes.length; i++){
 					if(that.myLikes[i].FbId === refs[0].FbId){
 						that.myLikes[i].refs = refs;
-						move2back(i,that.myLikes);
-						return;
-
+						//move2back(i,that.myLikes);
 					}
 				}	
 			}else if(type === "findWhoLikedMe"){
-				console.log(JSON.stringify(that.likers));
 				for(var i = 0; i< that.likers.length; i++){
 					if(that.likers[i].FbId === refs[0].FbId){
 						that.likers[i].refs = refs;
-						move2back(i,that.likers);
+						//move2back(i,that.likers);
 					}
 				}			
 			}
@@ -243,27 +243,33 @@ function MediaLoader(eventEmitter,request){
 		if(type === "findUsers"){
 			usLoader.addUsers(users);
 		}else if(type === "findWhoILike"){
-			that.myLikes = users;
+			addUsers(users,that.likers);
 			buffer();
 			E.EMIT("media_myLikes_loaded");
 		}else if(type === "findWhoLikedMe"){
-			addLikers(users);
+			addUsers(users,that.likers);
 			buffer();
 			E.EMIT("media_likers_loaded");
 		}else if(type === 'findInboxUsers'){
-			console.log("got inbox users");
-			console.log(JSON.stringify(users));
-			addInboxUsers(users);
+			addUsers(users,that.inboxUsers);
 			if(that.inboxRefs && that.inboxUsers)
 				that.setInboxUsers();
 		}
 	}
 	//COULD BE EXPENSIVE FUNCTION
+	function addUsers(newUsers, oldUsers){
+		var onlyInUsers = newUsers.filter(function(current_us){
+    		return oldUsers.filter(function(current_ls){
+        			return current_us.FbId == current_ls.FbId;
+    			}).length == 0;
+		});
+		oldUsers = oldUsers.concat(onlyInUsers);
+	};
 	function addLikers(userarray){
 		var onlyInUsers = userarray.filter(function(current_us){
     			return that.likers.filter(function(current_ls){
         			return current_us.FbId == current_ls.FbId;
-    		}).length == 0;
+    			}).length == 0;
 		});
 		that.likers = that.likers.concat(onlyInUsers);
 	};

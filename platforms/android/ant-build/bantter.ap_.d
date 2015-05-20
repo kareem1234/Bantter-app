@@ -70,6 +70,7 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/fileDownloader.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/likes.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/mediaCapture.js \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/notifications.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/query.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/userLoader.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/js/userStreamLoader.js \
@@ -81,11 +82,16 @@
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/libs/jquery.mobile.custom.min.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/libs/jquery.mobile.custom.structure.min.css \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/libs/jquery.mobile.custom.theme.min.css \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.device \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.file-transfer \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.media-capture \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js \
+/Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus/www \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/nl.x-services.plugins.videocaptureplus/www/VideoCapturePlus.js \
 /Users/kareemlewis/Documents/GitHub/bantter-app/platforms/android/assets/www/plugins/org.apache.cordova.device/www \

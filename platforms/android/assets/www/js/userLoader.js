@@ -4,6 +4,7 @@ function MediaLoader(eventEmitter,request){
 	var R = request;
 
 	var usLoader = new UserStreamLoader(E,R);
+	var notifier = new Notifier(E,R);
 	this.fileDl = new fileDownloader(E,R);
 
 	var userStream = new Array();
@@ -23,6 +24,7 @@ function MediaLoader(eventEmitter,request){
 	// and any other cached data
 	this.load = function(){
 		usLoader.load();
+		notifier.load();
 		var newStream = JSON.parse(window.localStorage.getItem("media_userStream"));
 		if(newStream)
 			userStream = userStream.concat(newStream);
@@ -175,34 +177,35 @@ function MediaLoader(eventEmitter,request){
 	};
 	// attach videoReference array to  the matching user object
 	// then call checkStatus() 
-	this.onRefLoad = function(refs,type){
-		if(type === "findUsers"){
-			for(var i = 0; i< userStream.length; i++){
-				if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
-					userStream[i].refs = refs;
-					that.fileDl.dlVid(userStream[i].refs[0].Url);
-					that.fileDl.dlImage(userStream[i].refs[0].ImageUrl);
+	this.onRefLoad = function(refArray,type){
+		console.log(refArray.length);
+		for(var x = 0 ; x<refArray.length; x++){
+			var refs =  new Array(); // backwards compatibility
+			refs.push(refArray[x]);
+			//console.log(JSON.stringify(refs));
+			if(type === "findUsers"){
+				for(var i = 0; i< userStream.length; i++){
+					if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
+						userStream[i].refs = refs;
+						that.fileDl.dlVid(userStream[i].refs[0].Url);
+						that.fileDl.dlImage(userStream[i].refs[0].ImageUrl);
+					}
 				}
+			}else if(type === "findWhoILike"){
+				for(var i = 0; i< that.myLikes.length; i++){
+					if(that.myLikes[i].FbId === refs[0].FbId){
+						that.myLikes[i].refs = refs;
+						//move2back(i,that.myLikes);
+					}
+				}	
+			}else if(type === "findWhoLikedMe"){
+				for(var i = 0; i< that.likers.length; i++){
+					if(that.likers[i].FbId === refs[0].FbId){
+						that.likers[i].refs = refs;
+						//move2back(i,that.likers);
+					}
+				}			
 			}
-		}else if(type === "findWhoILike"){
-			for(var i = 0; i< that.myLikes.length; i++){
-				if(that.myLikes[i].FbId === refs[0].FbId){
-					that.myLikes[i].refs = refs;
-					move2back(i,that.myLikes);
-					return;
-					E.EMIT("media_myLikes_refLoaded",i);
-
-				}
-			}	
-		}else if(type === "findWhoLikedMe"){
-			console.log(JSON.stringify(that.likers));
-			for(var i = 0; i< that.likers.length; i++){
-				if(that.likers[i].FbId === refs[0].FbId){
-					that.likers[i].refs = refs;
-					move2back(i,that.likers);
-					E.EMIT("media_likers_refLoaded",i);
-				}
-			}			
 		}
 		checkStatus();
 	}
@@ -240,27 +243,33 @@ function MediaLoader(eventEmitter,request){
 		if(type === "findUsers"){
 			usLoader.addUsers(users);
 		}else if(type === "findWhoILike"){
-			that.myLikes = users;
+			addUsers(users,that.likers);
 			buffer();
 			E.EMIT("media_myLikes_loaded");
 		}else if(type === "findWhoLikedMe"){
-			addLikers(users);
+			addUsers(users,that.likers);
 			buffer();
 			E.EMIT("media_likers_loaded");
 		}else if(type === 'findInboxUsers'){
-			console.log("got inbox users");
-			console.log(JSON.stringify(users));
-			addInboxUsers(users);
+			addUsers(users,that.inboxUsers);
 			if(that.inboxRefs && that.inboxUsers)
 				that.setInboxUsers();
 		}
 	}
 	//COULD BE EXPENSIVE FUNCTION
+	function addUsers(newUsers, oldUsers){
+		var onlyInUsers = newUsers.filter(function(current_us){
+    		return oldUsers.filter(function(current_ls){
+        			return current_us.FbId == current_ls.FbId;
+    			}).length == 0;
+		});
+		oldUsers = oldUsers.concat(onlyInUsers);
+	};
 	function addLikers(userarray){
 		var onlyInUsers = userarray.filter(function(current_us){
     			return that.likers.filter(function(current_ls){
         			return current_us.FbId == current_ls.FbId;
-    		}).length == 0;
+    			}).length == 0;
 		});
 		that.likers = that.likers.concat(onlyInUsers);
 	};
@@ -271,6 +280,9 @@ function MediaLoader(eventEmitter,request){
     		}).length == 0;
 		});
 		that.inboxUsers = that.inboxUsers.concat(onlyInUsers);
+		if(onlyInUsers.length > 0){
+			that.notifier.notify("inbox",onlyInUsers[0]);
+		}
 	}
 	// check if getNext can be called
 	//  and set that.readyStatus variable accordingly
@@ -311,32 +323,43 @@ function MediaLoader(eventEmitter,request){
 	// buffer the findUserStream
 	// by retrieving associated video refs
 	function bufferStream(){
+		var temp = new Array();
 		for(var i = 0; i< userStream.length; i++){
 			if(userStream[i].refs === undefined){
 				userStream[i].refs = null;
-				R.request('getVideoRefs',{FromFbId: userStream[i].FbId,Type:"findUsers"});
+				temp.push(userStream[i].FbId);
+				//R.request('getVideoRefs',{FromFbId: userStream[i].FbId,Type:"findUsers"});
 			}
 		}
-
+		if(temp.length > 0)
+			R.request('getVideoRefs',{FromFbId: temp ,Type:"findUsers"});
 	}
 	// buffer the MyLikes
 	// by retrieving associated video refs  
 	function bufferMyLikes(){
+		var temp = new Array();
 		for(var i = 0; i< that.myLikes.length; i++){
 			if(that.myLikes[i].refs === undefined){
 				that.myLikes[i].refs = null;
-				R.request('getVideoRefs',{FromFbId:that.myLikes[i].FbId,Type:"findWhoILike"});
+				//R.request('getVideoRefs',{FromFbId:that.myLikes[i].FbId,Type:"findWhoILike"});
+				temp.push(that.myLikes[i].FbId);
 			}
 		}
+		if(temp.length > 0)
+			R.request('getVideoRefs',{FromFbId:temp,Type:"findWhoILike"})
 	}
 	// buffer the likers
 	// by retrieving associated video refs
 	function bufferLikers(){
+		var temp = new Array();
 		for(var i = 0; i< that.likers.length; i++){
 			if(that.likers[i].refs === undefined){
 				that.likers[i].refs = null;
-				R.request('getVideoRefs',{FromFbId:that.likers[i].FbId,Type:"findWhoLikedMe"});
+				temp.push(that.likers[i].FbId);
+				//R.request('getVideoRefs',{FromFbId:that.likers[i].FbId,Type:"findWhoLikedMe"});
 			}
 		}
+		if(temp.length > 0)
+			R.request('getVideoRefs',{FromFbId:temp,Type:"findWhoLikedMe"});
 	}	
 }

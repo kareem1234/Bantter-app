@@ -12,6 +12,7 @@ function View (EventEmitter){
 	var peopleMenuHidden = false;
 	var canUseFileUrls = true;
 	this.streamLoading = false;
+	var profileImageUrl;
 	var domain = 'http://s3.amazonaws.com/bantter-downloads/';
 	this.currentView = "";
 	this.init = function(){
@@ -73,6 +74,14 @@ function View (EventEmitter){
 			if(vid.currentTime > 0 && vid.currentTime< 1){
 				removeVidLoad(true);
 			}
+		}).bind("loadedmetadata",function(){
+			/*
+			var vid = $(this).get(0);
+			actualRatio = vid.videoWidth / vid.videoHeight
+   			targetRatio = vid.width()/vid.height()
+   			adjustmentRatio = targetRatio/actualRatio
+   			$(this).css("-webkit-transform","scaleX("+adjustmentRatio+")");
+   			*/
 		}).bind("ended",function(){
 			$(this).get(0).currentTime=0;
 			$(this).get(0).play();
@@ -81,9 +90,11 @@ function View (EventEmitter){
 			$(this).get(0).currentTime=0;
 			$(this).get(0).play();
 			enableThumbs();
+		}).bind("loadedmetadata",function(){
+
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
-			if(vid.currentTime > 0 && vid.currentTime <1 ){
+			if(vid.currentTime > 0 && vid.currentTime < 0.1 ){
 				removeVidLoad(false);
 			}
 		}).get(0).loop=false;
@@ -172,8 +183,10 @@ function View (EventEmitter){
 			options.hide(0);
 		}
 		else{
-			if(imageUrl)
+			if(imageUrl != profileImageUrl){
+				profileImageUrl = imageUrl;
 				$("#optionsIcon_self").attr("src",domain+imageUrl);
+			}
 			console.log("showing");
 			optionsVisible=true;
 			options.show(0);
@@ -241,18 +254,14 @@ function View (EventEmitter){
 
 	}
 	this.streamViewRemoveLoading = function(){
-		that.streamLoading = false;
-		$(".spinner").addClass("notActive");
-		$("#mainPage_selfies_thumbsUp").show(0);
-		$("#mainPage_selfies_thumbsDown").show(0);
+		// fix this at somepoint
 	}
 	this.streamViewDisplayLoading = function(){
-		that.streamLoading = true;
-		$(".spinner").removeClass("notActive");
-		$("#mainPage_selfies_thumbsUp").hide(0);
-		$("#mainPage_selfies_thumbsDown").hide(0);
+		// fix this at somepoint
 	}
 	this.setUserViewPopUp = function(user){
+		console.log(JSON.stringify(user));
+		pauseVid();
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
 			vid.get(0).src=domain+user.refs.Url;
@@ -269,6 +278,7 @@ function View (EventEmitter){
 		$("#videoPopUpModal").removeClass('notActive');
 	}
 	this.setSelfViewPopUp = function(imageUrl,vidUrl){
+		pauseVid();
 		displayVidPlay(domain+imageUrl,true);
 		console.log(vidUrl);
 		console.log(imageUrl);
@@ -459,7 +469,7 @@ function View (EventEmitter){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty();
-			for(var i = inboxUsers.length-1; i >0;i--){
+			for(var i = 0; i<inboxUsers.length;i++){
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				var picDiv = document.createElement("div");
@@ -529,7 +539,7 @@ function View (EventEmitter){
 			picDiv.appendChild(picDivImg);
 			likesRowDiv.appendChild(picDiv);
 			likesRowDiv.appendChild(nameDiv);
-			document.getElementById(field).appendChild(likesRowDiv);
+			$("#"+field).prepend(likesRowDiv);
 	}
 	function bindLikesRow(field,viewFunction,length){
 			$(".likesRow").bind("tap",function(e){
@@ -550,7 +560,7 @@ function View (EventEmitter){
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){
 					e.preventDefault();
-					E.EMIT(field,length-1-index);
+					E.EMIT(field,index);
 				});
 				actionBut.empty().append('<img class="actionIcon" src="./img/replyIcon.png" />');		
 			});		
@@ -559,9 +569,12 @@ function View (EventEmitter){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty();
-			for(var i =that.mediaLoader.myLikes.length-1; i >0; i--){
-				if(that.mediaLoader.myLikes[i].refs === null)
+			console.log("total length is: "+that.mediaLoader.myLikes.length);
+			for(var i =0; i< that.mediaLoader.myLikes.length ; i++){
+				if(that.mediaLoader.myLikes[i].refs === null){
+					console.log("continue");
 					continue;
+				}
 				appendUser(that.mediaLoader.myLikes[i],"myLikes");
 			}
 			bindLikesRow('myLikesView_message',viewFunction,that.mediaLoader.myLikes.length);
@@ -569,7 +582,7 @@ function View (EventEmitter){
 	this.setLikersView = function(viewFunction){
 			that.updateLikersView();
 			$("#mainPage_people_likers").empty();
-			for(var i = that.mediaLoader.likers.length-1; i >0; i--){
+			for(var i = 0; i <that.mediaLoader.likers.length; i++){
 				if(that.mediaLoader.likers[i].refs === null)
 					continue;
 				appendUser(that.mediaLoader.myLikes[i],"likers");

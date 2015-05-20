@@ -53,6 +53,7 @@ function MediaCapture(eventEmitter,request){
 		}
 		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
 			console.log("vid captured");
+			that.inProgress = true;
 			mediaFile = mediaFiles[0];
 			if(window.device.platform === "Android"){
 				contentType = 'video/3gp';
@@ -71,8 +72,6 @@ function MediaCapture(eventEmitter,request){
 		});
 	}
 	this.getPolicy = function(){
-		that.toggleProgress();
-		that.inProgress = true;
 		var vidExtension = ".mp4";
 		var me = R.getUser();
 		var time = new Date().getTime();
@@ -82,7 +81,7 @@ function MediaCapture(eventEmitter,request){
 			FbId: me.FbId,
 			Url: vidurl+vidExtension,
 			ImageUrl:imageurl,
-			Numer: that.num + 1,
+			Num: that.num + 1,
 			To: toId,
 			Type: contentType
 		}

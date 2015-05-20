@@ -72,17 +72,23 @@ function Controller(){
         },false);
     }
     var likersView_view = function(index){
+        index = convertIndex(index,that.mediaLoader.likers);
         that.view.setUserViewPopUp(that.mediaLoader.likers[index]);
     };
     var myLikesView_view = function(index){
+         index = convertIndex(index,that.mediaLoader.myLikes);
         that.view.setUserViewPopUp(that.mediaLoader.myLikes[index]);
     };
     var inboxView_view = function(index){
+            index = convertIndex(index,that.mediaLoader.inboxUsers);
             that.mediaLoader.markedViewed(that.mediaLoader.inboxUsers[index].refs);
             that.view.setUserViewPopUp(that.mediaLoader.inboxUsers[index]);
     };
     var likesWarning = function(){
         that.view.displayInfo("You cant like anyone until you record a selfie",false);
+    };
+    var convertIndex = function(index,array){
+       return array.length - index -1;
     };
     // listen for call backs initated by the model objects
     function initModelCallbacks(){
@@ -97,7 +103,7 @@ function Controller(){
             }
             else if(that.view.currentView ==='streamView'){
               if(that.view.streamLoading){
-                that.view.removeStreamLoading();
+                that.view.streamViewRemoveLoading();
                 var nextUser = that.mediaLoader.getNext();
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
@@ -107,6 +113,9 @@ function Controller(){
         });
         that.event.LISTEN("media_notReady",function(){
             
+        });
+        that.event.LISTEN("notifier_inboxClicked",function(){
+            that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
         });
         that.event.LISTEN('user_failedGps',function(){
             that.view.displayInfo("Please turn on GPS for more accurate results",false);
@@ -125,6 +134,7 @@ function Controller(){
         });
         that.event.LISTEN("mediaCapture_cap",function(){
             that.mediaCapture.getPolicy();
+            that.view.displayInfo("video uploading in background ...",true);
         });
         that.event.LISTEN("mediaCapture_uploadSuccess",function(){
             that.mediaCapture.incUpload();
@@ -135,12 +145,6 @@ function Controller(){
         });
         that.event.LISTEN("fileDl_gotFile",function(data){
             that.mediaLoader.onVidDl(data);
-        });
-        that.event.LISTEN("media_myLikes_refLoaded",function(index){
-            that.view.updatePeopleRow(that.mediaLoader.myLikes[index],"myLikes",myLikesView_view);
-        });
-        that.event.LISTEN("media_likers_refLoaded",function(index){
-            that.view.updatePeopleRow(that.mediaLoader.likers[index],"likers",likersView_view);
         });
         that.event.LISTEN("media_myLikes_loaded",function(){
              if(that.view.currentView ==="myLikesView"){
@@ -164,6 +168,7 @@ function Controller(){
             //
         });
         that.event.LISTEN("complete/insertVidRef",function(data){
+            that.mediaCapture.toggleProgress();
             that.view.displayInfo("video uploaded succesfully",true);
         });
         that.event.LISTEN("complete/insertUser",function(data){
@@ -181,9 +186,9 @@ function Controller(){
         });
         that.event.LISTEN("complete/getPolicy",function(data){
             that.mediaCapture.onPolicyReturn(data.res);
-            that.view.displayInfo("video uploading in background ...",true);
         })
         that.event.LISTEN("complete/getVideoRefs",function(data){
+            //console.log(JSON.stringify(data));
             that.mediaLoader.onRefLoad(data.res.Refs,data.res.Type);
         });
         that.event.LISTEN("complete/findUsers",function(data){
@@ -237,20 +242,26 @@ function Controller(){
         that.event.LISTEN("myLikesView_message",function(index){
             if(that.mediaCapture.num === 0)
                 that.view.displayInfo("You have to upload a selfie before you can message someone",false);
-            else
+            else{
+                 index = convertIndex(index,that.mediaLoader.myLikes);
                 that.mediaCapture.getVideo(that.mediaLoader.myLikes[index].FbId);
+            }
         });
         that.event.LISTEN("likersView_message",function(index){
             if(that.mediaCapture.num === 0)
                 that.view.displayInfo("You have to upload a selfie before you can message someone",false);
-            else
-            that.mediaCapture.getVideo(that.mediaLoader.likers[index].FbId);
+            else{
+                 index = convertIndex(index,that.mediaLoader.likers);
+                that.mediaCapture.getVideo(that.mediaLoader.likers[index].FbId);
+            }
         });
         that.event.LISTEN("inboxView_reply",function(index){
             if(that.mediaCapture.num === 0)
                 that.view.displayInfo("You have to upload a selfie before you can message someone",false);
-            else
-                 that.mediaCapture.getVideo(that.mediaLoader.inboxUsers[index].Id);           
+            else{
+                 index = convertIndex(index,that.mediaLoader.inboxUsers);
+                 that.mediaCapture.getVideo(that.mediaLoader.inboxUsers[index].Id);
+            }           
         });
         that.event.LISTEN("view_login_clicked",function(){
             var data = that.view.getLoginFormData();
@@ -369,14 +380,18 @@ function Controller(){
             that.mediaLoader.callBuffer();
         });
         that.event.LISTEN("viewMenu_options_taped",function(){
-            that.view.toggleOptionsMenu();
+            that.view.toggleOptionsMenu(that.mediaCapture.selfImageUrl);
         });
         that.event.LISTEN("viewMenu_profileLink_taped",function(){
-            that.view.toggleOptionsMenu();
-            if(that.mediaCapture.num > 0){
+            that.view.toggleOptionsMenu(that.mediaCapture.selfImageUrl);
+            if(that.mediaCapture.num > 0 && (!that.mediaCapture.inProgress)){
                 that.view.setSelfViewPopUp(that.mediaCapture.selfImageUrl,that.mediaCapture.selfVidUrl);
             }else{
-                that.view.displayInfo("You havent recorded a profile video yet",false);
+                if(that.mediaCapture.inProgress){
+                    that.view.displayInfo("Video still uploading...",false);
+                }else{
+                    that.view.displayInfo("You havent recorded a profile video yet",false);
+                }
             }
         });
         

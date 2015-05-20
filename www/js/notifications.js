@@ -17,7 +17,7 @@ function Notifier(eventEmitter, request){
 	this.load = function(){
 		cordova.plugins.notification.local.on("click", function(notification) {
 			 if( notification.id == 1){
-			 	E.EMIT("notifier_inboxClicked")
+			 	E.EMIT("notifier_inboxClicked");
 			 }
 		});
 	}
