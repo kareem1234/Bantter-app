@@ -4,7 +4,7 @@ function MediaLoader(eventEmitter,request){
 	var R = request;
 
 	var usLoader = new UserStreamLoader(E,R);
-	var notifier = new Notifier(E,R);
+	//var notifier = new Notifier(E,R);
 	this.fileDl = new fileDownloader(E,R);
 
 	var userStream = new Array();
@@ -15,6 +15,7 @@ function MediaLoader(eventEmitter,request){
 
 	this.polllingId = -1;
 	var lastUser = null;
+	var newMessages = false;
 	var mode ='findUsers';
 	var inboxRefHash = {};
 	var inboxViewedHash = {};
@@ -24,7 +25,6 @@ function MediaLoader(eventEmitter,request){
 	// and any other cached data
 	this.load = function(){
 		usLoader.load();
-		notifier.load();
 		var newStream = JSON.parse(window.localStorage.getItem("media_userStream"));
 		if(newStream)
 			userStream = userStream.concat(newStream);
@@ -152,6 +152,13 @@ function MediaLoader(eventEmitter,request){
 		userStream = userStream.concat(usLoader.returnStream());
 		buffer();
 	}
+	this.getNextImage = function(){
+		if(userStream[0]){
+			return userStream[0].refs[0].ImageUrl;
+		}else{
+			return null;
+		} 
+	}
 	// set the viewing mode to 
 	// findUsers/ findWhoILike, findWhoLikedMe
 	this.setMode = function(modeType){
@@ -214,10 +221,12 @@ function MediaLoader(eventEmitter,request){
 	this.onInboxRefLoad = function(refs){
 		for(var i =0; i < refs.length; i++){
 			hashInboxRef(refs[i]);
-			if(inboxViewedHash[refs[i].url])
+			if(inboxViewedHash[refs[i].url]){
 				refs[i].viewable = false;
-			else
+				newMessages = true;
+			}else{
 				refs[i].viewable = true;
+			}
 		}
 		that.inboxRefs = refs;
 		if(that.inboxRefs && that.inboxUsers)
@@ -230,6 +239,10 @@ function MediaLoader(eventEmitter,request){
 			that.inboxUsers[i].refs = inboxRefHash[that.inboxUsers[i].FbId.toString()];
 		}
 		sortInbox();
+		if(newMessages){
+			E.EMIT("media_inbox_newMessages");
+			newMessages = false;
+		}
 		E.EMIT("media_inbox_loaded");
 	}
 	function sortInbox(){
@@ -281,7 +294,7 @@ function MediaLoader(eventEmitter,request){
 		});
 		that.inboxUsers = that.inboxUsers.concat(onlyInUsers);
 		if(onlyInUsers.length > 0){
-			that.notifier.notify("inbox",onlyInUsers[0]);
+			//that.notifier.notify("inbox",onlyInUsers[0]);
 		}
 	}
 	// check if getNext can be called

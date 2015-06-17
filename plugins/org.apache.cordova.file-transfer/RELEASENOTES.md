@@ -113,3 +113,47 @@
 * CB-6781: Continue previous commit with one new instance (This closes #30)
 * CB-6781: add the exception text to the error object
 * CB-6890: Fix pluginManager access for 4.0.x branch
+
+### 0.4.6 (Sep 17, 2014)
+* CB-7471 cordova-plugin-file-transfer documentation translation
+* CB-7249 cordova-plugin-file-transfer documentation translation
+* CB-7423 fix spec28,29 lastProgressEvent not visible to afterEach function
+* Amazon related changes.
+* Remove dupe file windows+windows8 both use the same one
+* CB-7316 Updates docs with actual information.
+* CB-7316 Adds support for Windows platform, moves \*Proxy files to proper directory.
+* CB-7316 Improves current specs compatibility:
+* added documentation for new test
+* CB-6466 Fix failing test due to recent url change
+* CB-6466 created mobile-spec test
+* Renamed test dir, added nested plugin.xml and test
+* Fixed failing spec.19 on wp8
+* added documentation to manual tests
+* CB-6961 port file-transfer tests to framework
+
+### 0.4.7 (Oct 03, 2014)
+* Construct proper FileEntry with nativeURL property set
+* CB-7532 Handle non-existent download dirs properly
+* CB-7529 Adds support for 'ms-appdata' URIs for windows
+
+### 0.4.8 (Dec 02, 2014)
+* CB-8021 - adds documentation for `httpMethod` to `doc/index.md`. However, translations still need to be addressed.
+* CB-7223 spec.27 marked pending for **wp8**
+* CB-6900 fixed `spec.7` for **wp8**
+* CB-7944 Pended unsupported auto tests for *Windows*
+* CB-7977 Mention `deviceready` in plugin docs
+* CB-7700 cordova-plugin-file-transfer documentation translation: cordova-plugin-file-transfer
+
+### 0.5.0 (Feb 04, 2015)
+* CB-8407 windows: Fix download of `ms-appdata:///` URIs
+* CB-8095 windows: Rewrite upload method to support progress events properly
+* CB-5059 android: Add a CookieManager abstraction for pluggable webviews
+* ios: Fix compile warning about implicity int conversion
+* CB-8351 ios: Use argumentForIndex rather than NSArray extension
+* CB-8351 ios: Use a local copy of DLog macro rather than CordovaLib version
+* CB-8296 ios: Fix crash when upload fails and file is not yet created (close #57)
+* Document "body" property on FileTransferError
+* CB-7912 ios, android: Update to work with whitelist plugins in Cordova 4.x
+* Error callback should always be called with the FileTransferError object, and not just the code
+* windows: alias appData to Windows.Storage.ApplicationData.current
+* CB-8093 Fixes incorrect FileTransferError returned in case of download failure

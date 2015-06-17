@@ -10,14 +10,19 @@ function Controller(){
         //that.view.displayInfo("Internet Connectivity lost,<br> app will not function properly",true);
         function onUserLoad(userStatus){
             that.user.getGpsData();
-            if(!userStatus)
-                that.view.setLoginView();
+            if(!userStatus){
+                window.analytics.trackView('LoginPage');
+                setTimeout(function(){
+                    that.view.setLoginView();
+                },1000);
+            }
             else{
                 that.request.setUser(userStatus);
                 that.mediaLoader.start();
             }
         };
         that.view.setLoadingView();
+        navigator.splashscreen.hide();
         that.likes.load();
         that.mediaCapture.load();
         that.mediaLoader.load();
@@ -28,9 +33,10 @@ function Controller(){
     // call all setup methods
     this.setup = function(){
         console.log("setting up device");
+        window.analytics.startTrackerWithId('UA-63324411-1');
         that.initCallbacks();
         that.load();
-        that.view.init();
+        that.view.init(that.mediaCapture.selfImageUrl);
         that.setOnPause();
         that.setOnResume();
         setInterval(function(){
@@ -54,10 +60,12 @@ function Controller(){
     this.setOnPause = function(){
         document.addEventListener("pause", function(){
             that.mediaLoader.pause();
+            that.view.pauseVideo();
         }, false);
     }
     this.setOnResume = function(){
         document.addEventListener("resume",function(){
+            console.log("resuming");
             that.mediaLoader.resume();
         },false);
     }
@@ -100,6 +108,7 @@ function Controller(){
                 var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
                 console.log("distance object: "+JSON.stringify(distance));
                 that.view.setStreamView(currentUser,distance);
+                window.analytics.trackView('selfiesPage');
             }
             else if(that.view.currentView ==='streamView'){
               if(that.view.streamLoading){
@@ -107,6 +116,7 @@ function Controller(){
                 var nextUser = that.mediaLoader.getNext();
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
+                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser = nextUser;
               }
             }
@@ -115,6 +125,7 @@ function Controller(){
             
         });
         that.event.LISTEN("notifier_inboxClicked",function(){
+             window.analytics.trackView('inboxPage');
             that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
         });
         that.event.LISTEN('user_failedGps',function(){
@@ -155,6 +166,9 @@ function Controller(){
             if(that.view.currentView ==="inboxView"){
                 that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
             }
+        });
+        that.event.LISTEN("media_inbox_newMessages",function(){
+            that.view.setNewInboxIcon();
         });
         that.event.LISTEN("media_likers_loaded",function(){
             if(that.view.currentView ==="likersView"){
@@ -282,6 +296,7 @@ function Controller(){
             }
         });
         that.event.LISTEN("viewMenu_likes_taped",function(){
+            window.analytics.trackView('likesPage');
             that.waitingFor = undefined;
             that.mediaLoader.setMode("myLikes");
             if(that.mediaLoader.myLikes){
@@ -296,6 +311,7 @@ function Controller(){
             }
         });
         that.event.LISTEN("viewMenu_selfies_taped",function(){
+            window.analytics.trackView('selfiesPage');
             that.waitingFor = undefined;
             that.mediaLoader.setMode("findUsers");
             var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
@@ -306,6 +322,7 @@ function Controller(){
             }
         });
         that.event.LISTEN("viewMenu_inbox_taped",function(){
+            window.analytics.trackView('inboxPage');
             that.waitingFor = undefined;
             if(that.mediaLoader.inboxUsers){
                 that.view.setInboxView(that.mediaLoader.inboxUsers,inboxView_view);
@@ -352,6 +369,7 @@ function Controller(){
             if(nextUser){
                  var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
+                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser  = nextUser;
                 if(that.mediaCapture.num > 0){
                     that.likes.addLike(currentUser.FbId);
@@ -370,6 +388,7 @@ function Controller(){
             if(nextUser){
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
+                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser = nextUser;
             }else{
                 that.view.streamViewDisplayLoading();

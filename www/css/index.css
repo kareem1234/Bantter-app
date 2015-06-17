@@ -1,3 +1,7 @@
+/*
+bannter pink: #F861B6;
+
+*/
 html, body {
 	overflow: hidden; height: 100%;
 	l
@@ -461,6 +465,10 @@ loginPage css styles
 	background-color:#0000FF;
 	width:101%;
 }
+.menu_inbox_haveMessage{
+	border-width: 15%;
+	 animation: blink .5s step-end infinite alternate;
+}
 #mainPage_menu_selfies{
 	background-color: #CC0099;
 	width:101%;
@@ -471,7 +479,7 @@ loginPage css styles
 }
 
 #mainPage_selfies_selfieVid{
-	width:100%;
+	min-width:100%;
 	/*
 	    position: absolute;
     min-width: 100%;

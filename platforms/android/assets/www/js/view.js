@@ -15,7 +15,10 @@ function View (EventEmitter){
 	var profileImageUrl;
 	var domain = 'http://s3.amazonaws.com/bantter-downloads/';
 	this.currentView = "";
-	this.init = function(){
+	this.init = function(imageUrl){
+		console.log("view init");
+		if(imageUrl)
+			$("#optionsIcon_self").attr("src",domain+imageUrl);
 		initVidControll();
 		$("#mainPage_likes_controlBut").bind("tap",function(){
 			E.EMIT("view_likesControll_taped");
@@ -64,6 +67,9 @@ function View (EventEmitter){
 			}
 		}
 	}
+	this.pauseVideo = function(){
+		pauseVid();
+	}
 	function pauseVid(){
 		$("#mainPage_selfies_selfieVid").get(0).pause();
 		$("#videoPopUp").get(0).pause();
@@ -94,7 +100,7 @@ function View (EventEmitter){
 
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
-			if(vid.currentTime > 0 && vid.currentTime < 0.1 ){
+			if(vid.currentTime > 0 && vid.currentTime < 1 ){
 				removeVidLoad(false);
 			}
 		}).get(0).loop=false;
@@ -116,6 +122,13 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuAction1").unbind("tap").text("");
 		$("#mainPage_likes_menuAction2").unbind("tap").text("");
 
+	}
+	this.preloadVidPoster = function (ImageUrl){
+		/*
+		if(ImageUrl){
+			$("#bufferContainer_background").attr("src",domain+ImageUrl);
+		}
+		*/
 	}
 	this.getLoginFormData = function(){
 		var formData = {
@@ -225,18 +238,18 @@ function View (EventEmitter){
 	function displayVidPlay(imageUrl,popUpBool){
 		if(!popUpBool){
 			var loadingContainer = $("#loadingContainer_background");
+			loadingContainer.attr("src",imageUrl);
 			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
-			loadingContainer.attr("src",imageUrl);
 		}else{
 			var loadingContainer = $("#popUpOverlay_background");
+			loadingContainer.attr("src",imageUrl);
 			$("#popUpOverlay").removeClass("notActive");
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner2").addClass("notActive");
 			$("#popUpOverlay_play").removeClass("notActive");
-			loadingContainer.attr("src",imageUrl);
 			togglePeopleMenu("hide");
 		}
 	}
@@ -296,6 +309,12 @@ function View (EventEmitter){
 		$("#loginPage_fbLogin").bind("click",function(){
 			E.EMIT("view_login_clicked");
 		});
+	}
+	this.setNewInboxIcon = function(){
+		$("#inboxIcon").attr("src",'./img/newInboxIcon.png');
+	}
+	function removeNewInboxIcon(){
+		$("#inboxIcon").attr("src",'./img/inboxIcon.png');
 	}
 	this.setMenu = function(){
 		if(!menuSet){
@@ -466,6 +485,7 @@ function View (EventEmitter){
 		$("#mainPage_likes_menuTitle").html("My Fans");
 	}
 	this.setInboxView = function(inboxUsers,viewFunction){
+			removeNewInboxIcon();
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty();

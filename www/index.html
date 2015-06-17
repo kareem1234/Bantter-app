@@ -4,6 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
+
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1" />
         <link rel="stylesheet" type="text/css" href="libs/bootstrap.min.css" />
@@ -81,8 +82,8 @@
                 </div>
                 <div id ="mainPage_tabs"class ="row row-xs-height">
                     <div class="col-xs-4 col-xs-height col-top menuTab">
-                        <button type="button" id="mainPage_menu_inbox"class="btn full btn-primary">
-                            <img class="icon"src="./img/inboxIcon.png"/>
+                        <button type="button" id="mainPage_menu_inbox"class="  btn full btn-primary">
+                            <img id ="inboxIcon" class="icon"src="./img/inboxIcon.png"/>
                         </button>
                     </div>
                     <div class="col-xs-4 col-xs-height menuTab col-top">
@@ -118,6 +119,7 @@
                     </div>
                     <div id ="mainPage_selfies_loadingContainer">
                         <img  id="loadingContainer_background"/>
+                        <img class="notActive" id="bufferContainer_background"/>
                         <img  id="loadingContainer_play" src="./img/play.png"class="notActive"/>
                             <div id="loadSpinner"class="notActive ">
                                 <div class="loader"></div>
@@ -221,7 +223,6 @@
     <script type ="text/javascript" src="libs/jquery.mobile.custom.min.js"></script>
     <script type ="text/javascript" src="js/client.js"></script>
     <script type ="text/javascript" src="js/likes.js"></script>
-    <script type ="text/javascript" src="js/notifications.js"></script>
     <script type ="text/javascript" src="js/mediaCapture.js"></script>
     <script type ="text/javascript" src="js/query.js"></script>
     <script type ="text/javascript" src="js/userStreamLoader.js"></script>

@@ -7,12 +7,12 @@
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
     </author>
+    <preference name="SplashScreen" value="splash" />
+    <preference name="SplashScreenDelay" value="10000" />
     <content src="index.html" />
     <access origin="*" />
-    <gap:plugin name="com.phonegap.plugins.facebookconnect">
-    	<param name="APP_ID" value="Bantter" />
-    	<param name="APP_NAME" value="1409430495955338" />
-	</gap:plugin>
+    <allow-navigation href="*" />
+    <allow-navigation href="http://*/*" />
      <platform name="android">
         <preference name="KeepRunning" value="true"/>
          <preference name="Fullscreen" value="false" />

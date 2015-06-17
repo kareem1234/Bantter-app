@@ -33,6 +33,7 @@ function Request(EventEmitter){
 			}
 			E.EMIT("complete"+URL,{res:response,req:requestData});
 		}).fail(function(error){
+				console.log(JSON.stringify(error));
 				timeout += timeout;
 			E.EMIT("failed"+URL,error);
 			setTimeout(function(){
