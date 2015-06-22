@@ -1,0 +1,77 @@
+{
+    "cordova-plugin-google-analytics": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/danwilson/google-analytics-plugin.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-splashscreen": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-splashscreen"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "nl.x-services.plugins.videocaptureplus": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/EddyVerbruggen/VideoCapturePlus-PhoneGap-Plugin.git",
+            "subdir": "."
+        }
+    },
+    "org.apache.cordova.device": {
+        "source": {
+            "type": "git",
+            "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-device.git",
+            "subdir": "."
+        }
+    },
+    "org.apache.cordova.file": {
+        "source": {
+            "type": "git",
+            "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
+            "subdir": "."
+        }
+    },
+    "org.apache.cordova.geolocation": {
+        "source": {
+            "type": "local",
+            "path": "/Users/kareemlewis/.plugman/cache/org.apache.cordova.geolocation/0.3.11/package"
+        }
+    },
+    "org.apache.cordova.media-capture": {
+        "source": {
+            "type": "git",
+            "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-media-capture.git",
+            "subdir": "."
+        }
+    },
+    "com.google.playservices": {
+        "source": {
+            "type": "registry",
+            "id": "com.google.playservices"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "org.apache.cordova.file-transfer": {
+        "source": {
+            "type": "registry",
+            "id": "org.apache.cordova.file-transfer"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-whitelist": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    }
+}

@@ -1,0 +1,9 @@
+<resources>
+
+<color name="pink">#F861B6</color>
+
+    <style name="AppTheme" parent="android:Theme.Light">
+      <item name="android:background">@color/pink</item>
+
+    </style>
+</resources>
