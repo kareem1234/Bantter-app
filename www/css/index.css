@@ -4,7 +4,7 @@ bannter pink: #F861B6;
 */
 html, body {
 	overflow: hidden; height: 100%;
-	l
+	background-color: #F861B6;
 
 }
 a {
@@ -143,6 +143,8 @@ input {
 	height:60%;
 }
 #mainPage_selfies_loadingContainer{
+	-webkit-transform: translate3d(0px,0px,0px);
+	-webkit-backface-visibility: hidden;
 	background-color: black;
 	position:fixed;
 	width:100%;
@@ -151,10 +153,14 @@ input {
 	z-index: 2;
 }
 #loadingContainer_background{
+	-webkit-transform: translate3d(0px,0px,0px);
+	-webkit-backface-visibility: hidden;
 	width:100%;
 	height:87%;
 }
 #loadingContainer_play{
+	-webkit-transform: translate3d(0px,0px,0px);
+	-webkit-backface-visibility: hidden;
 	margin-top: -160%;
 	margin-left:42%;
 	width:15%;
@@ -264,6 +270,8 @@ Loading page css styles
 	background-position:45% 40%;
     width: 100%;
     height: 100%;
+    -webkit-backface-visibility: hidden;
+	-webkit-perspective: 1000;
 }
 #loadingPage_statusDiv{
 	position: fixed;
@@ -378,6 +386,7 @@ loginPage css styles
 #mainPage{
  width:100%;
  height:100%;
+ background-color: white;
 }
 
 #mainPage_menu{
@@ -517,6 +526,7 @@ loginPage css styles
 }
 #mainPage_people{
 	height:70%;
+	background-color: white;
 
 }
 #mainPage_likes_controlBut{
@@ -543,6 +553,7 @@ loginPage css styles
 	font-size:x-large;
 	color: rgb(13, 82, 105);
 	font-family: 'Comfortaa', cursive;
+	background-color: white;
 }
 #mainPage_likes_menuAction1{
 	margin-left:-7%;
@@ -578,28 +589,7 @@ loginPage css styles
 	left:80%;
 	z-index: 6;
 }
-/*   Code for css loader animation */
-.spinner {
-  width: 70px;
-  height: 70px;
 
-  position: relative;
-  margin-left: 107px;
-}
-.spinner2{
-width: 9%;
-height: 4%;
-position: relative;
-margin-left: 40%;
-margin-top: 165%;
-}
-.spinner3 {
-width: 18%;
-height: 15%;
-position: relative;
-margin-left: 40%;
-margin-top: 60%;
-}
 .newInboxIcon{
 	width:100%;
 	height:100%;
@@ -608,58 +598,58 @@ margin-top: 60%;
 	margin-top:4%;
 	height:1%;
 }
-.double-bounce1, .double-bounce2 {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color:blue;
-  position: absolute;
-  top: 0;
-  left: 0;
-  
-  -webkit-animation: bounce 1.5s infinite ease-in-out;
-  animation: bounce 1.5s infinite ease-in-out;
+
+/* ********************** CSS LOADING SCREEN SPINNER   **************/
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 100px auto;
+  background-color: #0099FF;
+  margin-left: 40%;
+  margin-top: 165%;
+
+  border-radius: 100%;  
+  -webkit-animation: scaleout 1.0s infinite ease-in-out;
+  animation: scaleout 1.0s infinite ease-in-out;
 }
 
-.double-bounce2 {
-	background-color:purple;
-  -webkit-animation-delay: -1.5s;
-  animation-delay: -1.5s;
-}
-
-@-webkit-keyframes bounce {
-  0%, 100% { -webkit-transform: scale(0.0) }
-  50% { -webkit-transform: scale(1.0) }
-}
-
-@keyframes bounce {
-  0%, 100% { 
-    transform: scale(0.0);
-    -webkit-transform: scale(0.0);
-  } 50% { 
-    transform: scale(1.0);
+@-webkit-keyframes scaleout {
+  0% { -webkit-transform: scale(0.0) }
+  100% {
     -webkit-transform: scale(1.0);
+    opacity: 0;
   }
 }
-/***************************** LOAD SPINNNER ANIMATION********************/
+
+@keyframes scaleout {
+  0% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 100% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
+}
+/***************************** VID POSTER LOAD SPINNNER ANIMATION********************/
 .loader {
   margin: 6em auto;
   margin-top: 20%;
   font-size: 10px;
   position: relative;
   text-indent: -9999em;
-  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-left: 1.1em solid #ffffff;
-  -webkit-animation: load8 0.5s infinite linear;
-  animation: load8 0.5s infinite linear;
+  border-top: 0.8em solid rgba(255, 255, 255, 0.2);
+  border-right: 0.8em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 0.8em solid rgba(255, 255, 255, 0.2);
+  border-left: 0.8em solid #ffffff;
+  -webkit-animation: load8 0.4s infinite linear;
+  animation: load8 0.4s infinite linear;
 }
 .loader,
 .loader:after {
   border-radius: 50%;
-  width: 6em;
-  height: 6em;
+  width: 4em;
+  height: 4em;
 }
 @-webkit-keyframes load8 {
   0% {

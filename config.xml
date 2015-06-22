@@ -7,7 +7,11 @@
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
     </author>
-    <preference name="SplashScreen" value="splash" />
+    <preference name="SplashScreen" value="screen1" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreenDuration" value="1.5" />
+    <preference name="SuppressesIncrementalRendering" value="true" />
     <preference name="SplashScreenDelay" value="10000" />
     <content src="index.html" />
     <access origin="*" />

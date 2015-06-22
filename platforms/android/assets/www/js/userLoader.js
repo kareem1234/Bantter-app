@@ -48,6 +48,7 @@ function MediaLoader(eventEmitter,request){
 		if(lastUser){
 			that.fileDl.deleteVid(lastUser.refs[0].Url);
 		}
+		buffer();
 		checkStatus();
 	}
 	// saves all user arrays 
@@ -88,8 +89,11 @@ function MediaLoader(eventEmitter,request){
 	}
 	// get mylikes likers and finduser stream
 	this.getAllUsers = function(){
-		if(userStream.length<10)
+		if(userStream.length<10){
 			usLoader.getUsers();
+		}else{
+			console.log(userStream.length);
+		}
 
 			R.request('findWhoILike');
 			R.request('findWhoLikedMe');
@@ -301,8 +305,10 @@ function MediaLoader(eventEmitter,request){
 	//  and set that.readyStatus variable accordingly
 	function checkStatus(){
 		var status = that.readyStatus;
+		console.log("checking status");
+		console.log("mode is: "+mode);
 		if(mode === "findUsers"){
-			if(userStream[0] && userStream[0].refs && userStream[0].refs[0].WebUrl)
+			if(userStream[0] && userStream[0].refs && userStream[0].refs[0].Url)
 				that.readyStatus = true;
 			else{
 				that.readyStatus = false;
@@ -319,10 +325,14 @@ function MediaLoader(eventEmitter,request){
 				that.readyStatus = false;
 		}
 		if(! (status && that.readyStatus)){
-			if(that.readyStatus)
+			if(that.readyStatus){
+				console.log("media is ready...");
 				E.EMIT("media_ready");
-			else
+			}
+			else{
+				console.log("media is NOT ready...");
 				E.EMIT("media_notReady");
+			}
 		}
 	}
 	// call individual buffer functions

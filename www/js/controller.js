@@ -17,22 +17,23 @@ function Controller(){
                 },1000);
             }
             else{
+                console.log("starting");
                 that.request.setUser(userStatus);
                 that.mediaLoader.start();
             }
         };
         that.view.setLoadingView();
-        navigator.splashscreen.hide();
         that.likes.load();
         that.mediaCapture.load();
         that.mediaLoader.load();
         var userStatus = that.user.load();
         onUserLoad(userStatus);
-
      }
     // call all setup methods
     this.setup = function(){
         console.log("setting up device");
+        navigator.splashscreen.hide();
+        that.view.setLoadingView();
         window.analytics.startTrackerWithId('UA-63324411-1');
         that.initCallbacks();
         that.load();
@@ -107,7 +108,9 @@ function Controller(){
                 currentUser = that.mediaLoader.getNext();
                 var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
                 console.log("distance object: "+JSON.stringify(distance));
-                that.view.setStreamView(currentUser,distance);
+                setTimeout(function(){
+                    that.view.setStreamView(currentUser,distance);
+                },1500);
                 window.analytics.trackView('selfiesPage');
             }
             else if(that.view.currentView ==='streamView'){
@@ -115,7 +118,9 @@ function Controller(){
                 that.view.streamViewRemoveLoading();
                 var nextUser = that.mediaLoader.getNext();
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
-                that.view.streamViewDisplayNext(nextUser,distance);
+                setTimeout(function(){
+                    that.view.setStreamView(currentUser,distance);
+                },1500);
                 that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser = nextUser;
               }
@@ -178,6 +183,7 @@ function Controller(){
     }
     // listen for call backs initated by the query/request object
     function initQueryCallbacks(){
+        console.log("initating query call backs");
         that.event.LISTEN("complete/insertLike",function(){
             //
         });
@@ -206,6 +212,7 @@ function Controller(){
             that.mediaLoader.onRefLoad(data.res.Refs,data.res.Type);
         });
         that.event.LISTEN("complete/findUsers",function(data){
+            console.log("completed find users");
             that.mediaLoader.onUserLoad(data.res,"findUsers");
         });
         that.event.LISTEN("complete/getInbox",function(data){

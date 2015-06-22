@@ -7,6 +7,7 @@
 
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="libs/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.structure.min.css" />
         <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.theme.min.css" />
@@ -23,10 +24,7 @@
     </head>
     <body class ="">
         <div data-role="page" id ="loadingPage" class=" container-fluid ">
-            <div class=" spinner2">
-                <div class="double-bounce1"></div>
-                <div class="double-bounce2"></div>
-            </div>             
+            <div class="spinner"></div>            
         </div>
         <div class="notActive" id="videoPopUpModal">
                 <video webkit-playsinline  preload="auto" id='videoPopUp' >
@@ -212,11 +210,7 @@
                 <!--  container-->
             </div>
         </div>
-        <div id="fb-root"></div>
     </body>
-    <!--
-    <script type="text/javascript"  src="facebookConnectPlugin.js"></script>
--->
     <script type="text/javascript"  src="cordova.js"></script>
     <script type ="text/javascript" src="libs/jquery-2.1.1.min.js"></script>
     <script type ="text/javascript" src="libs/bootstrap.min.js"></script>

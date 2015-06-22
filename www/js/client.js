@@ -213,7 +213,7 @@ function User(eventEmitter, request) {
                 };
                 console.log('attempting to retrieve gps');
                 navigator.geolocation.getCurrentPosition(gotGps, failedGps);
-                //R.request("getGps");
+                R.request("getGps");
             }
         }
 

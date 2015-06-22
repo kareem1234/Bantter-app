@@ -174,12 +174,18 @@ function View (EventEmitter){
 		displayDistance(distance);
 		$("#mainPage_selfies_name").text(user.Name);
 		var vid = $("#mainPage_selfies_selfieVid");
-		if(user.refs[0].Url.indexOf("file") == -1)
+		if(user.refs[0].Url.indexOf("file") == -1){
 			vid.get(0).src=domain+user.refs[0].Url;
-		else if(canUseFileUrls === false)
+			console.log("setting src to "+domain+user.refs[0].Url);
+		}
+		else if(canUseFileUrls === false){
 			vid.get(0).src=domain+user.refs[0].WebUrl;
-		else
+			console.log("setting src to "+domain+user.refs[0].WebUrl);
+		}
+		else{
 			vid.get(0).src=user.refs[0].Url;
+			console.log("setting src to "+user.refs[0].Url);
+		}
 		setTimeout(function(){
 			vid.get(0).load();
 			vid.get(0).play();
@@ -215,7 +221,7 @@ function View (EventEmitter){
 	}
 	function displayVidLoad(popUpBool){
 		if(!popUpBool){
-			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#mainPage_selfies_loadingContainer").fadeIn();
 			$("#loadingContainer_play").addClass("notActive");
 			$("#loadSpinner").removeClass("notActive");
 		}
@@ -228,7 +234,7 @@ function View (EventEmitter){
 	}
 	function removeVidLoad(popUpBool){
 		if(!popUpBool)
-			$("#mainPage_selfies_loadingContainer").addClass("notActive");
+			$("#mainPage_selfies_loadingContainer").fadeOut();
 		else{
 			$("#popUpOverlay").addClass("notActive");
 			$("#popUpOverlay_play").addClass("notActive");
@@ -239,7 +245,7 @@ function View (EventEmitter){
 		if(!popUpBool){
 			var loadingContainer = $("#loadingContainer_background");
 			loadingContainer.attr("src",imageUrl);
-			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#mainPage_selfies_loadingContainer").fadeIn(50);
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
@@ -377,12 +383,18 @@ function View (EventEmitter){
 		$("#mainPage_selfies_name").text(user.Name);
 		displayDistance(distance);
 		var vid = $("#mainPage_selfies_selfieVid");
-		if(user.refs[0].Url.indexOf("file") == -1)
+		if(user.refs[0].Url.indexOf("file") == -1){
+			console.log("setting src to "+domain+user.refs[0].Url);
 			vid.get(0).src=domain+user.refs[0].Url;
-		else if(canUseFileUrls === false)
+		}
+		else if(canUseFileUrls === false){
+			console.log("setting src to "+domain+user.refs[0].WebUrl);
 			vid.get(0).src=domain+user.refs[0].WebUrl;
-		else
+		}
+		else{
+			console.log("setting src to "+user.refs[0].Url);
 			vid.get(0).src=user.refs[0].Url;
+		}
 		
 		displayVidPlay(domain+user.refs[0].ImageUrl,false);
 		playing = false;
