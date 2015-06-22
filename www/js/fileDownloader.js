@@ -7,7 +7,7 @@
  	var duplicateUrls = new Array();
  	var fileUrls = new Array();
  	var numDownloaded = 0;
- 	var maxBuff = 4;
+ 	var maxBuff = 10;
  	var that = this;
 
 

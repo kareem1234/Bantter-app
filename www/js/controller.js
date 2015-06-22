@@ -388,6 +388,7 @@ function Controller(){
                 that.view.streamViewDisplayLoading();
                 that.waitingFor = "findUsers";
             }
+
         });
         that.event.LISTEN("streamView_thumbsDown_taped",function(){
             var nextUser = that.mediaLoader.getNext();

@@ -152,6 +152,7 @@ function View (EventEmitter){
 		$("#loginPage").addClass("notActive");
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").removeClass("notActive");
+		$("#loadingPage_icon").fadeIn(100);
 	}
 	function displayDistance(distance){
 		if(distance.Method ==="car"){
