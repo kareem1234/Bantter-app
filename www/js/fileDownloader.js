@@ -3,120 +3,99 @@
  	var R = Request;
  	var E = EventEmitter;
  	var waitingUrls = new Array();
- 	var inProgressUrls = new Array();
- 	var duplicateUrls = new Array();
- 	var fileUrls = new Array();
  	var numDownloaded = 0;
- 	var maxBuff = 10;
+ 	var maxBuff = 6;
  	var that = this;
+ 	var downloadDates = new Array();
 
-
- 	function remove_arr(array,string){
- 		var index = array.indexOf(string);
- 		array.splice(index,1);
- 	}
- 	function removeDuplicate(vidRefUrl){
- 		setTimeout(function(){
- 			for(var i=0;i<duplicateUrls.length;i++){
- 				if(duplicateUrls[i]=== vidRefUrl){
- 					duplicateUrls.splice(i,1);
- 					that.dlVid(vidRefUrl);
- 				}
- 			}
- 		},0);
+ 	function randomExtension(){
+ 		return Math.random().toString(36).substring(7);
  	}
  	this.dlImage = function(ImageUrl){
  		var image = new Image();
  		image.onload = function () {
-  	 		console.log("image is loaded");
+
 		};
  		image.src = domain+ImageUrl;
  	}
  	this.save = function(){
- 		window.localStorage.setItem("fileDownloader_fileUrls",JSON.stringify(that.fileUrls));
+ 		//window.localStorage.setItem("fileDownloader_fileUrls",JSON.stringify(that.fileUrls));
  	}
  	this.load = function(){
- 		var trashUrls = JSON.parse(window.localStorage.getItem("fileDownloader_fileUrls"));
+ 		//var trashUrls = JSON.parse(window.localStorage.getItem("fileDownloader_fileUrls"));
  		//var newNum = JSON.parse(window.localStorage.getItem("mediaCapture_num"));
  	}
+ 	// for debugging
+ 	this.checkIfFileExist = function(fileSource){
+    console.log("checkIfFileExist :"+fileSource);
+ 	  window.resolveLocalFileSystemURL(fileSource, function(){
+      console.log("file exists and should load");
+    },function(){
+      console.log("file does not exist and should not load");
+    });
+	};
  	// download a video using the provided url and save it to the file system
  	// stores urls for later download if we have exceeded maxbuff
  	this.dlVid = function(vidRefUrl){
- 		// add to waiting urls if we are fully buffed
- 		if(fileUrls.length >= maxBuff){
- 			waitingUrls.push(vidRefUrl);
- 			return;
- 		}
- 		// if we have already downloaded the file
- 		// add it to list of urls and emit event
- 		for(var i=0;i< fileUrls.length; i++){
- 				if(fileUrls[i].indexOf(vidRefUrl) > -1){
- 					fileUrls.push(fileUrls[i]);
- 					var data = {fileUrl: "",vidUrl:""};
- 					data.fileUrl = fileUrls[i];
- 					data.vidUrl = vidRefUrl;
- 					E.EMIT("fileDl_gotFile",data);
- 					return;
- 				}
- 		}
- 		// if this file download is in progress
- 		// and it to duplicate urls
- 		for(var i=0;i< inProgressUrls.length; i++){
- 			if(inProgressUrls[i].indexOf(vidRefUrl) > -1){
- 				duplicateUrls.push(vidRefUrl);
- 			}
- 		}
- 		function gotFS(fileSystem){
+   		// add to waiting urls if we are fully buffed
+ 		if(numDownloaded >= maxBuff){
+ 			  waitingUrls.push(vidRefUrl);
+        console.log("waiting urls size is now: "+waitingUrls.length);
+        if(waitingUrls.length >= 10)
+          waitingUrls.splice(0,5);
+ 			  return;
+ 		}else{
+      numDownloaded ++;
  			var ft = new FileTransfer();
  			var url =  domain+vidRefUrl;
- 			ft.download(url,cordova.file.dataDirectory+"/"+vidRefUrl,function(entry){
- 				fileUrls.push(entry.toURL());
- 				remove_arr(inProgressUrls,vidRefUrl);
- 				removeDuplicate(vidRefUrl);
+ 			var newFileUrl = cordova.file.dataDirectory+"/"+randomExtension()+"_"+vidRefUrl;
+      console.log(url);
+ 			ft.download(url,newFileUrl,function(entry){
  				var data = {fileUrl: "",vidUrl:""};
  				data.fileUrl = entry.toURL();
  				data.vidUrl = vidRefUrl;
  				E.EMIT("fileDl_gotFile",data);
  			},fail);
  		}
- 		inProgressUrls.push(vidRefUrl);
- 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+
  	}
  	// delete a video file using the provided fileUrl
  	this.deleteVid = function(fileUrl){
- 		console.log("attempting to delete:"+fileUrl);
- 		function onFS(fileSystem){
- 			fileSystem.root.getFile(fileUrl,{create: false, exclusive: false},
- 				onFileEntry,deleteFail);
- 		}
- 		function onFileEntry(entry){
- 			entry.remove(function(){
- 				console.log("file removed.... donwloading next file in line");
- 				fileUrls.shift();
- 				if(fileUrls.length<maxBuff)
- 					that.dlVid(waitingUrls.shift());
- 			},deleteFail);
- 		}
- 		// check for duplicate fileurls in the array and remove 1
- 		var index = fileUrls.indexOf(fileUrl);
- 		if(index > -1){
- 			if(fileUrls.indexOf(fileUrl,index) > -1){
- 				fileUrls.shift();
- 				return;
- 			}
- 		}
- 		// if no duplicates found delete file
- 		if(fileUrl.indexOf("file") != -1)
- 			window.requestFileSystem(LocalFileSystem.PERSISTENT,0,onFS,deleteFail);
+    function onSuccess(directory) {
+        var directoryReader = directory.createReader();
+        directoryReader.readEntries(success,onError);
+    }
+    function success(entries) {
+        for (var i=0; i<entries.length; i++) {
+            if(entries[i].toURL() === fileUrl){
+              entries[i].remove(function(){ 
+                numDownloaded--;
+                if(numDownloaded < maxBuff){
+                    that.dlVid(waitingUrls.shift());
+                }
+              },function(){
+                console.log("error deleting last used file");
+              });
+              ;
+            }
+        }
+    }
+    function onError(error){
+      console.log("failed to read directory/ retrieve filesystem");
+    }
+    if(fileUrl.indexOf(cordova.file.dataDirectory) != -1){
+        console.log("deleting file: "+fileUrl);
+        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, onSuccess,onError);
+      }
+    else
+      console.log("is web url not deleting");
  	}
  	// callback on general fail
- 	function fail(){
- 		console.log("background video download failed");
- 		E.EMIT("fileDL_fail");
- 	}
+  function fail(error){
+        console.log(JSON.stringify(error));
+        numDownloaded--;
+        console.log("background video download failed");
+        E.EMIT("fileDL_fail");
+    }
  	// callback on deleting fail
- 	function deleteFail(){
- 		console.log("background video delete failed, WARNING  this may cause unecessary file storage");
- 		E.EMIT("fileDL_delete_fail");
- 	}
  }

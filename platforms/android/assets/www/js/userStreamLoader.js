@@ -23,6 +23,10 @@ function UserStreamLoader(eventEmitter,Request){
 	// when request come in call this function an addUsers
 	// to appropiate users
 	this.addUsers = function(users){
+		function shuffle(o){
+    		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    		return o;
+		}
 		console.log("found "+users.length+" users");
 		onUserAddedCount++;
 		for(var i=0; i<users.length; i++){
@@ -35,7 +39,9 @@ function UserStreamLoader(eventEmitter,Request){
 				_time = users[i].TimeStamp;
 		}
 		if(onUserAddedCount === 2){
-			userStream = userStream.concat(userBackup);
+			if(userStream.length<6)
+				userStream = userStream.concat(userBackup);
+			shuffle(userStream);
 			onUserAddedCount = 0;
 			userBackup = [];
 		}

@@ -10,7 +10,7 @@
   <engines>
     <engine name="cordova" version=">=3.0.0" />
   </engines>
-
+<dependency id="com.google.playservices" />
   <name>Google Play Services for Android</name>
 
   <platform name="android">

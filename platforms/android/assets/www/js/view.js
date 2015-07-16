@@ -32,7 +32,6 @@ function View (EventEmitter){
 			        ) 
 			    {
 			        container.hide(0);
-			        console.log("hiding menu");
 			        optionsVisible = false;
 			    }
 		});
@@ -152,6 +151,8 @@ function View (EventEmitter){
 		$("#loginPage").addClass("notActive");
 		$("#mainPage").addClass("notActive");
 		$("#loadingPage").removeClass("notActive");
+		$("#loadingPage_icon").fadeIn(0);
+		$("#loadingPage_spinner").fadeIn(0);
 	}
 	function displayDistance(distance){
 		if(distance.Method ==="car"){
@@ -194,9 +195,7 @@ function View (EventEmitter){
 
 	}
 	this.toggleOptionsMenu = function(imageUrl){
-		console.log("toggling optionsMenu");
 		var options = $("#optionsMenu");
-		console.log(optionsVisible);
 		if (optionsVisible === true){
 			optionsVisible = false;
 			options.hide(0);
@@ -206,7 +205,6 @@ function View (EventEmitter){
 				profileImageUrl = imageUrl;
 				$("#optionsIcon_self").attr("src",domain+imageUrl);
 			}
-			console.log("showing");
 			optionsVisible=true;
 			options.show(0);
 		}
@@ -221,7 +219,7 @@ function View (EventEmitter){
 	}
 	function displayVidLoad(popUpBool){
 		if(!popUpBool){
-			$("#mainPage_selfies_loadingContainer").fadeIn();
+			$("#mainPage_selfies_loadingContainer").fadeIn(0);
 			$("#loadingContainer_play").addClass("notActive");
 			$("#loadSpinner").removeClass("notActive");
 		}
@@ -279,7 +277,6 @@ function View (EventEmitter){
 		// fix this at somepoint
 	}
 	this.setUserViewPopUp = function(user){
-		console.log(JSON.stringify(user));
 		pauseVid();
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
@@ -299,9 +296,6 @@ function View (EventEmitter){
 	this.setSelfViewPopUp = function(imageUrl,vidUrl){
 		pauseVid();
 		displayVidPlay(domain+imageUrl,true);
-		console.log(vidUrl);
-		console.log(imageUrl);
-		console.log("setting self view");
 		var vid = $("#videoPopUp");
 		vid.get(0).src=domain+vidUrl;
 		playing = false;
@@ -601,10 +595,8 @@ function View (EventEmitter){
 			myLikesSet = true;
 			that.updateMyLikesView();
 			$("#mainPage_people_myLikes").empty();
-			console.log("total length is: "+that.mediaLoader.myLikes.length);
 			for(var i =0; i< that.mediaLoader.myLikes.length ; i++){
 				if(that.mediaLoader.myLikes[i].refs === null){
-					console.log("continue");
 					continue;
 				}
 				appendUser(that.mediaLoader.myLikes[i],"myLikes");

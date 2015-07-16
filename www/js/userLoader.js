@@ -111,11 +111,14 @@ function MediaLoader(eventEmitter,request){
 		clearInterval(that.pollingId);
 	}
 	that.resume = function(){
-		that.pollingId = setInterval(function(){
-			R.request('findWhoLikedMe');
-			R.request('getInbox');
-			R.request("findInboxUsers");
-		},1000*120);
+		var restart = function(){
+			that.pollingId = setInterval(function(){
+				R.request('findWhoLikedMe');
+				R.request('getInbox');
+				R.request("findInboxUsers");
+			},1000*120);
+		};
+		restart();
 	}
 	// only get the finduser stream
 	this.getUsers = function(){
@@ -126,7 +129,7 @@ function MediaLoader(eventEmitter,request){
 	// depending on the mode
 	this.getNext = function(){
 		checkStatus();
-		if(userStream.length === 1){
+		if(userStream.length === 3){
 			setTimeout(function(){
 				usLoader.getUsers();
 			},0);
@@ -154,6 +157,16 @@ function MediaLoader(eventEmitter,request){
 	// then proceeds to call buffer()
 	this.onStreamReady = function(){
 		userStream = userStream.concat(usLoader.returnStream());
+		var ids = new Array();
+		var length = userStream.length;
+		for(var i =0; i<userStream.length;i++){
+			if(ids.indexOf(userStream[i].FbId) === -1)
+				ids.push(userStream[i].FbId);
+			else{
+				userStream.splice(i,1);
+				i--;
+			}
+		}
 		buffer();
 	}
 	this.getNextImage = function(){
@@ -177,23 +190,27 @@ function MediaLoader(eventEmitter,request){
 					userStream[i].refs[0].WebUrl = data.vidUrl;
 					userStream[i].refs[0].Url = data.fileUrl;
 					userStream[i].refs[0].Type = 'fileUrl';
-					return;
+					checkStatus();
+					return true;
 				}	
 		}
-		checkStatus();
+		return false;
 	}
-
-	function move2back(index,array){
-		array.push(array.splice(index,index+1)[0]);
-	};
+	function getFileUrls(){
+		var urls = new Array();
+		for(var i=0; i<userStream.length;i++){
+			if(userStream[i].refs && (userStream[i].refs[0].Type === 'fileUrl')){
+				urls.push(userStream[i].refs[0].Url)
+			}
+		}
+		return urls;
+	}
 	// attach videoReference array to  the matching user object
 	// then call checkStatus() 
 	this.onRefLoad = function(refArray,type){
-		console.log(refArray.length);
 		for(var x = 0 ; x<refArray.length; x++){
 			var refs =  new Array(); // backwards compatibility
 			refs.push(refArray[x]);
-			//console.log(JSON.stringify(refs));
 			if(type === "findUsers"){
 				for(var i = 0; i< userStream.length; i++){
 					if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
@@ -260,7 +277,7 @@ function MediaLoader(eventEmitter,request){
 		if(type === "findUsers"){
 			usLoader.addUsers(users);
 		}else if(type === "findWhoILike"){
-			addUsers(users,that.likers);
+			addUsers(users,that.myLikes);
 			buffer();
 			E.EMIT("media_myLikes_loaded");
 		}else if(type === "findWhoLikedMe"){
@@ -305,8 +322,6 @@ function MediaLoader(eventEmitter,request){
 	//  and set that.readyStatus variable accordingly
 	function checkStatus(){
 		var status = that.readyStatus;
-		console.log("checking status");
-		console.log("mode is: "+mode);
 		if(mode === "findUsers"){
 			if(userStream[0] && userStream[0].refs && userStream[0].refs[0].Url)
 				that.readyStatus = true;

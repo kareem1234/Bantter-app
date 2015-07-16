@@ -31,7 +31,6 @@ function Request(EventEmitter){
 				tries = 0;
 				timeout = 2000;
 			}
-			console.log("request complete "+URL);
 			E.EMIT("complete"+URL,{res:response,req:requestData});
 		}).fail(function(error){
 				console.log(JSON.stringify(error));

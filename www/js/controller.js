@@ -107,10 +107,9 @@ function Controller(){
                 that.mediaLoader.setMode("findUsers");
                 currentUser = that.mediaLoader.getNext();
                 var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
-                console.log("distance object: "+JSON.stringify(distance));
                 setTimeout(function(){
                     that.view.setStreamView(currentUser,distance);
-                },1500);
+                },2000);
                 window.analytics.trackView('selfiesPage');
             }
             else if(that.view.currentView ==='streamView'){
@@ -120,7 +119,7 @@ function Controller(){
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 setTimeout(function(){
                     that.view.setStreamView(currentUser,distance);
-                },1500);
+                },2000);
                 that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser = nextUser;
               }
@@ -160,7 +159,11 @@ function Controller(){
             that.view.displayInfo("something whent wrong, video upload failed",false);
         });
         that.event.LISTEN("fileDl_gotFile",function(data){
-            that.mediaLoader.onVidDl(data);
+            if(!that.mediaLoader.onVidDl(data)){
+                console.log("to late video already played");
+                console.log(data.fileUrl);
+                that.mediaLoader.fileDl.deleteVid(data.fileUrl);
+            }
         });
         that.event.LISTEN("media_myLikes_loaded",function(){
              if(that.view.currentView ==="myLikesView"){
@@ -212,7 +215,6 @@ function Controller(){
             that.mediaLoader.onRefLoad(data.res.Refs,data.res.Type);
         });
         that.event.LISTEN("complete/findUsers",function(data){
-            console.log("completed find users");
             that.mediaLoader.onUserLoad(data.res,"findUsers");
         });
         that.event.LISTEN("complete/getInbox",function(data){
@@ -437,7 +439,7 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
-//window.localStorage.clear();
+window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
 
 

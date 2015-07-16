@@ -272,9 +272,13 @@ Loading page css styles
 	-webkit-perspective: 1000;
 }
 #loadingPage_icon{
+	-webkit-transform: translate3d(0px,0px,0px);
+	-webkit-backface-visibility: hidden;
 	position:fixed;
-	width:100%;
-	height:100%;
+	top:-10%;
+	left:-38%;
+	width:180%;
+	height:110%;
 }
 #loadingPage_statusDiv{
 	position: fixed;
