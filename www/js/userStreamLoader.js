@@ -8,25 +8,10 @@ function UserStreamLoader(eventEmitter,Request){
 	var userRange = {};
 	var maxRange = 10;
 	var onUserAddedCount = 0;
-	this.save = function(){
-		window.localStorage.setItem("userStreamLoader_userStream",JSON.stringify(userStream));
-		window.localStorage.setItem("userStreamLoader_userBackup",JSON.stringify(userBackup));
-	}
-	this.load = function(){
-		var newStream = JSON.parse(window.localStorage.getItem("userStreamLoader_userStream"));
-		if(newStream != null)
-			userStream = userStream.concat(newStream);
-		var newBackup = JSON.parse(window.localStorage.getItem("userStreamLoader_userBackup"));
-		if(newBackup != null)
-			userBackup = userBackup.concat(newBackup);
-	}
+	var fetching = false;
 	// when request come in call this function an addUsers
 	// to appropiate users
 	this.addUsers = function(users){
-		function shuffle(o){
-    		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    		return o;
-		}
 		console.log("found "+users.length+" users");
 		onUserAddedCount++;
 		for(var i=0; i<users.length; i++){
@@ -39,9 +24,9 @@ function UserStreamLoader(eventEmitter,Request){
 				_time = users[i].TimeStamp;
 		}
 		if(onUserAddedCount === 2){
+			fetching = false;
 			if(userStream.length<6)
 				userStream = userStream.concat(userBackup);
-			shuffle(userStream);
 			onUserAddedCount = 0;
 			userBackup = [];
 		}
@@ -56,6 +41,7 @@ function UserStreamLoader(eventEmitter,Request){
 	//  increment currentRange and make subsequent request
 	//  after make one request to get any particular user
 	this.getUsers = function(){
+		fetching = true;
 		console.log("getting user stream");
 		R.request('findUsers',{
 			time:  _time,
@@ -68,6 +54,7 @@ function UserStreamLoader(eventEmitter,Request){
 	}
 	// return the userStream array to the userLoader
 	this.returnStream = function(){
+		shuffle(userStream);
 		console.log("returning user stream of length: "+userStream.length);
 		var returnArray = userStream;
 		userStream= [];
@@ -101,6 +88,10 @@ function UserStreamLoader(eventEmitter,Request){
 			return true;
 		}
 		return false;
+	}
+	function shuffle(o){
+		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+		return o;
 	}
 
 }

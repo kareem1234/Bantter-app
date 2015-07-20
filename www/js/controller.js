@@ -40,7 +40,9 @@ function Controller(){
         that.view.init(that.mediaCapture.selfImageUrl);
         that.setOnPause();
         that.setOnResume();
+        setUploadReminder();
         setInterval(function(){
+            console.log("saving");
             that.save();
         },1000*60);
 
@@ -68,6 +70,7 @@ function Controller(){
         document.addEventListener("resume",function(){
             console.log("resuming");
             that.mediaLoader.resume();
+            that.event.EMIT("viewMenu_selfies_taped");
         },false);
     }
     this.setConnectivity = function(){
@@ -78,12 +81,24 @@ function Controller(){
         document.addEventListener("online",function(){
             that.view.displayInfo("Connectivity resumed",false);
             that.mediaLoader.resume();
+            that.event.EMIT("viewMenu_selfies_taped");
         },false);
     }
     var likersView_view = function(index){
         index = convertIndex(index,that.mediaLoader.likers);
         that.view.setUserViewPopUp(that.mediaLoader.likers[index]);
     };
+    var setUploadReminder = function(){
+        if(!this.call && that.mediaCapture.num > 0)
+            return;
+        if(!this.call){
+            this.call = setInterval(function(){
+                that.view.displayInfo("dont forget to upload a selfie",false);
+            },1000*90);
+        }else{
+            clearInterval(this.call);
+        }
+    }
     var myLikesView_view = function(index){
          index = convertIndex(index,that.mediaLoader.myLikes);
         that.view.setUserViewPopUp(that.mediaLoader.myLikes[index]);
@@ -109,7 +124,7 @@ function Controller(){
                 var distance = that.user.getDistance(currentUser.Lat,currentUser.Lgt);
                 setTimeout(function(){
                     that.view.setStreamView(currentUser,distance);
-                },2000);
+                },1000);
                 window.analytics.trackView('selfiesPage');
             }
             else if(that.view.currentView ==='streamView'){
@@ -119,8 +134,7 @@ function Controller(){
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 setTimeout(function(){
                     that.view.setStreamView(currentUser,distance);
-                },2000);
-                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
+                },1000);
                 currentUser = nextUser;
               }
             }
@@ -154,14 +168,28 @@ function Controller(){
         that.event.LISTEN("mediaCapture_uploadSuccess",function(){
             that.mediaCapture.incUpload();
             that.user.updateTimeStamp();
+            setUploadReminder();
         });
         that.event.LISTEN("mediaCapture_uploadError",function(){
             that.view.displayInfo("something whent wrong, video upload failed",false);
         });
         that.event.LISTEN("fileDl_gotFile",function(data){
             if(!that.mediaLoader.onVidDl(data)){
-                console.log("to late video already played");
-                console.log(data.fileUrl);
+                that.mediaLoader.fileDl.deleteVid(data.fileUrl);
+            }
+        });
+        that.event.LISTEN("fileDL_fail",function(data){
+            if(!that.mediaLoader.onVidDl(data)){
+                that.mediaLoader.fileDl.deleteVid(data.fileUrl);
+            }
+        });
+        that.event.LISTEN("fileDl_gotImageFile",function(data){
+            if(!that.mediaLoader.onImageDl(data)){
+                that.mediaLoader.fileDl.deleteVid(data.fileUrl);
+            }
+        });
+        that.event.LISTEN("fileDL_ImageFail",function(data){
+            if(!that.mediaLoader.onImageDl(data)){
                 that.mediaLoader.fileDl.deleteVid(data.fileUrl);
             }
         });
@@ -373,14 +401,13 @@ function Controller(){
             that.mediaCapture.getVideo();
         });
         that.event.LISTEN("streamView_thumbsUp_taped",function(){
-            that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
             var nextUser = that.mediaLoader.getNext();
+            var prevUser = currentUser;
             if(nextUser){
                  var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
-                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser  = nextUser;
-                if(that.mediaCapture.num > 0){
+                if(that.mediaCapture.num > 0 || that.mediaCapture.inProgress){
                     that.likes.addLike(currentUser.FbId);
                     that.mediaLoader.pushLikedUser(currentUser);
                 }else{
@@ -390,20 +417,23 @@ function Controller(){
                 that.view.streamViewDisplayLoading();
                 that.waitingFor = "findUsers";
             }
-
+            that.mediaLoader.quickSave();
+            that.mediaLoader.fileDl.deleteVid(prevUser.refs[0].Url);
         });
         that.event.LISTEN("streamView_thumbsDown_taped",function(){
             var nextUser = that.mediaLoader.getNext();
-            that.mediaLoader.fileDl.deleteVid(currentUser.refs[0].Url);
+            var prevUser = currentUser;
+            //that.mediaLoader.fileDl.deleteVid(prevUser.refs[0].Url);
             if(nextUser){
                 var distance = that.user.getDistance(nextUser.Lat,nextUser.Lgt);
                 that.view.streamViewDisplayNext(nextUser,distance);
-                that.view.preloadVidPoster(that.mediaLoader.getNextImage());
                 currentUser = nextUser;
             }else{
                 that.view.streamViewDisplayLoading();
                 that.waitingFor = "findUsers";
             }
+            that.mediaLoader.quickSave();
+            that.mediaLoader.fileDl.deleteVid(prevUser.refs[0].Url);
         });
         that.event.LISTEN("likesView_scrolled",function(){
             that.mediaLoader.callBuffer();
@@ -439,7 +469,7 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
-window.localStorage.clear();
+//window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
 
 

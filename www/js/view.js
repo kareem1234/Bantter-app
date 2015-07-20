@@ -70,8 +70,8 @@ function View (EventEmitter){
 		pauseVid();
 	}
 	function pauseVid(){
-		$("#mainPage_selfies_selfieVid").get(0).pause();
-		$("#videoPopUp").get(0).pause();
+		$("#mainPage_selfies_selfieVid").get(0).src="";
+		$("#videoPopUp").get(0).src="";
 	}
 	function initVidControll(){
 		$("#videoPopUp").bind("timeupdate",function(){
@@ -123,11 +123,9 @@ function View (EventEmitter){
 
 	}
 	this.preloadVidPoster = function (ImageUrl){
-		/*
 		if(ImageUrl){
 			$("#bufferContainer_background").attr("src",domain+ImageUrl);
 		}
-		*/
 	}
 	this.getLoginFormData = function(){
 		var formData = {
@@ -170,29 +168,56 @@ function View (EventEmitter){
 			$("#mainPage_selfies_time").text(distance.Hours + " hr "+ distance.Minutes+ " mins");
 	}
 	this.streamViewDisplayNext = function(user,distance){
-		$("#loadingContainer_background").attr("src",domain+user.refs[0].ImageUrl);
+		$("#loadingContainer_background").attr("src",returnSource(user,true));
 		displayVidLoad(false);
 		displayDistance(distance);
 		$("#mainPage_selfies_name").text(user.Name);
 		var vid = $("#mainPage_selfies_selfieVid");
-		if(user.refs[0].Url.indexOf("file") == -1){
-			vid.get(0).src=domain+user.refs[0].Url;
-			console.log("setting src to "+domain+user.refs[0].Url);
-		}
-		else if(canUseFileUrls === false){
-			vid.get(0).src=domain+user.refs[0].WebUrl;
-			console.log("setting src to "+domain+user.refs[0].WebUrl);
-		}
-		else{
-			vid.get(0).src=user.refs[0].Url;
-			console.log("setting src to "+user.refs[0].Url);
-		}
+		vid.get(0).src=returnSource(user,false);
 		setTimeout(function(){
 			vid.get(0).load();
 			vid.get(0).play();
 			disableThumbs();
 		},0);
-
+	}
+	function returnSource(user,isImage,useWeb){
+		if(isImage){
+			if(user.refs[0].ImageUrl.indexOf(cordova.file.dataDirectory) === -1){
+				console.log("setting Image source: "+domain+user.refs[0].ImageUrl);
+				return domain+user.refs[0].ImageUrl;
+			}
+			if((canUseFileUrls === false) || useWeb ){
+				if(user.refs[0].WebImageUrl){
+					console.log("setting Image source: "+domain+user.refs[0].WebImageUrl);
+					return domain+user.refs[0].WebImageUrl;
+				}else{
+					console.log("setting Image source: "+domain+user.refs[0].ImageUrl);
+					return domain+user.refs[0].ImageUrl;
+				}
+			}
+			else{
+				console.log("setting Image source: "+user.refs[0].ImageUrl);
+				return user.refs[0].ImageUrl;
+			}
+		}else{
+			if(user.refs[0].Url.indexOf(cordova.file.dataDirectory) === -1){
+				console.log("setting video source: "+domain+user.refs[0].Url);
+				return domain+user.refs[0].Url;
+			}
+			if((canUseFileUrls === false) || useWeb){
+				if(user.refs[0].WebUrl){
+					console.log("setting video source: "+domain+user.refs[0].WebUrl);
+					return domain+user.refs[0].WebUrl
+				}else{
+					console.log("setting video source: "+domain+user.refs[0].Url);
+					return domain+user.refs[0].Url;
+				}
+			}
+			else{
+				console.log("setting video source: "+user.refs[0].Url);
+				return user.refs[0].Url;
+			}
+		}
 	}
 	this.toggleOptionsMenu = function(imageUrl){
 		var options = $("#optionsMenu");
@@ -232,7 +257,7 @@ function View (EventEmitter){
 	}
 	function removeVidLoad(popUpBool){
 		if(!popUpBool)
-			$("#mainPage_selfies_loadingContainer").fadeOut(0);
+			$("#mainPage_selfies_loadingContainer").addClass("notActive");
 		else{
 			$("#popUpOverlay").addClass("notActive");
 			$("#popUpOverlay_play").addClass("notActive");
@@ -243,7 +268,7 @@ function View (EventEmitter){
 		if(!popUpBool){
 			var loadingContainer = $("#loadingContainer_background");
 			loadingContainer.attr("src",imageUrl);
-			$("#mainPage_selfies_loadingContainer").fadeIn(50);
+			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
@@ -280,15 +305,12 @@ function View (EventEmitter){
 		pauseVid();
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
-			vid.get(0).src=domain+user.refs.Url;
-			displayVidPlay(domain+user.refs.ImageUrl,true);
+			vid.get(0).src=returnSource(user,false,true);
+			displayVidPlay(returnSource(user,true),true);
 		}
 		else{
-			if(user.refs[0].Url.indexOf("file") == -1)
-				vid.get(0).src=domain+user.refs[0].Url;
-			else
-				vid.get(0).src=domain+user.refs[0].WebUrl;
-			displayVidPlay(domain+user.refs[0].ImageUrl,true);
+			vid.get(0).src=returnSource(user,false,true);
+			displayVidPlay(returnSource(user,true,true),true);
 		}
 		playing = false;
 		$("#videoPopUpModal").removeClass('notActive');
@@ -377,20 +399,8 @@ function View (EventEmitter){
 		$("#mainPage_selfies_name").text(user.Name);
 		displayDistance(distance);
 		var vid = $("#mainPage_selfies_selfieVid");
-		if(user.refs[0].Url.indexOf("file") == -1){
-			console.log("setting src to "+domain+user.refs[0].Url);
-			vid.get(0).src=domain+user.refs[0].Url;
-		}
-		else if(canUseFileUrls === false){
-			console.log("setting src to "+domain+user.refs[0].WebUrl);
-			vid.get(0).src=domain+user.refs[0].WebUrl;
-		}
-		else{
-			console.log("setting src to "+user.refs[0].Url);
-			vid.get(0).src=user.refs[0].Url;
-		}
-		
-		displayVidPlay(domain+user.refs[0].ImageUrl,false);
+		vid.get(0).src=returnSource(user,false);
+		displayVidPlay(returnSource(user,true),false);
 		playing = false;
 		disableThumbs();
 		$("#mainPage").removeClass("notActive");
@@ -558,7 +568,7 @@ function View (EventEmitter){
 			picDiv.className = "col-xs-3 col-xs-height col-top";
 			var picDivImg = document.createElement("img");
 			picDivImg.className ="mainPage_likes_profilePic";
-			picDivImg.src=domain+user.refs[0].ImageUrl;
+			picDivImg.src=returnSource(user,true,true);
 			var nameDiv = document.createElement("div");
 			nameDiv.className = "col-xs-9 col-xs-height col-top";
 			nameDiv.innerHTML = user.Name;

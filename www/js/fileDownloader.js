@@ -2,21 +2,44 @@
  	var domain = "https://s3.amazonaws.com/bantter-downloads/";
  	var R = Request;
  	var E = EventEmitter;
- 	var waitingUrls = new Array();
+
+  var waintingImageUrls = new Array();
+  var maxImageBuff = 2;
+  var numImgDl = 0;
+  var containerNum= 1;
+  var waitingUrls = new Array();
  	var numDownloaded = 0;
  	var maxBuff = 6;
  	var that = this;
- 	var downloadDates = new Array();
 
  	function randomExtension(){
  		return Math.random().toString(36).substring(7);
  	}
  	this.dlImage = function(ImageUrl){
- 		var image = new Image();
- 		image.onload = function () {
+    if(numImgDl >=maxImageBuff){
+      waintingImageUrls.push(ImageUrl);
+      return;
+    }else{
+      var ft = new FileTransfer();
+      var url =  domain+ImageUrl;
+      var newFileUrl = cordova.file.dataDirectory+"/"+randomExtension()+"_"+ImageUrl;
+      ft.download(url,newFileUrl,function(entry){
+        var data = {fileUrl: "",imageUrl:""};
+        data.fileUrl = entry.toURL();
+        data.imageUrl = ImageUrl;
+        E.EMIT("fileDl_gotImageFile",data);
+      },function(error){
+        var data = {fileUrl: "",imageUrl:""};
+        data.fileUrl = ImageUrl;
+        data.imageUrl = ImageUrl;
+        console.log(JSON.stringify(error));
+        numImgDl--;
+        console.log("background image download failed");
+        E.EMIT("fileDL_ImageFail",data);
+      });
+    }
 
-		};
- 		image.src = domain+ImageUrl;
+
  	}
  	this.save = function(){
  		//window.localStorage.setItem("fileDownloader_fileUrls",JSON.stringify(that.fileUrls));
@@ -49,18 +72,40 @@
  			var ft = new FileTransfer();
  			var url =  domain+vidRefUrl;
  			var newFileUrl = cordova.file.dataDirectory+"/"+randomExtension()+"_"+vidRefUrl;
-      console.log(url);
  			ft.download(url,newFileUrl,function(entry){
  				var data = {fileUrl: "",vidUrl:""};
  				data.fileUrl = entry.toURL();
  				data.vidUrl = vidRefUrl;
  				E.EMIT("fileDl_gotFile",data);
- 			},fail);
+ 			},function(error){
+        var data = {fileUrl: "",vidUrl:""};
+        data.fileUrl = vidRefUrl;
+        data.vidUrl = vidRefUrl;
+        console.log(JSON.stringify(error));
+        numDownloaded--;
+        console.log("background video download failed");
+        E.EMIT("fileDL_fail",data);
+      });
  		}
 
  	}
  	// delete a video file using the provided fileUrl
  	this.deleteVid = function(fileUrl){
+    function loadNext(){
+      if(fileUrl.indexOf(".mp4")=== -1){
+          console.log("loading next image");
+          numImgDl--;
+          if(numImgDl < maxImageBuff)
+            if(waintingImageUrls.length >0)
+                that.dlImage(waintingImageUrls.shift());
+      }else{
+        console.log("loading next video");
+        numDownloaded--;
+        if(numDownloaded < maxBuff)
+            if(waitingUrls.length>0)
+                that.dlVid(waitingUrls.shift());
+        }
+    }
     function onSuccess(directory) {
         var directoryReader = directory.createReader();
         directoryReader.readEntries(success,onError);
@@ -69,10 +114,8 @@
         for (var i=0; i<entries.length; i++) {
             if(entries[i].toURL() === fileUrl){
               entries[i].remove(function(){ 
-                numDownloaded--;
-                if(numDownloaded < maxBuff){
-                    that.dlVid(waitingUrls.shift());
-                }
+                  console.log("deleted: "+fileUrl);
+                  loadNext();
               },function(){
                 console.log("error deleting last used file");
               });
@@ -84,18 +127,12 @@
       console.log("failed to read directory/ retrieve filesystem");
     }
     if(fileUrl.indexOf(cordova.file.dataDirectory) != -1){
-        console.log("deleting file: "+fileUrl);
+        console.log(" attempting to delete file: "+fileUrl);
         window.resolveLocalFileSystemURL(cordova.file.dataDirectory, onSuccess,onError);
-      }
+    }
     else
       console.log("is web url not deleting");
  	}
- 	// callback on general fail
-  function fail(error){
-        console.log(JSON.stringify(error));
-        numDownloaded--;
-        console.log("background video download failed");
-        E.EMIT("fileDL_fail");
-    }
+
  	// callback on deleting fail
  }

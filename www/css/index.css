@@ -144,8 +144,6 @@ input {
 }
 #mainPage_selfies_loadingContainer{
 	-webkit-transform: translate3d(0px,0px,0px);
-	-webkit-backface-visibility: hidden;
-	background-color: black;
 	position:fixed;
 	width:100%;
 	height:100%;

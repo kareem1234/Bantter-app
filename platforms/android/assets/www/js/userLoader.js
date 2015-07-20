@@ -24,7 +24,6 @@ function MediaLoader(eventEmitter,request){
 	// loads all user arrays
 	// and any other cached data
 	this.load = function(){
-		usLoader.load();
 		var newStream = JSON.parse(window.localStorage.getItem("media_userStream"));
 		if(newStream)
 			userStream = userStream.concat(newStream);
@@ -61,6 +60,9 @@ function MediaLoader(eventEmitter,request){
 		window.localStorage.setItem("media_inboxViewedHash",JSON.stringify(inboxViewedHash));
 		window.localStorage.setItem("media_inboxRefHash",JSON.stringify(inboxRefHash));
 		window.localStorage.setItem("media_lastUser",JSON.stringify(lastUser));
+	}
+	this.quickSave = function(){
+		window.localStorage.setItem("media_userStream",JSON.stringify(userStream));
 	}
 	//should be called on startup to load cached data
 	// and begin fetching user references
@@ -128,8 +130,8 @@ function MediaLoader(eventEmitter,request){
 	// return the next user in que
 	// depending on the mode
 	this.getNext = function(){
-		checkStatus();
-		if(userStream.length === 3){
+		//checkStatus();
+		if(userStream.length <= 3){
 			setTimeout(function(){
 				usLoader.getUsers();
 			},0);
@@ -137,8 +139,7 @@ function MediaLoader(eventEmitter,request){
 		if(userStream.length === 0 )
 			return null;
 		else{
-			lastUser = userStream.shift();
-			return lastUser;
+			return userStream.shift();
 		}
 	}
 	// manual code to call buffer
@@ -196,6 +197,18 @@ function MediaLoader(eventEmitter,request){
 		}
 		return false;
 	}
+	this.onImageDl = function(data){
+		for(var i = 0; i< userStream.length; i++){
+			if(userStream[i].refs[0].ImageUrl == data.imageUrl){
+					userStream[i].refs[0].WebImageUrl = data.imageUrl;
+					userStream[i].refs[0].ImageUrl = data.fileUrl;
+					userStream[i].refs[0].Type = 'fileUrl';
+					return true;
+				}	
+		}
+		console.log("could not attach image file");
+		return false;		
+	}
 	function getFileUrls(){
 		var urls = new Array();
 		for(var i=0; i<userStream.length;i++){
@@ -215,7 +228,6 @@ function MediaLoader(eventEmitter,request){
 				for(var i = 0; i< userStream.length; i++){
 					if(userStream[i].FbId === refs[0].FbId && userStream[i].refs === null){
 						userStream[i].refs = refs;
-						console.log(userStream[i].refs[0].Url);
 						that.fileDl.dlVid(userStream[i].refs[0].Url);
 						that.fileDl.dlImage(userStream[i].refs[0].ImageUrl);
 					}
@@ -236,7 +248,7 @@ function MediaLoader(eventEmitter,request){
 				}			
 			}
 		}
-		checkStatus();
+		//checkStatus();
 	}
 	// callback for when inboxreferences are returned from server
 	// hashes them and sets wether viewable property
@@ -300,25 +312,6 @@ function MediaLoader(eventEmitter,request){
 		});
 		oldUsers = oldUsers.concat(onlyInUsers);
 	};
-	function addLikers(userarray){
-		var onlyInUsers = userarray.filter(function(current_us){
-    			return that.likers.filter(function(current_ls){
-        			return current_us.FbId == current_ls.FbId;
-    			}).length == 0;
-		});
-		that.likers = that.likers.concat(onlyInUsers);
-	};
-	function addInboxUsers(userarray){
-		var onlyInUsers = userarray.filter(function(current_us){
-    			return that.inboxUsers.filter(function(current_ls){
-        			return current_us.FbId == current_ls.FbId;
-    		}).length == 0;
-		});
-		that.inboxUsers = that.inboxUsers.concat(onlyInUsers);
-		if(onlyInUsers.length > 0){
-			//that.notifier.notify("inbox",onlyInUsers[0]);
-		}
-	}
 	// check if getNext can be called
 	//  and set that.readyStatus variable accordingly
 	function checkStatus(){

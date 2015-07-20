@@ -90,7 +90,6 @@ function User(eventEmitter, request) {
             }
 
          function distance2TransportTimeMap(distance) {
-            console.log("calculated distance is: "+distance);
                 function toWalkTime(returnObj) {
                     returnObj.Time = (distance / 5) * 60;
                     returnObj.Hours = Math.floor(returnObj.Time / 60);
