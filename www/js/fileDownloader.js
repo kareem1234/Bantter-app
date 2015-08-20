@@ -11,6 +11,7 @@
  	var numDownloaded = 0;
  	var maxBuff = 6;
  	var that = this;
+  var dataDirectory;
 
  	function randomExtension(){
  		return Math.random().toString(36).substring(7);
@@ -22,7 +23,7 @@
     }else{
       var ft = new FileTransfer();
       var url =  domain+ImageUrl;
-      var newFileUrl = cordova.file.dataDirectory+"/"+randomExtension()+"_"+ImageUrl;
+      var newFileUrl = dataDirectory+"/"+randomExtension()+"_"+ImageUrl;
       ft.download(url,newFileUrl,function(entry){
         var data = {fileUrl: "",imageUrl:""};
         data.fileUrl = entry.toURL();
@@ -45,9 +46,16 @@
  		//window.localStorage.setItem("fileDownloader_fileUrls",JSON.stringify(that.fileUrls));
  	}
  	this.load = function(){
- 		//var trashUrls = JSON.parse(window.localStorage.getItem("fileDownloader_fileUrls"));
- 		//var newNum = JSON.parse(window.localStorage.getItem("mediaCapture_num"));
+    console.log(window.device.platform);
+      if(window.device.platform ==="iOS"){
+          console.log("getting ios path");
+          dataDirectory = cordova.file.dataDirectory+'/Documents';
+      }
+      else
+        dataDirectory= cordova.file.dataDirectory;
  	}
+  
+  //that.load();
  	// for debugging
  	this.checkIfFileExist = function(fileSource){
     console.log("checkIfFileExist :"+fileSource);
@@ -71,7 +79,7 @@
       numDownloaded ++;
  			var ft = new FileTransfer();
  			var url =  domain+vidRefUrl;
- 			var newFileUrl = cordova.file.dataDirectory+"/"+randomExtension()+"_"+vidRefUrl;
+ 			var newFileUrl = dataDirectory+"/"+randomExtension()+"_"+vidRefUrl;
  			ft.download(url,newFileUrl,function(entry){
  				var data = {fileUrl: "",vidUrl:""};
  				data.fileUrl = entry.toURL();
@@ -126,9 +134,9 @@
     function onError(error){
       console.log("failed to read directory/ retrieve filesystem");
     }
-    if(fileUrl.indexOf(cordova.file.dataDirectory) != -1){
+    if(fileUrl.indexOf("file") != -1){
         console.log(" attempting to delete file: "+fileUrl);
-        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, onSuccess,onError);
+        window.resolveLocalFileSystemURL(dataDirectory, onSuccess,onError);
     }
     else
       console.log("is web url not deleting");

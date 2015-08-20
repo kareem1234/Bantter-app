@@ -12,7 +12,6 @@ function UserStreamLoader(eventEmitter,Request){
 	// when request come in call this function an addUsers
 	// to appropiate users
 	this.addUsers = function(users){
-		console.log("found "+users.length+" users");
 		onUserAddedCount++;
 		for(var i=0; i<users.length; i++){
 			if(checkHash(users[i].FbId) && checkRange(users[i]))
@@ -37,12 +36,17 @@ function UserStreamLoader(eventEmitter,Request){
 		}
 		
 	}
+	this.load = function(){
+		window.localStorage.getItem("UserStreamLoader_time",JSON.stringify(_time));
+	}
+	this.save = function(){
+		window.localStorage.setItem("UserStreamLoader_time", JSON.stringify(_time));
+	}
 	// make the request to get users
 	//  increment currentRange and make subsequent request
 	//  after make one request to get any particular user
 	this.getUsers = function(){
 		fetching = true;
-		console.log("getting user stream");
 		R.request('findUsers',{
 			time:  _time,
 			range :  maxRange
@@ -55,7 +59,6 @@ function UserStreamLoader(eventEmitter,Request){
 	// return the userStream array to the userLoader
 	this.returnStream = function(){
 		shuffle(userStream);
-		console.log("returning user stream of length: "+userStream.length);
 		var returnArray = userStream;
 		userStream= [];
 		E.EMIT("userStream_notReady");

@@ -1,4 +1,6 @@
 function View (EventEmitter){
+	// galxy nexus width: 360, height 570
+	// s3 width 360, height 615
 	var E = EventEmitter;
 	var that = this;
 	var menuSet = false;
@@ -12,11 +14,13 @@ function View (EventEmitter){
 	var peopleMenuHidden = false;
 	var canUseFileUrls = true;
 	this.streamLoading = false;
-	var profileImageUrl;
+	var profileImageUrl= null;
 	var domain = 'http://s3.amazonaws.com/bantter-downloads/';
 	this.currentView = "";
 	this.init = function(imageUrl){
 		console.log("view init");
+		console.log( Math.max(document.documentElement.clientWidth, window.innerWidth || 0));
+		console.log(Math.max(document.documentElement.clientHeight, window.innerHeight || 0));
 		if(imageUrl)
 			$("#optionsIcon_self").attr("src",domain+imageUrl);
 		initVidControll();
@@ -61,7 +65,7 @@ function View (EventEmitter){
 		});
 		if(window.device.platform === "Android"){
 			var androidVersion = parseFloat(window.device.version);
-			if(androidVersion < 4.4){
+			if(androidVersion < 4.2){
 				canUseFileUrls = false;
 			}
 		}
@@ -70,10 +74,30 @@ function View (EventEmitter){
 		pauseVid();
 	}
 	function pauseVid(){
-		$("#mainPage_selfies_selfieVid").get(0).src="";
-		$("#videoPopUp").get(0).src="";
+		var vid1 = $("#mainPage_selfies_selfieVid").get(0);
+		vid1.pause();
+		vid1.src="";
+		vid1.load();
+		vid1 = $("#videoPopUp").get(0);
+		vid1.pause();
+		vid1.src="";
+		vid1.load();
 	}
 	function initVidControll(){
+		function setPauseControls(){
+			$("#mainPage_selfies_selfieVid, #videoPopUp").bind("tap",function(){
+				var vid = $(this).get(0);
+					if(!vid.paused){
+						console.log("pausing video");
+						setPauseEvent = true;
+						vid.pause();
+					}else if( setPauseEvent === true){
+						console.log("taped again to play");
+						vid.play();
+					}
+
+			});
+		};
 		$("#videoPopUp").bind("timeupdate",function(){
 			var vid = $(this).get(0);
 			if(vid.currentTime > 0 && vid.currentTime< 1){
@@ -92,6 +116,7 @@ function View (EventEmitter){
 			$(this).get(0).play();
 		}).get(0).loop=false;
 		$("#mainPage_selfies_selfieVid").bind("ended",function(){
+			console.log("video ended");
 			$(this).get(0).currentTime=0;
 			$(this).get(0).play();
 			enableThumbs();
@@ -99,23 +124,24 @@ function View (EventEmitter){
 
 		}).bind("timeupdate",function(){
 			var vid = $(this).get(0);
+			console.log(vid.currentTime);
 			if(vid.currentTime > 0 && vid.currentTime < 1 ){
 				removeVidLoad(false);
 			}
+			if(window.device.platform ==="iOS" && vid.currentTime >= Math.floor(vid.duration))
+					enableThumbs();
 		}).get(0).loop=false;
-		$("#mainPage_selfies_selfieVid, #videoPopUp").bind("tap",function(){
-			var vid = $(this).get(0);
-			var bindEvent = function(){
-				if(!vid.paused){
-					setPauseEvent = true;
-					vid.pause();
-				}else if( setPauseEvent === true){
-					vid.play();
-				}
+		if(window.device.platform === "Android"){
+			var androidVersion = parseFloat(window.device.version);
+			if(androidVersion >= 4.4){
+				setPauseControls()
 			}
-			setTimeout(bindEvent,0);
-
-		});
+		}
+		if(window.device.platform ==="iOS"){
+			$("#videoPopUp").get(0).loop=true;
+			$("#mainPage_selfies_selfieVid").get(0).loop=true;
+			setPauseControls();
+		}
 	}
 	function clearBox(){
 		$("#mainPage_likes_menuAction1").unbind("tap").text("");
@@ -169,20 +195,21 @@ function View (EventEmitter){
 	}
 	this.streamViewDisplayNext = function(user,distance){
 		$("#loadingContainer_background").attr("src",returnSource(user,true));
-		displayVidLoad(false);
-		displayDistance(distance);
-		$("#mainPage_selfies_name").text(user.Name);
-		var vid = $("#mainPage_selfies_selfieVid");
-		vid.get(0).src=returnSource(user,false);
 		setTimeout(function(){
+			displayVidLoad(false);
+			displayDistance(distance);
+			$("#mainPage_selfies_name").text(user.Name);
+			var vid = $("#mainPage_selfies_selfieVid");
+			vid.get(0).src=returnSource(user,false);
 			vid.get(0).load();
 			vid.get(0).play();
 			disableThumbs();
 		},0);
 	}
 	function returnSource(user,isImage,useWeb){
+		console.log("file directory is:"+cordova.file.documentsDirectory);
 		if(isImage){
-			if(user.refs[0].ImageUrl.indexOf(cordova.file.dataDirectory) === -1){
+			if(user.refs[0].ImageUrl.indexOf("file") === -1){
 				console.log("setting Image source: "+domain+user.refs[0].ImageUrl);
 				return domain+user.refs[0].ImageUrl;
 			}
@@ -200,7 +227,7 @@ function View (EventEmitter){
 				return user.refs[0].ImageUrl;
 			}
 		}else{
-			if(user.refs[0].Url.indexOf(cordova.file.dataDirectory) === -1){
+			if(user.refs[0].Url.indexOf("file") === -1){
 				console.log("setting video source: "+domain+user.refs[0].Url);
 				return domain+user.refs[0].Url;
 			}
@@ -219,14 +246,14 @@ function View (EventEmitter){
 			}
 		}
 	}
-	this.toggleOptionsMenu = function(imageUrl){
+	this.toggleOptionsMenu = function(imageUrl,inprogress){
 		var options = $("#optionsMenu");
 		if (optionsVisible === true){
 			optionsVisible = false;
 			options.hide(0);
 		}
 		else{
-			if(imageUrl != profileImageUrl){
+			if(imageUrl  && !inprogress){
 				profileImageUrl = imageUrl;
 				$("#optionsIcon_self").attr("src",domain+imageUrl);
 			}
@@ -244,7 +271,7 @@ function View (EventEmitter){
 	}
 	function displayVidLoad(popUpBool){
 		if(!popUpBool){
-			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#mainPage_selfies_loadingContainer").show(0);
 			$("#loadingContainer_play").addClass("notActive");
 			$("#loadSpinner").removeClass("notActive");
 		}
@@ -257,7 +284,7 @@ function View (EventEmitter){
 	}
 	function removeVidLoad(popUpBool){
 		if(!popUpBool)
-			$("#mainPage_selfies_loadingContainer").addClass("notActive");
+			$("#mainPage_selfies_loadingContainer").fadeOut();
 		else{
 			$("#popUpOverlay").addClass("notActive");
 			$("#popUpOverlay_play").addClass("notActive");
@@ -268,7 +295,7 @@ function View (EventEmitter){
 		if(!popUpBool){
 			var loadingContainer = $("#loadingContainer_background");
 			loadingContainer.attr("src",imageUrl);
-			$("#mainPage_selfies_loadingContainer").removeClass("notActive");
+			$("#mainPage_selfies_loadingContainer").show(0);
 			loadingContainer.removeClass("notActive");
 			$("#loadSpinner").addClass("notActive");
 			$("#loadingContainer_play").removeClass("notActive");
@@ -302,6 +329,7 @@ function View (EventEmitter){
 		// fix this at somepoint
 	}
 	this.setUserViewPopUp = function(user){
+		console.log(JSON.stringify(user));
 		pauseVid();
 		var vid = $("#videoPopUp");
 		if(that.currentView ==="inboxView"){
@@ -447,6 +475,7 @@ function View (EventEmitter){
 		$("#mainPage_people_inbox").removeClass("notActive");
 
 		//
+		$("#mainPage_likes_menuTitle").empty();
 		$("#mainPage_likes_menuTitle").html("My Inbox");
 	}
 	this.updateMyLikesView = function(){
@@ -473,6 +502,7 @@ function View (EventEmitter){
 		$("#mainPage_people_myLikes").removeClass("notActive");
 
 		//
+		$("#mainPage_likes_menuTitle").empty();
 		$("#mainPage_likes_menuTitle").html("My Likes");
 	}
 	this.updateLikersView = function(){
@@ -498,6 +528,7 @@ function View (EventEmitter){
 		$("#mainPage_people_likers").removeClass("notActive");
 
 		//
+		$("#mainPage_likes_menuTitle").empty();
 		$("#mainPage_likes_menuTitle").html("My Fans");
 	}
 	this.setInboxView = function(inboxUsers,viewFunction){
@@ -505,23 +536,25 @@ function View (EventEmitter){
 			inboxSet = true;
 			that.updateInboxView();
 			$("#mainPage_people_inbox").empty();
+			console.log("inbox user length: "+inboxUsers.length);
 			for(var i = 0; i<inboxUsers.length;i++){
+				console.log("inbox user length: "+inboxUsers.length);
 				var likesRowDiv = document.createElement("div");
 				likesRowDiv.className = "likesRow row row-xs-height";
 				var picDiv = document.createElement("div");
 				picDiv.className = "col-xs-3 col-xs-height col-top";
 				var picDivImg = document.createElement("img");
 				picDivImg.className ="mainPage_likes_profilePic";
-				picDivImg.src=domain+inboxUsers[i].refs.ImageUrl;
+				picDivImg.src=returnSource(inboxUsers[i],true,true);
 				var nameDiv = document.createElement("div");
 				nameDiv.className = "col-xs-7 col-xs-height col-top";
 				nameDiv.innerHTML = inboxUsers[i].Name;
 				var iconDiv = document.createElement("div");
 				iconDiv.className ="col-xs-2 col-xs-height col-top";
-				if(that.mediaLoader.checkViewable(inboxUsers[i].refs.Url)){
+				if(that.mediaLoader.checkViewable(inboxUsers[i].refs[0].Url)){
 					var iconImage = document.createElement("img");
 					iconImage.className ="newInboxIcon";
-					iconImage.src ="./img/starIcon.jpg";
+					iconImage.src ="./img/starIcon.png";
 					iconDiv.appendChild(iconImage);
 				}
 				picDiv.appendChild(picDivImg);
@@ -538,14 +571,15 @@ function View (EventEmitter){
 				prevSelected.addClass("selectedLikesRow");
 				var index = prevSelected.index();
 				var actionBut1 = $("#mainPage_likes_menuAction1");
-				if(that.mediaLoader.checkViewable(inboxUsers[index].refs.Url)){
+				if(that.mediaLoader.checkViewable(inboxUsers[index].refs[0].Url)){
+					console.log("ref is viewable");
 					actionBut1.empty().append('<img class="actionIcon" src="./img/viewIcon.png" />');
 					actionBut1.unbind("tap").bind("tap",function(e){
 						e.preventDefault();
 						viewFunction(index);
 					});
 				}else{
-					actionBut1.innerHTML(" ");
+					actionBut1.empty();
 				}
 				var actionBut = $("#mainPage_likes_menuAction2");
 				actionBut.unbind("tap").bind("tap",function(e){

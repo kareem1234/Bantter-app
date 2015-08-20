@@ -27,7 +27,7 @@ function User(eventEmitter, request) {
         this.isDataSet = function(){
             if(Age != undefined)
                 return true;
-            return false;            
+            return false;
         }
         this.updateTimeStamp = function() {
                 TimeStamp = new Date().getTime();
@@ -62,7 +62,7 @@ function User(eventEmitter, request) {
          		return "Must be between 13 and 100 years old";
          	else if(!properGender)
          		return "Please select a gender";
-         	else 
+         	else
          		return true;
          }
 
@@ -72,6 +72,7 @@ function User(eventEmitter, request) {
                 if (!me) {
                     return false;
                 } else {
+                    console.log(JSON.stringify(me));
                     me = JSON.parse(me);
                     Age = me.Age;
                     Gender = me.Gender;
@@ -135,7 +136,7 @@ function User(eventEmitter, request) {
             console.log(JSON.stringify(data));
             if(data == null){
                 console.log("unable to find ip location setting false lat lgt");
-                Lat = 0; 
+                Lat = 0;
                 Lgt = 0;
 
             }else if(gpsSet === true){
@@ -215,13 +216,3 @@ function User(eventEmitter, request) {
                 R.request("getGps");
             }
         }
-
-
-
-
-
-
-
-
-
-

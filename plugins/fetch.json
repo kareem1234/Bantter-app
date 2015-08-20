@@ -16,24 +16,10 @@
         "is_top_level": true,
         "variables": {}
     },
-    "nl.x-services.plugins.videocaptureplus": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/EddyVerbruggen/VideoCapturePlus-PhoneGap-Plugin.git",
-            "subdir": "."
-        }
-    },
     "org.apache.cordova.device": {
         "source": {
             "type": "git",
             "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-device.git",
-            "subdir": "."
-        }
-    },
-    "org.apache.cordova.file": {
-        "source": {
-            "type": "git",
-            "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
             "subdir": "."
         }
     },
@@ -43,33 +29,67 @@
             "path": "/Users/kareemlewis/.plugman/cache/org.apache.cordova.geolocation/0.3.11/package"
         }
     },
-    "org.apache.cordova.media-capture": {
-        "source": {
-            "type": "git",
-            "url": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-media-capture.git",
-            "subdir": "."
-        }
-    },
     "com.google.playservices": {
         "source": {
             "type": "registry",
-            "id": "com.google.playservices"
+            "id": "com.google.playservices@19.0.0"
         },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "org.apache.cordova.file-transfer": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.file-transfer"
-        },
-        "is_top_level": true,
+        "is_top_level": false,
         "variables": {}
     },
     "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
             "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-media-capture": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-media-capture"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-file": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-file"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "nl.x-services.plugins.videocaptureplus": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/EddyVerbruggen/VideoCapturePlus-PhoneGap-Plugin.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-file-transfer": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-file-transfer"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-vibration": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-vibration"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-console": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-console"
         },
         "is_top_level": true,
         "variables": {}

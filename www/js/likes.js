@@ -3,7 +3,7 @@ function Likes(eventEmitter, Request){
 	var E = eventEmitter;
 	var R = Request;
 	var that = this;
-	var maxBuffer = 2;
+	var maxBuffer = 1;
 	var likes = new Array();
 	this.save = function(){
 		window.localStorage.setItem("likes_likesArray",JSON.stringify(likes));

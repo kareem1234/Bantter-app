@@ -7,6 +7,9 @@ html, body {
 	background-color: #F861B6;
 
 }
+video::-webkit-media-controls {
+    display:none !important;
+}
 a {
     color: #428BCA;
 }
@@ -61,8 +64,23 @@ input {
 #underline1{
 	top:37%;
 }
+@media screen and (max-width: 320px) {
+   .underline{
+	left:17.5%;
+	} 
+}
+@media screen and (max-width: 320px) {
+   #underline1{
+	top:39%;
+	} 
+}
 #underline2{
 	top:47%;
+}
+@media screen and (max-width: 320px) {
+   #underline2{
+	top:50%;
+	} 
 }
 #underline3{
 	top:59%;
@@ -92,7 +110,7 @@ input {
 	position:fixed;
 	top:13%;
 	width:100%;
-	height:87%;
+	height:88%;
 	z-index:6;
 }
 #popUpOverlay_play{
@@ -150,15 +168,18 @@ input {
 	top:13%;
 	z-index: 2;
 }
+@media screen and (max-width: 320px) {
+   #mainPage_selfies_loadingContainer{
+		top:13.7%;
+	} 
+}
 #loadingContainer_background{
 	-webkit-transform: translate3d(0px,0px,0px);
 	-webkit-backface-visibility: hidden;
 	width:100%;
-	height:87%;
+	height:88%;
 }
 #loadingContainer_play{
-	-webkit-transform: translate3d(0px,0px,0px);
-	-webkit-backface-visibility: hidden;
 	margin-top: -160%;
 	margin-left:42%;
 	width:15%;
@@ -244,6 +265,11 @@ input {
      		margin-top:-25%;
      }
 }
+@media screen and (max-width: 320px) {
+	     .icon{
+     		margin-top:-30%;
+     }
+}
 
 #removePadding{
 	padding-left: 0px;
@@ -254,6 +280,12 @@ input {
 	border-radius: 0px;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
 }
+@media screen and (max-width: 320px) {
+  .btn{
+		font-size: x-large;
+	} 
+}
+
 .container-xs-height{
 	height:100%;
 }
@@ -327,6 +359,13 @@ loginPage css styles
 	width:100%;
 	height:100%;
 }
+@media screen and (max-height: 570px) {
+     .actionIcon{
+     	width:110%;
+		height:150%;
+     }
+}
+
 .noPad {
 	margin: 0%;
 	padding:0%; 
@@ -355,6 +394,12 @@ loginPage css styles
 	font-size: x-large;
 	opacity:0.7;
 }
+@media screen and (max-width: 320px) {
+   #loginPage_GenderInput{
+	top:53%;
+	left:15%;
+	} 
+}
 #loginPage_AgeInput{
 	font-size: x-large;
 	position:fixed;
@@ -364,6 +409,11 @@ loginPage css styles
     color:white;
     width:70%;
     left:15%;
+}
+@media screen and (max-width: 320px) {
+   #loginPage_AgeInput{
+		top:42%;
+	} 
 }
 #loginPage_fbLogin{
 	font-family: 'Comfortaa', cursive;
@@ -375,6 +425,11 @@ loginPage css styles
 	border-radius: 1%;
 	opacity:0.9;
 	font-size: large;
+}
+@media screen and (max-width: 320px) {
+   #loginPage_fbLogin{
+		height:9%;
+	} 
 }
 #loginPage_info{
 	text-align:center;
@@ -401,6 +456,11 @@ loginPage css styles
 	margin-right: 0px;
 	margin-left:0px;
 }
+@media screen and (max-width: 320px) {
+   #mainPage_menu{
+		height:9%;
+	}
+}
 #mainPage_tabs{
 	height:5%;
 
@@ -413,21 +473,32 @@ loginPage css styles
 .mainPage_selfies_contentPane{
 	height:80%;
 	text-align: center;
-	color:white;
 	font-size:x-large;
 }
 #mainPage_menu_logo{
 	width: 80%;
 	height:80%;
 }
+@media screen and (max-height: 570px) {
+     #mainPage_menu_logo{
+     		width:80%;
+			height:90%;
+     }
+}
 #mainPage_menu_vidIcon{
-	padding-top: 12%;
-	width:60%;
-	height:60%;
+	padding-top: 20%;
+	width:54%;
+	height:110%;
 }
 @media screen and (max-width: 350px) {
      #mainPage_menu_vidIcon{
-     		width:80%;
+     		width:77%;
+			height:80%;
+     }
+}
+@media screen and (max-height: 570px) {
+     #mainPage_menu_vidIcon{
+     		width:60%;
 			height:80%;
      }
 }
@@ -450,16 +521,17 @@ loginPage css styles
 }
 .optionsIcon{
 	margin-left:20%;
-	width:70%;
+	width:68%;
 	height:20%;
 }
 #mainPage_menu_optionsIcon{
 	padding-top: 12%;
 	width:60%;
-	height:100%;
+	height:60%;
 }
 #optionsIcon_self{
 	margin-top:20%;
+	-webkit-transform: translate3d(0px,0px,0px);
 	border-radius: 50%;
 }
 #optionsIcon_contact{
@@ -471,9 +543,21 @@ loginPage css styles
 			height:80%;
      }
 }
+@media screen and (max-height: 570px) {
+     #mainPage_menu_optionsIcon{
+     		width:70%;
+			height:79%;
+     }
+}
 #mainPage_menu_likes{
 	background-color: #FF0066;
 	width:101%;
+}
+@media screen and (max-height: 570px) {
+	#mainPage_menu_likes{
+		background-color: #FF0066;
+		width:103%;
+	}
 }
 #mainPage_menu_inbox{
 	background-color:#0000FF;
@@ -493,15 +577,9 @@ loginPage css styles
 }
 
 #mainPage_selfies_selfieVid{
-	min-width:100%;
-	/*
-	    position: absolute;
-    min-width: 100%;
-    min-height: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-	*/
+	z-index: 3;
+	min-width:100% !important;
+
 }
 #mainPage_selfies_thumbsDown{
 	margin-left:35%;
@@ -511,7 +589,7 @@ loginPage css styles
 }
 #mainPage_selfies_selfieInfo{
 	height: 10%;
-	top:13.1%;
+	top:14%;
 	position:fixed;
 	width:100%;
 	background-color:black;
@@ -520,6 +598,12 @@ loginPage css styles
 	padding-top: 4%;
 	z-index: 4;
 }
+@media screen and (max-width: 320px) {
+   #mainPage_selfies_selfieInfo{
+		top:13.7%;
+	}
+}
+
 #mainPage_people_likers{
 
 }
@@ -567,6 +651,7 @@ loginPage css styles
 	margin-left:7%;
 }
 .mainPage_likes_profilePic{
+	-webkit-transform: translate3d(0px,0px,0px);
 	border-radius: 5%;
 	margin-top:-15%;
 	margin-bottom:-25%;
@@ -579,20 +664,20 @@ loginPage css styles
 			height:100%;
      }
 }
+@media screen and (max-height: 570px) {
+     .mainPage_likes_profilePic {
+     		width:100%;
+			height:100%;
+			margin-top:0%;
+			margin-bottom:0%;
+     }
+}
 #profileVidLink{
 	  height:30%;
 	  color: #428BCA;
 }
 .starDiv{
 	background-color: red;
-}
-#popUpOverlay_backIcon{
-	width:10%;
-	height:10%;
-	position:fixed;
-	top:20%;
-	left:80%;
-	z-index: 6;
 }
 
 .newInboxIcon{
@@ -616,6 +701,11 @@ loginPage css styles
   border-radius: 100%;  
   -webkit-animation: scaleout 1.0s infinite ease-in-out;
   animation: scaleout 1.0s infinite ease-in-out;
+}
+@media screen and (max-height: 570px) {
+	.spinner{
+		margin-top: 150%;
+	}
 }
 
 @-webkit-keyframes scaleout {

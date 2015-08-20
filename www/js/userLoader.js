@@ -14,16 +14,17 @@ function MediaLoader(eventEmitter,request){
 	this.inboxRefs = undefined;
 
 	this.polllingId = -1;
-	var lastUser = null;
 	var newMessages = false;
 	var mode ='findUsers';
 	var inboxRefHash = {};
 	var inboxViewedHash = {};
+	var inboxDlHash = {};
 	that.readyStatus = false;
 
 	// loads all user arrays
 	// and any other cached data
 	this.load = function(){
+		usLoader.load();
 		var newStream = JSON.parse(window.localStorage.getItem("media_userStream"));
 		if(newStream)
 			userStream = userStream.concat(newStream);
@@ -42,24 +43,25 @@ function MediaLoader(eventEmitter,request){
 		var newInboxRefHash = JSON.parse(window.localStorage.getItem("media_inboxRefHash"));
 		if(newInboxRefHash)
 			inboxRefHash = newInboxRefHash;
+		var newInboxDlHash = JSON.parse(window.localStorage.getItem("media_inboxDlHash"));
+		if(newInboxDlHash)
+			inboxDlHash = newInboxDlHash;
 
-		lastUser = JSON.parse(window.localStorage.getItem("media_lastUser"));
-		if(lastUser){
-			that.fileDl.deleteVid(lastUser.refs[0].Url);
-		}
-		buffer();
+		resetStream();
 		checkStatus();
+		that.fileDl.load();
 	}
 	// saves all user arrays 
 	// and any other cached data
 	this.save = function(){
+		usLoader.save();
 		window.localStorage.setItem("media_userStream",JSON.stringify(userStream));
 		window.localStorage.setItem("media_myLikes",JSON.stringify(that.myLikes));
 		window.localStorage.setItem("media_likers",JSON.stringify(that.likers));
 		window.localStorage.setItem("media_inboxUsers",JSON.stringify(that.inboxUsers));
 		window.localStorage.setItem("media_inboxViewedHash",JSON.stringify(inboxViewedHash));
 		window.localStorage.setItem("media_inboxRefHash",JSON.stringify(inboxRefHash));
-		window.localStorage.setItem("media_lastUser",JSON.stringify(lastUser));
+		window.localStorage.setItem("media_inboxDlHash",JSON.stringify(inboxDlHash));
 	}
 	this.quickSave = function(){
 		window.localStorage.setItem("media_userStream",JSON.stringify(userStream));
@@ -76,28 +78,40 @@ function MediaLoader(eventEmitter,request){
 		//
 	}
 	this.pushLikedUser= function(User){
-		that.myLikes.push(User);
+		that.myLikes.unshift(User);
+		removeDuplicates(that.myLikes);
+		if(that.myLikes.length > 20)
+			that.myLikes.pop();
+		window.localStorage.setItem("media_myLikes",JSON.stringify(that.myLikes));
 		buffer();
 	}
-	// sets whethere or not the inbox ref has been viewed
+	// sets whethere or not the inbox rf has been viewed
 	this.markedViewed = function(vidRef){
 		inboxViewedHash[vidRef.Url] = true;
+		that.save();
 		//
 	}
-	// check whether an inbox ref has been viewed
+	function markSeen(url){
+			inboxDlHash[url] = true;
+	}
+	function checkSeen(url){
+		console.log(inboxDlHash[url]);
+		if(inboxDlHash[url])
+			return true;
+		else
+			return false;
+	}
+	// check whether an inbox ref can be viewed
 	this.checkViewable = function(url){
-		return !inboxViewedHash[url];
+		console.log(url);
+		var r = !inboxViewedHash[url];
+		console.log(r);
+		return r;
 		//
 	}
 	// get mylikes likers and finduser stream
 	this.getAllUsers = function(){
-		if(userStream.length<10){
 			usLoader.getUsers();
-		}else{
-			console.log(userStream.length);
-		}
-
-			R.request('findWhoILike');
 			R.request('findWhoLikedMe');
 			R.request('getInbox');
 			R.request("findInboxUsers");
@@ -105,7 +119,7 @@ function MediaLoader(eventEmitter,request){
 			R.request('findWhoLikedMe');
 			R.request('getInbox');
 			R.request("findInboxUsers");
-		},300000); // 5 minitues
+		},60000); // 5 minitues
 
 	}
 	that.pause = function(){
@@ -130,7 +144,7 @@ function MediaLoader(eventEmitter,request){
 	// return the next user in que
 	// depending on the mode
 	this.getNext = function(){
-		//checkStatus();
+		checkStatus();
 		if(userStream.length <= 3){
 			setTimeout(function(){
 				usLoader.getUsers();
@@ -145,7 +159,6 @@ function MediaLoader(eventEmitter,request){
 	// manual code to call buffer
 	this.callBuffer = function(){
 		buffer();
-		//
 	}
 	// save inbox ref in object
 	// for easy tracking of viewed property
@@ -158,17 +171,21 @@ function MediaLoader(eventEmitter,request){
 	// then proceeds to call buffer()
 	this.onStreamReady = function(){
 		userStream = userStream.concat(usLoader.returnStream());
+		removeDuplicates(userStream);
+		for(var i=0;i<userStream.length;i++)
+			console.log(userStream[i].FbId);
+		buffer();
+	}
+	function removeDuplicates(array){
 		var ids = new Array();
-		var length = userStream.length;
-		for(var i =0; i<userStream.length;i++){
-			if(ids.indexOf(userStream[i].FbId) === -1)
-				ids.push(userStream[i].FbId);
+		for(var i =0; i<array.length;i++){
+			if(ids.indexOf(array[i].FbId) === -1)
+				ids.push(array[i].FbId);
 			else{
-				userStream.splice(i,1);
+				array.splice(i,1);
 				i--;
 			}
 		}
-		buffer();
 	}
 	this.getNextImage = function(){
 		if(userStream[0]){
@@ -184,6 +201,31 @@ function MediaLoader(eventEmitter,request){
 		checkStatus();
 		buffer();
 	}
+	// used to add a user to the front of the stream list if its video has been downloaded to make
+	// fast playable stream
+	this.move2Front = function(i){
+		if(userStream.length < 4 )
+			return;
+		function getIndex(){
+			var index;
+			for(var i=0;i<userStream.length;i++)
+				if(!userStream[i].refs[0].WebUrl){
+					index =i+1;
+					console.log("setting index to: "+i);
+					break;
+				}
+			return index;
+		}
+		userStream.splice(getIndex(), 0, userStream.splice(i, 1)[0]);
+	}
+	this._debug_checkNumFileVids = function(){
+		var indexes = new Array();
+		for(var i = 0; i< userStream.length;i++){
+			if(userStream[i].refs[0].WebUrl)
+				indexes.push(i);
+		}
+		console.log(JSON.stringify(indexes));
+	}
 	// update a video referene url with the new fileurl
 	this.onVidDl = function(data){
 		for(var i = 0; i< userStream.length; i++){
@@ -191,10 +233,14 @@ function MediaLoader(eventEmitter,request){
 					userStream[i].refs[0].WebUrl = data.vidUrl;
 					userStream[i].refs[0].Url = data.fileUrl;
 					userStream[i].refs[0].Type = 'fileUrl';
+					console.log("moving to front...");
+					that.move2Front(i);
+					that._debug_checkNumFileVids();
 					checkStatus();
 					return true;
 				}	
 		}
+		console.log("could not attach vid reference");
 		return false;
 	}
 	this.onImageDl = function(data){
@@ -248,29 +294,33 @@ function MediaLoader(eventEmitter,request){
 				}			
 			}
 		}
-		//checkStatus();
+		checkStatus();
 	}
 	// callback for when inboxreferences are returned from server
 	// hashes them and sets wether viewable property
 	this.onInboxRefLoad = function(refs){
+		newMessages = false;
+		console.log("got inbox refs: "+JSON.stringify(refs));
 		for(var i =0; i < refs.length; i++){
 			hashInboxRef(refs[i]);
-			if(inboxViewedHash[refs[i].url]){
-				refs[i].viewable = false;
+			if(!checkSeen(refs[i].Url)){
 				newMessages = true;
-			}else{
-				refs[i].viewable = true;
 			}
+			markSeen(refs[i].Url);
 		}
 		that.inboxRefs = refs;
-		if(that.inboxRefs && that.inboxUsers)
+		if(that.inboxRefs && that.inboxUsers){
 				that.setInboxUsers();
+			}
+		that.save();
 	}
 	// callback when both inbox users and inbox refs are loaded
 	// attaches inboxrefs to inboxusers
 	this.setInboxUsers = function(){
+		console.log("inbox user length: "+that.inboxUsers.length);
 		for(var i = 0; i <that.inboxUsers.length; i++){
-			that.inboxUsers[i].refs = inboxRefHash[that.inboxUsers[i].FbId.toString()];
+			that.inboxUsers[i].refs = [];
+			that.inboxUsers[i].refs[0] = inboxRefHash[that.inboxUsers[i].FbId.toString()];
 		}
 		sortInbox();
 		if(newMessages){
@@ -290,20 +340,22 @@ function MediaLoader(eventEmitter,request){
 		if(type === "findUsers"){
 			usLoader.addUsers(users);
 		}else if(type === "findWhoILike"){
-			addUsers(users,that.myLikes);
+			that.myLikes = addUsers(users,that.myLikes);
 			buffer();
 			E.EMIT("media_myLikes_loaded");
 		}else if(type === "findWhoLikedMe"){
-			addUsers(users,that.likers);
+			that.likers = addUsers(users,that.likers);
 			buffer();
 			E.EMIT("media_likers_loaded");
 		}else if(type === 'findInboxUsers'){
-			addUsers(users,that.inboxUsers);
-			if(that.inboxRefs && that.inboxUsers)
+			that.inboxUsers = addUsers(users,that.inboxUsers);
+			if(that.inboxRefs && that.inboxUsers){
 				that.setInboxUsers();
+			}
 		}
 	}
 	//COULD BE EXPENSIVE FUNCTION
+	// not properly adding to inbxousers
 	function addUsers(newUsers, oldUsers){
 		var onlyInUsers = newUsers.filter(function(current_us){
     		return oldUsers.filter(function(current_ls){
@@ -311,13 +363,15 @@ function MediaLoader(eventEmitter,request){
     			}).length == 0;
 		});
 		oldUsers = oldUsers.concat(onlyInUsers);
+		removeDuplicates(oldUsers);
+		return oldUsers;
 	};
 	// check if getNext can be called
 	//  and set that.readyStatus variable accordingly
 	function checkStatus(){
 		var status = that.readyStatus;
 		if(mode === "findUsers"){
-			if(userStream[0] && userStream[0].refs && userStream[0].refs[0].Url)
+			if(userStream[0] && userStream[0].refs && userStream[0].refs[0].WebUrl)
 				that.readyStatus = true;
 			else{
 				that.readyStatus = false;
@@ -344,6 +398,21 @@ function MediaLoader(eventEmitter,request){
 			}
 		}
 	}
+	function resetStream(){
+		for(var i=0;i<userStream.length;i++){
+			if(userStream[i].refs === null)
+				userStream[i].refs = undefined;
+			if(userStream[i].refs && userStream[i].refs[0].Url){
+				if(!userStream[i].refs[0].WebUrl){
+						that.fileDl.dlVid(userStream[i].refs[0].Url);
+				}
+				if(!userStream[i].refs[0].WebImageUrl){
+						that.fileDl.dlImage(userStream[i].refs[0].ImageUrl);
+				}
+			}
+
+		}
+	}
 	// call individual buffer functions
 	function buffer(){
 		bufferStream();
@@ -363,8 +432,9 @@ function MediaLoader(eventEmitter,request){
 				//R.request('getVideoRefs',{FromFbId: userStream[i].FbId,Type:"findUsers"});
 			}
 		}
-		if(temp.length > 0)
+		if(temp.length > 0){
 			R.request('getVideoRefs',{FromFbId: temp ,Type:"findUsers"});
+		}
 	}
 	// buffer the MyLikes
 	// by retrieving associated video refs  

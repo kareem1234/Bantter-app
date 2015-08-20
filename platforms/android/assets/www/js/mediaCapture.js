@@ -5,8 +5,10 @@ function MediaCapture(eventEmitter,request){
 	var toId = null;
 	var androidFilePath = "";
 	var imageExtension = "00001.png";
+	var android43Location = "file:///storage/emulated/0/DCIM/Camera";
+	var android43Location2 = "file:///storage/emulated/0/";
 	this.num = 0;
-	var mediaFile;
+	var mediaFilePath;
 	var outBoxHash = {};
 	var contentType;
 	var policy;
@@ -46,30 +48,53 @@ function MediaCapture(eventEmitter,request){
 		that.inProgress = !that.inProgress;
 	}
 	this.getVideo= function(id){
+		console.log("id is: "+id);
+		var lim;
 		if(id){
 			toId = id;
+			lim = 15;
 		}else{
 			toId = "ALL";
+			lim = 7;
 		}
-		window.plugins.videocaptureplus.captureVideo(function(mediaFiles){
+		function callback(mediaFiles){
 			console.log("vid captured");
 			that.inProgress = true;
-			mediaFile = mediaFiles[0];
+			mediaFilePath = mediaFiles[0].fullPath;
 			if(window.device.platform === "Android"){
 				contentType = 'video/3gp';
-				E.EMIT("mediaCapture_cap");
+				var androidVersion = parseFloat(window.device.version);
+				if(androidVersion === 4.3){
+					getAndroidDCIMPath(function(){
+						E.EMIT("mediaCapture_cap");
+					});
+				}else{
+					E.EMIT("mediaCapture_cap");
+				}
 			}
 			else{
 				console.log("platform is not android");
 				E.EMIT("mediaCapture_cap");
 			}
-		},captureError,{
+		};
+		var options = {
 			limit: 1,
-			duration: 6,
-			highquality: false,
+			duration: lim,
+			highquality: true,
 			frontcamera: true,
-
-		});
+		};
+		if(window.device.platform === "Android"){
+			var androidVersion = parseFloat(window.device.version);
+			if(androidVersion != 4.3){
+				window.plugins.videocaptureplus.captureVideo(callback,captureError,options);
+			}else{
+				console.log("using stock capture");
+				window.plugins.videocaptureplus.captureVideo(callback,captureError,options);
+				//navigator.device.capture.captureVideo(callback, captureError, {duration:lim});
+			}
+		}else{
+			window.plugins.videocaptureplus.captureVideo(callback,captureError,options);
+		}
 	}
 	this.getPolicy = function(){
 		var vidExtension = ".mp4";
@@ -77,6 +102,7 @@ function MediaCapture(eventEmitter,request){
 		var time = new Date().getTime();
 		var vidurl = me.FbId +"_"+ time;
 		var imageurl =me.FbId +"_"+ time;
+		console.log("sending video to: "+toId);
 		vidRef = {
 			FbId: me.FbId,
 			Url: vidurl+vidExtension,
@@ -84,7 +110,8 @@ function MediaCapture(eventEmitter,request){
 			Num: that.num + 1,
 			To: toId,
 			Type: contentType
-		}
+		};
+		console.log(JSON.stringify(vidRef));
 		R.request('getPolicy',vidRef);
 	}
 	this.onPolicyReturn = function(pol){
@@ -95,7 +122,8 @@ function MediaCapture(eventEmitter,request){
         options.fileName = vidRef.Url;
         options.mimeType = contentType;
         options.chunkedMode = false;
-        var path = mediaFile.fullPath;
+        var path = mediaFilePath;
+        console.log(path);
         /*
         if(window.device.platform == "Android")
         	path = androidFilePath;
@@ -120,14 +148,15 @@ function MediaCapture(eventEmitter,request){
 				console.log(that.selfVidUrl);
 				console.log(that.selfImageUrl);
 			}
+			console.log(vidRef);
          	R.request("insertVidRef",vidRef);
-         	clear();
+         	//clear();
          	E.EMIT("mediaCapture_uploadSuccess");
          },function(error){
          	console.log("upload failed");
          	console.log(JSON.stringify(error));
          	console.log("retrying upload");
-         	timeout += timeout;
+         	timeout+=timeout;
          	setTimeout(function(){
          		upload(ft,path,pol,options);
          	},timeout);
@@ -146,5 +175,33 @@ function MediaCapture(eventEmitter,request){
 		mediaFile = undefined;
 		toId = undefined;
 	}
+	function getAndroidDCIMPath(callback){
+		function onDr(directory){
+			var directoryReader = directory.createReader();
+    		directoryReader.readEntries(function(entries){
+    			console.log("dcim folder length: "+entries.length);
+   				mediaFilePath = android43Location2+entries[entries.length-1].fullPath;
+   				callback();
+    		},onDrF);
+		};
+		function onDrF(){
+			console.log("failed read/getting directory");
+		};
+		
+		window.resolveLocalFileSystemURL(android43Location, onDr, onDrF);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

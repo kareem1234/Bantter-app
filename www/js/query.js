@@ -9,7 +9,16 @@ function Request(EventEmitter){
 	var tries = 3;
 	// set internal user object
 	this.setUser = function(user){
+		console.log("setting user");
+		console.log("my id: "+user.FbId);
 		me = user;
+		me.VidRef = null;
+		me.FromFbId = null;
+		me.Type = null;
+		me.Range= null;
+		me.Time =null;
+		me.Like = null;
+		console.log(JSON.stringify(me));
 		//
 	}
 	// return internal user object
@@ -79,6 +88,8 @@ function Request(EventEmitter){
 				   makeRequest("GET","/"+string,me);
 				   break;
 			case "findInboxUsers" :
+					console.log(me.Id);
+					console.log(me.FbId);
 					makeRequest("GET","/"+string,me);
 					break;
 			case "getGps":
