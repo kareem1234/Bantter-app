@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+        <link rel="stylesheet" type="text/css" href="libs/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.structure.min.css" />
+        <link rel="stylesheet" type="text/css" href="libs/jquery.mobile.custom.theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link href="http://fonts.googleapis.com/css?family=Comfortaa:400,700" rel="stylesheet" type="text/css">
+        <title>Bantter</title>
+        <script type="text/javascript">
+            window.onerror = function(message, url, lineNumber) {
+                console.log("Error: "+message+" in "+url+" at line "+lineNumber);
+            }
+        </script>
+    </head>
+    <body class ="">
+        <div data-role="page" id ="loadingPage" class=" container-fluid ">
+            <img id="loadingPage_icon" class ="notActive" src ="./img/bantterIconPink.png"/>
+            <div id="loadingPage_spinner" class="spinner notActive"></div>            
+        </div>
+        <div class="notActive" id="videoPopUpModal">
+                <video webkit-playsinline  preload="auto" id='videoPopUp' >
+                </video>
+                <div id="popUpOverlay">
+                    <img  id="popUpOverlay_background"/>
+                    <img  id="popUpOverlay_play" src="./img/play.png"class=""/>
+                    <div id="loadSpinner2"class="">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+        </div>
+        <div class="modal " id="infoPopUp">
+                <div class="modal-content infoPopUpContent">
+                        <p id="modal-title2"></p>
+                </div><!-- /.modal-content -->
+        </div><!-- /.modal -->        
+        <div id="loginPage" data-role="page" class="backgroundImage notActive">
+            <img  id="loginPage_bantterLogo"src= "./img/bantterIconPink.png"/>
+            <input type="text" id="loginPage_nameInput" placeholder="First Name">
+            <div id="underline1" class ="underline"></div>
+            <input type="number" id="loginPage_AgeInput"placeholder="Age">
+            <div id="underline2" class ="underline"></div>
+            <!-- Single button -->
+            <div id="loginPage_GenderInput" class="  btn-group">
+                <button id="loginPage_GenderInput_but"type="button" class=" transparent btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Gender <span class="  caret"></span>
+                </button>
+                <ul class="  dropdown-menu" role="menu">
+                    <li ><a href="#">Female</a></li>
+                    <li ><a href="#">Male</a></li>
+                </ul>
+            </div>
+            <button type="button" id="loginPage_fbLogin"class="btn btn-lg btn-primary">Sign Up</button>
+            <!--
+            <div id="loginPage_info"class=" row row-xs-height">
+                    <a class=" text-center customLink"onclick="navigator.app.loadUrl('http://www.bantter.com/', { openExternal:true });">More info</a>
+            </div>
+        -->
+        </div>
+        <div id ="mainPage" data-role="page" class="notActive">
+            <div  class=" container-xs-height">
+                <div id="mainPage_menu" class ="  row row-xs-height">
+                     <div class="col-xs-6 col-xs-height">
+                        <img  id="mainPage_menu_logo"src= "./img/bantter2.png"/>
+                     </div>
+                     <div class="col-xs-3 col-xs-height col-top">
+                        <img  id="mainPage_menu_vidIcon"src= "./img/vidIcon.png"/>
+                     </div>
+                    <div class="col-xs-3 col-xs-height col-top">
+                        <img  id="mainPage_menu_optionsIcon"src= "./img/optionsIcon.png"/>
+                     </div>
+                </div>
+                <div id ="mainPage_tabs"class ="row row-xs-height">
+                    <div class="col-xs-4 col-xs-height col-top menuTab">
+                        <button type="button" id="mainPage_menu_inbox"class="  btn full btn-primary">
+                            <img id ="inboxIcon" class="icon"src="./img/inboxIcon.png"/>
+                        </button>
+                    </div>
+                    <div class="col-xs-4 col-xs-height menuTab col-top">
+                        <button type="button" id="mainPage_menu_selfies"class="btn full btn-primary">
+                            <img class="icon"src="./img/friendsIcon.jpg"/>                            
+                        </button>
+                    </div>
+                    <div class="col-xs-4 col-xs-height menuTab col-top">
+                        <button type="button" id="mainPage_menu_likes"class="btn full btn-primary">
+                            <img class="icon"src="./img/likesIcon.png"/>
+                        </button>
+                    </div>
+                </div>
+                <div id="optionsMenu" class="notActive">
+                    <img class="optionsIcon" id="optionsIcon_self" src="./img/profileIcon.png">
+                    <div id="profileVidLink" class=" optionsItem centerText row row-xs-height"> Profile 
+                    </div>
+                    <img class="optionsIcon"id="optionsIcon_contact" src="./img/contactIcon.png">
+                    <div class=" optionsItem centerText row row-xs-height"> 
+                        <a href="mailto:bantter.llc@gmail.com" data-rel='external'>Contact</a>
+                    </div>
+                </div>
+                <div  id="mainPage_selfies"class =" row row-xs-height">
+                    <div id="selfie_contentPane"class ="mainPage_selfies_contentPane row row-xs-height">
+                        <video  preload="auto"webkit-playsinline  id='mainPage_selfies_selfieVid' >
+                        </video>
+                    </div>
+                    <div id="mainPage_selfies_selfieInfo"class =" noPad row row-xs-height">
+                            <div id="mainPage_selfies_name"class="textInfo col-xs-6 noPad col-xs-height col-top">Ashley 19</div>
+                            <div id="mainPage_selfies_transportImg"class="textInfo noPad  col-xs-2 col-xs-height col-top"></div>
+                            <div id="mainPage_selfies_time"class="textInfo col-xs-4 noPad col-xs-height col-top"></div>
+                           
+                    </div>
+                    <div id ="mainPage_selfies_loadingContainer">
+                        <img  id="loadingContainer_background"/>
+                        <img  id="loadingContainer_play" src="./img/play.png"class="notActive"/>
+                            <div id="loadSpinner"class="notActive ">
+                                <div class="loader"></div>
+                            </div>
+                    </div>
+                    <div class ="thumbsDiv row row-xs-height">
+                            <div class="thumbsDown col-xs-6 col-xs-height col-top">
+                                <img id="mainPage_selfies_thumbsDown"src="./img/thumbsDown.png"/>
+                            </div>
+                            <div class="thumbsUp col-xs-6 col-xs-height col-top">
+                                <img id="mainPage_selfies_thumbsUp" src="./img/thumbsUp.png"/>
+                            </div>
+                    </div>
+                    <div class ="mainPage_selfies_contentPane pane2 row row-xs-height">
+                        <div class = "row row-xs-height">
+                            <div class="col-xs-12 col-xs-height col-top">
+                                <div class=" spinner notActive">
+                                    <div class="double-bounce1"></div>
+                                    <div class="double-bounce2"></div>
+                                </div>                               
+                            </div>                            
+                        </div>
+                    </div>                                      
+                </div>
+                <div id="mainPage_people" class =" notActive row row-xs-height">
+                    <div id="mainPage_likes_controlCont" class =" notActive row row-xs-height">
+                        <button type="button" id="mainPage_likes_controlBut"class="btn  btn-primary">
+                        </button>
+                    </div>
+                    <div class=" notActive spinner3">
+                        <div class="double-bounce1"></div>
+                         <div class="double-bounce2"></div>
+                    </div>                     
+                    <div id="mainPage_people_myLikes" class ="  mainPage_likesDiv row row-xs-height">
+                        <!--
+                        <div class =" likesRow row row-xs-height">
+                            <div class="col-xs-3 col-xs-height col-top">
+                                <img class="mainPage_likes_profilePic"src="http://graph.facebook.com/67563683055/picture?type=square"/>
+                            </div>
+                            <div class="col-xs-9 col-xs-height col-top">
+                                Jhon S.
+                            </div>
+                        -->
+                    </div>
+                    <div id="mainPage_people_likers" class ="notActive mainPage_likesDiv row row-xs-height">
+                        <!--
+                        <div class ="likesRow row row-xs-height">
+                            <div class="col-xs-3 col-xs-height col-top">
+                                <img class="mainPage_likes_profilePic"src="http://graph.facebook.com/67563683055/picture?type=square"/>
+                            
+                            </div>
+                            <div class="col-xs-9 col-xs-height col-top">
+                                Jhon F.
+                            </div>
+                        </div>
+                    -->
+                    </div> 
+
+                    <div id="mainPage_people_inbox" class ="notActive mainPage_likesDiv row row-xs-height">
+                                <!--
+
+                        <div class ="likesRow row row-xs-height">
+                            <div class="col-xs-3 col-xs-height col-top">
+                                <img class="mainPage_likes_profilePic"src="http://graph.facebook.com/67563683055/picture?type=square"/>
+                           
+                            </div>
+                            <div class="col-xs-7 col-xs-height col-top">
+                                Jhon F.
+                            </div>
+                            <div class="col-xs-2 col-xs-height col-top">
+                                <img class="newInboxIcon" src="./img/starIcon.jpg">
+                            </div>
+                        </div>
+                         -->
+                    </div>                      
+                    <div id="mainPage_people_menu" class="notActive row row-xs-height">
+                        <div id="mainPage_likes_menuTitle"class="col-xs-6 col-xs-height col-top">
+                        </div>
+                
+                        <div id="mainPage_likes_menuAction1"class="col-xs-2 col-xs-height col-top">
+                           <!-- <img id ="noIcon" src="./img/noIcon.jpg"> -->
+                        </div>
+                
+                        <div id="mainPage_likes_menuAction2"class="col-xs-2 col-xs-height col-top">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--  container-->
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript"  src="cordova.js"></script>
+    <script type ="text/javascript" src="libs/jquery-2.1.1.min.js"></script>
+    <script type ="text/javascript" src="libs/bootstrap.min.js"></script>
+    <script type ="text/javascript" src="libs/jquery.mobile.custom.min.js"></script>
+    <script type ="text/javascript" src="js/client.js"></script>
+    <script type ="text/javascript" src="js/likes.js"></script>
+    <script type ="text/javascript" src="js/mediaCapture.js"></script>
+    <script type ="text/javascript" src="js/query.js"></script>
+    <script type ="text/javascript" src="js/userStreamLoader.js"></script>
+    <script type ="text/javascript" src="js/userLoader.js"></script>
+    <script type ="text/javascript" src="js/view.js"></script>
+    <script type ="text/javascript" src="js/util.js"></script>
+    <script type ="text/javascript" src="js/fileDownloader.js"></script>
+    <script type ="text/javascript" src="js/customEvent.js"></script>
+    <script type ="text/javascript" src="js/controller.js"></script>
+</html>
