@@ -470,7 +470,7 @@ Controller.prototype.user  = new User(Controller.prototype.event,Controller.prot
 Controller.prototype.view = new View(Controller.prototype.event);
 View.prototype.mediaLoader = Controller.prototype.mediaLoader;
 var c = new Controller();
-window.localStorage.clear();
+//window.localStorage.clear();
 document.addEventListener("deviceready",c.setup,false);
 
 

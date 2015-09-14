@@ -1,6 +1,20 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
+        "file": "plugins/cordova-plugin-console/www/logger.js",
+        "id": "cordova-plugin-console.logger",
+        "clobbers": [
+            "cordova.logger"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
+        "id": "cordova-plugin-console.console",
+        "clobbers": [
+            "console"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "clobbers": [
@@ -274,17 +288,10 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-console/www/logger.js",
-        "id": "cordova-plugin-console.logger",
+        "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
+        "id": "cordova-plugin-statusbar.statusbar",
         "clobbers": [
-            "cordova.logger"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
-        "id": "cordova-plugin-console.console",
-        "clobbers": [
-            "console"
+            "window.StatusBar"
         ]
     }
 ];
@@ -292,6 +299,7 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "com.google.playservices": "19.0.0",
+    "cordova-plugin-console": "1.0.1",
     "cordova-plugin-file": "2.1.0",
     "cordova-plugin-file-transfer": "1.2.1",
     "cordova-plugin-google-analytics": "0.7.2",
@@ -302,7 +310,7 @@ module.exports.metadata =
     "nl.x-services.plugins.videocaptureplus": "1.3.0",
     "org.apache.cordova.device": "0.2.13-dev",
     "org.apache.cordova.geolocation": "0.3.11",
-    "cordova-plugin-console": "1.0.1"
+    "cordova-plugin-statusbar": "1.0.1"
 }
 // BOTTOM OF METADATA
 });

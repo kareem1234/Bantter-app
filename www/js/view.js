@@ -27,6 +27,10 @@ function View (EventEmitter){
 		$("#mainPage_likes_controlBut").bind("tap",function(){
 			E.EMIT("view_likesControll_taped");
 		});
+		if(window.device.platform ="iOS"){
+			StatusBar.overlaysWebView(false);
+			StatusBar.styleBlackOpaque();
+		}
 		$(document).click(function (e){
 			    var container = $("#optionsMenu");
 			    var container2 = $("#mainPage_menu_optionsIcon");

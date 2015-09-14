@@ -170,7 +170,7 @@ input {
 }
 @media screen and (max-width: 320px) {
    #mainPage_selfies_loadingContainer{
-		top:13.7%;
+		top:14.5%;
 	} 
 }
 #loadingContainer_background{
@@ -354,6 +354,12 @@ loginPage css styles
 	opacity:1;
 	margin-left: 35%;
 
+}
+@media screen and (max-width: 320px) {
+   .transportImg{
+		    width:60%;
+			height:60%;
+	}
 }
 .actionIcon{
 	width:100%;
@@ -589,7 +595,7 @@ loginPage css styles
 }
 #mainPage_selfies_selfieInfo{
 	height: 10%;
-	top:14%;
+	top:13%;
 	position:fixed;
 	width:100%;
 	background-color:black;
@@ -600,7 +606,7 @@ loginPage css styles
 }
 @media screen and (max-width: 320px) {
    #mainPage_selfies_selfieInfo{
-		top:13.7%;
+		top:14.5%;
 	}
 }
 
@@ -671,6 +677,12 @@ loginPage css styles
 			margin-top:0%;
 			margin-bottom:0%;
      }
+}
+@media screen and (max-width: 320px) {
+   .mainPage_likes_profilePic {
+		     width:70%;
+			height:80%;
+	}
 }
 #profileVidLink{
 	  height:30%;

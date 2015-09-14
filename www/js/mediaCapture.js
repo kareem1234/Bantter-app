@@ -133,8 +133,7 @@ function MediaCapture(eventEmitter,request){
                     "AWSAccessKeyId": pol.awsKey,
                     "acl": "public-read",
                     "policy": pol.policy,
-                    "signature": pol.signature,
-                    "Content-Type": contentType
+                    "signature": pol.signature
                 };
          upload(ft,path,pol,options);
 	}
